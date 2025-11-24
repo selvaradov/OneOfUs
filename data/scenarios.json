@@ -50,7 +50,7 @@
   {
     "id": "uk-royal-family-whatsapp-1",
     "category": "whatsapp",
-    "scenario": "Family WhatsApp: Your aunt says 'I don't understand why people are upset about this Royal Family controversy - they do so much for charity!' Reply without starting a fight.",
+    "scenario": "Family WhatsApp: Your aunt says 'I don't understand why people are upset about this Royal Family controversy - they do so much for charity!' Reply carefully...",
     "positions": ["left", "centre", "right"],
     "charLimit": 300,
     "metadata": {

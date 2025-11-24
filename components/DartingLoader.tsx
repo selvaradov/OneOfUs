@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { HatGlasses } from 'lucide-react';
 
 interface DartingLoaderProps {
   message: string;
@@ -11,7 +11,6 @@ export default function DartingLoader({ message }: DartingLoaderProps) {
   const [position, setPosition] = useState({ x: 50, y: 50 });
   const [targetPosition, setTargetPosition] = useState({ x: 50, y: 50 });
   const [opacity, setOpacity] = useState(1);
-  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     // Generate a new random target position every 800ms
@@ -46,14 +45,7 @@ export default function DartingLoader({ message }: DartingLoaderProps) {
   useEffect(() => {
     // Shimmer effect - fade in and out
     const interval = setInterval(() => {
-      setOpacity((prev) => {
-        const newOpacity = prev <= 0.2 ? 1 : prev - 0.15;
-        // Toggle icon when fading out
-        if (newOpacity < 0.3) {
-          setIsVisible((v) => !v);
-        }
-        return newOpacity;
-      });
+      setOpacity((prev) => (prev <= 0.2 ? 1 : prev - 0.15));
     }, 100);
 
     return () => clearInterval(interval);
@@ -71,11 +63,7 @@ export default function DartingLoader({ message }: DartingLoaderProps) {
           opacity: opacity,
         }}
       >
-        {isVisible ? (
-          <Eye className="w-12 h-12 text-orange-500" />
-        ) : (
-          <EyeOff className="w-12 h-12 text-orange-500/50" />
-        )}
+        <HatGlasses className="w-12 h-12 text-orange-500" />
       </div>
 
       {/* Message at bottom */}

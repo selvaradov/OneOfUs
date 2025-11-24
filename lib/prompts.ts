@@ -1,5 +1,5 @@
 import { Prompt } from './types';
-import promptsData from '@/data/prompts.json';
+import promptsData from '@/data/scenarios.json';
 
 export function getAllPrompts(): Prompt[] {
   return promptsData as Prompt[];
