@@ -177,38 +177,42 @@
 - ✅ Results page with score and feedback
 - ✅ localStorage persistence
 
-### Refinements Needed (Based on Initial Testing)
+### Post-MVP Refinements - COMPLETED ✓
 
-**High Priority - UX/Flow Issues:**
-- [ ] **Position assignment**: Don't let user choose their position - assign it randomly to them
-- [ ] **Reduce engagement barrier**: Make prompts much shorter
-  - [ ] Single tweet instead of 3-tweet threads
-  - [ ] Shorter character limits across all scenarios
-  - [ ] Lower the bar to get people engaged quickly
-- [ ] **Loading state**: Add playful loading indicator during grading
-  - [ ] Make it clear submission was successful
-  - [ ] Keep user entertained during API wait time
-- [ ] **Simplify feedback**: Reduce model output to one paragraph total
-  - [ ] Less lecture-y, more casual/playful tone
-  - [ ] Focus on what gave them away or what worked
-- [ ] **AI comparison**: Generate an AI response and show side-by-side
-  - [ ] Let users see how the AI would have written from that position
-  - [ ] Makes it more educational and interesting
+**UX/Flow Improvements:**
+- ✅ **Position assignment**: Random assignment implemented
+- ✅ **Reduce engagement barrier**: Shortened prompts (single tweets, shorter character limits)
+- ✅ **Loading state**: Added darting HatGlasses loader with playful messages
+- ✅ **Simplify feedback**: Grading prompt refined to avoid lecture-y tone
+- ✅ **AI comparison**: Side-by-side AI response comparison implemented
+- ✅ **Onboarding UX**: Replaced dropdowns with slider (5-point scale)
+- ✅ **Color scheme**: Changed from purple to orange (#f97316)
+- ✅ **Visual indicators**: Rubric with icons (Brain, Sparkles, Target) and progress bars
+- ✅ **History page**: View all previous games with scores
+- ✅ **Navigation**: Navbar with Home/Play/History links
+- ✅ **Position descriptions**: More natural phrasing (e.g., "traditional conservative" vs "Right")
+- ✅ **Grading improvements**: Focus on ideology, not social etiquette
+- ✅ **Code organization**: Separated grader prompt into data/ directory
 
-**Medium Priority - UI/Design:**
-- [ ] **Redesign color scheme**: Remove purple, avoid B2B SaaS aesthetic
-  - [ ] More quirky, internet-era feeling
-  - [ ] Unique visual identity (not generic startup)
-  - [ ] Consider: retro, playful, or slightly irreverent tone
-- [ ] **Improve onboarding UX**: Select dropdowns feel clunky
-  - [ ] Consider buttons/cards instead
-  - [ ] Make it feel more interactive and engaging
+### Remaining Tasks
+
+**High Priority:**
+- [ ] **Backend database infrastructure**
+  - [ ] Set up database for logging user sessions
+  - [ ] Track: user IDs, profiles, IPs, timestamps, queries, grader outputs
+  - [ ] Migrate from localStorage to database persistence
+  - [ ] Consider: Vercel Postgres or Supabase
+
+**Medium Priority:**
+- [ ] **UI theme refresh**: More unique, quirky, internet-era feeling (not B2B SaaS)
+  - Current orange theme is better than purple but could be more distinctive
+- [ ] **Add more UK prompts**: Expand from 10 to 20-30 scenarios
+- [ ] **Prompt difficulty system**: Tag scenarios by difficulty level
 
 **Low Priority - Future Features:**
-- [ ] Add more UK prompts (aim for 20-30)
-- [ ] Implement prompt difficulty system
-- [ ] Show aggregate statistics
-- [ ] History/progress tracking UI
+- [ ] **Recent news access**: Model awareness of current UK politics (e.g., Reform UK)
+- [ ] **Aggregate statistics**: Show global stats across all users
+- [ ] **Progressive difficulty**: Unlock harder prompts after success
 
 ### Detailed Implementation Checklist (Original - For Reference)
 
