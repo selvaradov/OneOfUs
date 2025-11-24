@@ -108,41 +108,42 @@
 - Factual coherence and logical consistency (20 points)
 - **Total: 100 points**
 
-### Implementation Phases
+### Implementation Phases - ALL COMPLETE ✓
 
-**Phase 1: Basic UI/UX** (1-2 days)
-- [ ] Next.js project setup with TypeScript + Tailwind
-- [ ] Landing page with game rules
-- [ ] Prompt selection screen
-- [ ] Text input interface with character counter
-- [ ] Results display page
-- [ ] Basic routing between screens
+**Phase 1: Basic UI/UX**
+- ✅ Next.js project setup with TypeScript + Tailwind
+- ✅ Landing page with game rules
+- ✅ Random prompt assignment (no selection screen)
+- ✅ Text input interface with character counter
+- ✅ Results display page with rubric visualization
+- ✅ Routing: home → game → results → history
 
-**Phase 2: Prompt System** (1 day)
-- [ ] Create JSON file with 5-10 initial prompts across different formats
-- [ ] Each prompt includes: scenario text, political positions available, word/character limits
-- [ ] Random prompt selection logic
-- [ ] Prompt display with clear instructions
+**Phase 2: Prompt System**
+- ✅ Created `/data/scenarios.json` with 10 UK-focused scenarios
+- ✅ Includes: tweets, reddit, news comments, WhatsApp, pub conversations
+- ✅ Each prompt: scenario text, political positions, character limits, metadata
+- ✅ Random prompt selection with position assignment
 
-**Phase 3: LLM Integration** (1-2 days)
-- [ ] Set up Anthropic API client
-- [ ] Design grading system prompt with rubric
-- [ ] Implement API call to grade user response
-- [ ] Parse and display structured feedback
-- [ ] Error handling for API failures
+**Phase 3: LLM Integration**
+- ✅ Anthropic API client configured
+- ✅ Grading system prompt with 3-part rubric (Understanding 65pts, Authenticity 20pts, Execution 15pts)
+- ✅ Grader extracted to `/data/graderPrompt.ts` for maintainability
+- ✅ API call returns structured feedback + AI comparison response
+- ✅ Error handling for API failures
 
-**Phase 4: User Experience Polish** (1 day)
-- [ ] Loading states during grading
-- [ ] Local storage for user's political alignment (optional)
-- [ ] Score history in localStorage
-- [ ] "Play Again" flow
-- [ ] Responsive design for mobile
+**Phase 4: User Experience Polish**
+- ✅ Playful loading indicator (darting HatGlasses with shimmer effect)
+- ✅ Onboarding modal with 5-point slider for political alignment
+- ✅ localStorage for sessions and alignment
+- ✅ History page showing all previous attempts
+- ✅ Navigation bar with Home/Play/History links
+- ✅ Responsive design for mobile
 
-**Phase 5: Testing & Refinement** (ongoing)
-- [ ] Test with real users
-- [ ] Iterate on grading prompts based on results
-- [ ] Refine UI based on feedback
-- [ ] Add more prompt scenarios
+**Phase 5: Testing & Refinement**
+- ✅ Tested with real users and iterated on feedback
+- ✅ Grading prompt refined: less lecture-y, focus on ideology not etiquette
+- ✅ UI refined: orange theme, icons instead of emojis, visual progress bars
+- ⏩ Ongoing: Add more scenarios, expand prompt library
 
 ### Decisions Made
 
@@ -214,101 +215,157 @@
 - [ ] **Aggregate statistics**: Show global stats across all users
 - [ ] **Progressive difficulty**: Unlock harder prompts after success
 
-### Detailed Implementation Checklist (Original - For Reference)
+---
 
-**Step 1: Project Setup & Structure**
-- [ ] Initialize Next.js 14+ project with TypeScript and App Router
-- [ ] Configure Tailwind CSS with base styling setup
-- [ ] Set up project folder structure:
-  - [ ] `/app` - Next.js app router pages
-  - [ ] `/components` - React components
-  - [ ] `/lib` - Utilities, types, API clients
-  - [ ] `/data` - JSON files for prompts
-  - [ ] `/app/api` - API routes for Claude integration
-- [ ] Create `.env.local` for Anthropic API key
-- [ ] Add `.env.local` to `.gitignore`
-- [ ] Install dependencies: `@anthropic-ai/sdk`
+## Backend Database Infrastructure Plan
 
-**Step 2: Type Definitions & Data Models**
-- [ ] Create TypeScript interfaces:
-  - [ ] `Prompt` type (id, category, scenario, positions, charLimit, etc.)
-  - [ ] `UserAlignment` type (for onboarding data)
-  - [ ] `GameSession` type (prompt, user response, position chosen, etc.)
-  - [ ] `GradingResult` type (score, feedback, detected/undetected)
-- [ ] Design data structure to be database-ready (add IDs, timestamps, etc.)
+### Database Choice: Vercel Postgres (recommended)
+- Native Vercel integration with zero config
+- PostgreSQL-compatible (standard SQL, robust querying)
+- Generous free tier (60 hours compute time, 256MB storage)
+- Automatic connection pooling via `@vercel/postgres`
+- Alternative: Supabase (if need more features like auth, realtime, storage)
 
-**Step 3: Initial Prompts Content**
-- [ ] Create `/data/prompts.json` with 5-10 UK-focused prompts
-- [ ] Include variety: Tweet threads, Reddit comments, Letters to MP, News comments, WhatsApp family
-- [ ] Each prompt specifies: scenario text, available political positions, character limits
-- [ ] Keep structure region-agnostic where possible
+### Database Schema Design
 
-**Step 4: Landing Page & Layout**
-- [ ] Create landing page (`/app/page.tsx`) with:
-  - [ ] Game title and tagline
-  - [ ] Brief explanation of Ideological Turing Test
-  - [ ] "Start Playing" CTA button
-  - [ ] Basic responsive layout with Tailwind
-- [ ] Create base layout with consistent styling
+**Tables:**
 
-**Step 5: Onboarding Modal**
-- [ ] Create onboarding modal component (max 3 questions)
-- [ ] Questions to collect:
-  - [ ] Political alignment (e.g., 5-point scale or categorical)
-  - [ ] Age range (optional)
-  - [ ] Country/region (optional, default UK)
-- [ ] Implement backdrop blur effect
-- [ ] Store responses in localStorage
-- [ ] Modal only shows on first visit (check localStorage)
+**1. `users` table**
+```sql
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  political_alignment INTEGER, -- 1-5 scale from onboarding
+  age_range TEXT,
+  country TEXT DEFAULT 'UK',
+  total_games INTEGER DEFAULT 0,
+  avg_score DECIMAL(5,2)
+);
+```
 
-**Step 6: Game Screen UI**
-- [ ] Create game page (`/app/game/page.tsx`)
-- [ ] Random prompt selection from prompts.json
-- [ ] Display scenario with clear formatting
-- [ ] Position selector (buttons/dropdown for available positions)
-- [ ] Text area with character counter
-- [ ] Visual feedback for character limit guidance
-- [ ] Submit button (disabled until position selected + text entered)
-- [ ] Loading state during API call
+**2. `game_sessions` table**
+```sql
+CREATE TABLE game_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  completed_at TIMESTAMP WITH TIME ZONE,
 
-**Step 7: Claude API Integration**
-- [ ] Create API route `/app/api/grade/route.ts`
-- [ ] Set up Anthropic SDK client with API key from env
-- [ ] Design grading system prompt with rubric
-- [ ] Handle API request: receive user response, prompt context, position
-- [ ] Call Claude API with grading prompt
-- [ ] Parse response and return structured feedback
-- [ ] Add error handling and rate limiting awareness
+  -- Request data
+  prompt_id TEXT NOT NULL,
+  prompt_scenario TEXT NOT NULL,
+  prompt_category TEXT NOT NULL,
+  position_assigned TEXT NOT NULL,
+  user_response TEXT NOT NULL,
+  char_count INTEGER,
 
-**Step 8: Results Screen**
-- [ ] Create results page/component
-- [ ] Display playful feedback (detected vs. undetected message)
-- [ ] Show score if applicable
-- [ ] Show Claude's specific feedback/reasoning
-- [ ] "Play Again" button (returns to game with new prompt)
-- [ ] Option to review original prompt and user's response
+  -- Grading results
+  detected BOOLEAN,
+  score INTEGER,
+  feedback TEXT,
+  rubric_understanding INTEGER,
+  rubric_authenticity INTEGER,
+  rubric_execution INTEGER,
+  ai_comparison_response TEXT,
 
-**Step 9: localStorage Persistence**
-- [ ] Save game sessions to localStorage
-- [ ] Store: timestamp, prompt ID, position chosen, user response, grading result
-- [ ] Implement simple history view (optional for MVP)
-- [ ] Ensure data model matches future database schema
+  -- Metadata
+  ip_address INET,
+  user_agent TEXT,
+  duration_seconds INTEGER,
 
-**Step 10: Polish & Testing**
-- [ ] Responsive design testing (mobile, tablet, desktop)
-- [ ] Error states for API failures
-- [ ] Loading states and transitions
-- [ ] Basic accessibility (keyboard navigation, ARIA labels)
-- [ ] Test with various prompt types
-- [ ] Iterate on grading prompt based on results
+  INDEX idx_user_sessions (user_id, created_at DESC),
+  INDEX idx_prompt_performance (prompt_id, score),
+  INDEX idx_position_performance (position_assigned, detected)
+);
+```
 
-**Step 11: Deployment Preparation**
-- [ ] Test locally with API key
-- [ ] Set up Vercel project
-- [ ] Configure environment variables in Vercel
-- [ ] Deploy preview build
-- [ ] Verify API routes work in production
-- [ ] (Database integration will come before public launch)
+**3. `prompts_analytics` table** (optional - for tracking prompt difficulty)
+```sql
+CREATE TABLE prompts_analytics (
+  prompt_id TEXT PRIMARY KEY,
+  total_attempts INTEGER DEFAULT 0,
+  avg_score DECIMAL(5,2),
+  detection_rate DECIMAL(5,2), -- % detected
+  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+### Implementation Steps
+
+**Phase 1: Database Setup & Schema**
+- [ ] Create Vercel Postgres database in project
+- [ ] Run schema migrations to create tables
+- [ ] Set up connection pooling via `@vercel/postgres`
+- [ ] Create database utility functions in `/lib/db.ts`
+- [ ] Add database URL to environment variables
+
+**Phase 2: User Management**
+- [ ] Create `/app/api/user/route.ts` for user operations
+- [ ] Modify onboarding to create user record on first visit
+- [ ] Generate UUID for user, store in localStorage + database
+- [ ] Migrate existing localStorage alignment data to database
+- [ ] Update user stats after each game (total_games, avg_score)
+
+**Phase 3: Game Session Persistence**
+- [ ] Modify `/app/api/grade/route.ts` to save sessions to database
+- [ ] Capture IP address and user agent from request headers
+- [ ] Track session duration (submit time - page load time)
+- [ ] Store full grading result including rubric breakdown
+- [ ] Keep localStorage as fallback for offline/client-side access
+
+**Phase 4: History & Analytics Queries**
+- [ ] Update history page to fetch from database instead of localStorage
+- [ ] Add pagination for user history (limit 20 per page)
+- [ ] Create analytics queries:
+  - User stats: total games, avg score, detection rate by position
+  - Prompt difficulty: average scores per prompt
+  - Position performance: which positions are easiest/hardest
+- [ ] Optional: Create `/app/api/stats` endpoint for aggregate data
+
+**Phase 5: Migration & Fallback**
+- [ ] Create migration script to import existing localStorage sessions
+- [ ] Add error handling: if DB unavailable, fall back to localStorage
+- [ ] Test with existing users who have localStorage data
+- [ ] Graceful degradation for DB connection failures
+
+**Phase 6: Privacy & Compliance**
+- [ ] Add privacy notice on landing page about data collection
+- [ ] Implement data retention policy (e.g., delete sessions after 6 months)
+- [ ] Optional: Allow users to export/delete their data
+- [ ] Hash IP addresses for privacy (store hash, not raw IP)
+- [ ] GDPR considerations: consent for data storage
+
+### Database Utility Functions
+
+**`/lib/db.ts`** - Core database operations:
+- `createUser(alignment, ageRange, country)` → returns user UUID
+- `saveGameSession(sessionData)` → saves game to DB
+- `getUserHistory(userId, limit, offset)` → paginated history
+- `getUserStats(userId)` → aggregate user performance
+- `updateUserStats(userId)` → recalculate avg_score, total_games
+- `getPromptAnalytics(promptId)` → prompt difficulty stats
+- `getAllPromptsAnalytics()` → global prompt performance
+
+### Data Flow After Implementation
+
+1. **First Visit:**
+   - User completes onboarding → creates `users` record
+   - UUID stored in localStorage for subsequent visits
+
+2. **Game Session:**
+   - User plays game → grading happens via API
+   - API saves to `game_sessions` table
+   - Also saved to localStorage for offline access
+
+3. **History Page:**
+   - Fetches from database (primary source)
+   - Falls back to localStorage if DB unavailable
+   - Shows paginated results with filtering options
+
+4. **Analytics (Future):**
+   - Aggregate queries for global stats
+   - Track which positions/prompts are hardest
+   - Monitor detection rates over time
 
 ## Favicon prompt
 ```
