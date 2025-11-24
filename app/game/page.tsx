@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Prompt, PoliticalPosition, GameSession } from '@/lib/types';
 import { getRandomPrompt } from '@/lib/prompts';
 import { hasCompletedOnboarding, saveGameSession } from '@/lib/storage';
+import { getPositionDescription } from '@/lib/positionDescriptions';
 import OnboardingModal from '@/components/OnboardingModal';
+import Navbar from '@/components/Navbar';
 
 const LOADING_MESSAGES = [
   "Analyzing your chameleon skills...",
@@ -122,32 +124,15 @@ export default function GamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            One of Us
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Can you fool the AI?
-          </p>
-        </div>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+        <div className="max-w-4xl mx-auto">
 
         {/* Main Card */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-6">
           {/* Scenario */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 text-xs font-semibold text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-900/30 rounded-full uppercase">
-                {prompt.category}
-              </span>
-              {prompt.metadata?.topic && (
-                <span className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-700 rounded-full">
-                  {prompt.metadata.topic}
-                </span>
-              )}
-            </div>
             <div className="prose dark:prose-invert max-w-none">
               <p className="text-lg text-gray-900 dark:text-gray-100 leading-relaxed">
                 {prompt.scenario}
@@ -159,10 +144,10 @@ export default function GamePage() {
           <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-800">
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                You&apos;re writing as someone who is:
+                You&apos;re writing as:
               </p>
-              <p className="text-2xl font-bold text-orange-700 dark:text-orange-300 capitalize">
-                {assignedPosition}
+              <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
+                {getPositionDescription(assignedPosition)}
               </p>
             </div>
           </div>
@@ -214,5 +199,6 @@ export default function GamePage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

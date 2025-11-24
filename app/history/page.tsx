@@ -3,20 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { GameSession } from '@/lib/types';
-import { getGameSessions, getUserAlignment } from '@/lib/storage';
+import { getGameSessions } from '@/lib/storage';
+import { getPositionDescription } from '@/lib/positionDescriptions';
+import Navbar from '@/components/Navbar';
 
 export default function HistoryPage() {
   const [sessions, setSessions] = useState<GameSession[]>([]);
-  const [userAlignment, setUserAlignment] = useState<string>('');
 
   useEffect(() => {
     const allSessions = getGameSessions();
     setSessions(allSessions.reverse()); // Most recent first
-
-    const alignment = getUserAlignment();
-    if (alignment) {
-      setUserAlignment(alignment.politicalAlignment);
-    }
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -30,19 +26,16 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Your History
-          </h1>
-          {userAlignment && (
-            <p className="text-gray-600 dark:text-gray-400">
-              Your alignment: <span className="font-semibold capitalize">{userAlignment}</span>
-            </p>
-          )}
-        </div>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Your History
+            </h1>
+          </div>
 
         {/* Stats */}
         {sessions.length > 0 && (
@@ -103,12 +96,9 @@ export default function HistoryPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-1 text-xs font-semibold text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-900/30 rounded uppercase">
-                        {session.prompt.category}
-                      </span>
-                      <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">
-                        as {session.positionChosen}
+                    <div className="mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        As {getPositionDescription(session.positionChosen)}
                       </span>
                     </div>
                     <p className="text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
@@ -157,5 +147,6 @@ export default function HistoryPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

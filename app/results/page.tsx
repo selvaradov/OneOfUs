@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { GameSession } from '@/lib/types';
 import { getGameSessions } from '@/lib/storage';
+import { getPositionDescription } from '@/lib/positionDescriptions';
 
 function ResultsContent() {
   const router = useRouter();
@@ -171,16 +172,12 @@ function ResultsContent() {
 
         {/* Scenario Context - Compact */}
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4 text-sm">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="px-2 py-1 text-xs font-semibold text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-900/30 rounded uppercase">
-              {prompt.category}
-            </span>
-            <span className="text-gray-600 dark:text-gray-400">
-              Position: <span className="font-semibold capitalize">{positionChosen}</span>
-            </span>
-          </div>
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gray-300 mb-2">
             <span className="font-medium">Scenario:</span> {prompt.scenario}
+          </p>
+          <p className="text-gray-600 dark:text-gray-400 text-xs">
+            Argued from the perspective of{' '}
+            <span className="font-semibold">{getPositionDescription(positionChosen)}</span>
           </p>
         </div>
 

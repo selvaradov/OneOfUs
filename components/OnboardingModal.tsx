@@ -32,6 +32,10 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
     setTouched(true);
   };
 
+  const handleSliderClick = () => {
+    setTouched(true);
+  };
+
   const handleSubmit = () => {
     if (!touched) return;
 
@@ -89,6 +93,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
                 step="1"
                 value={alignmentValue}
                 onChange={handleSliderChange}
+                onClick={handleSliderClick}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-orange-500"
                 style={{
                   background: `linear-gradient(to right, #f97316 0%, #f97316 ${(alignmentValue / 6) * 100}%, #e5e7eb ${(alignmentValue / 6) * 100}%, #e5e7eb 100%)`
