@@ -52,11 +52,9 @@ export interface GradingResult {
   score: number;
   feedback: string;
   rubricScores?: {
+    understanding: number;
     authenticity: number;
-    shibboleths: number;
-    steelmanning: number;
-    tone: number;
-    coherence: number;
+    execution: number;
   };
   timestamp: string;
 }

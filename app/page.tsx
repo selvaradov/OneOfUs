@@ -48,6 +48,16 @@ export default function Home() {
               Reddit comments, and letters to MPs.
             </p>
           </div>
+
+          {/* History Link */}
+          <div className="pt-4">
+            <Link
+              href="/history"
+              className="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline"
+            >
+              View your history →
+            </Link>
+          </div>
         </div>
       </main>
     </div>

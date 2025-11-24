@@ -91,21 +91,69 @@ function ResultsContent() {
             </div>
           </div>
 
-          {/* Rubric Scores - Compact Grid */}
+          {/* Rubric Scores - Visual Progress Bars with Icons */}
           {gradingResult.rubricScores && (
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {Object.entries(gradingResult.rubricScores).map(([key, value]) => (
-                  <div key={key} className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {value}
-                      <span className="text-sm text-gray-500">/20</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Understanding */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">🧠</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">Understanding</span>
                     </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 capitalize">
-                      {key}
-                    </div>
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      {gradingResult.rubricScores.understanding}
+                      <span className="text-xs text-gray-500">/65</span>
+                    </span>
                   </div>
-                ))}
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div
+                      className="bg-orange-500 h-2.5 rounded-full transition-all"
+                      style={{ width: `${(gradingResult.rubricScores.understanding / 65) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Authenticity */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">✨</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">Authenticity</span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      {gradingResult.rubricScores.authenticity}
+                      <span className="text-xs text-gray-500">/20</span>
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div
+                      className="bg-orange-500 h-2.5 rounded-full transition-all"
+                      style={{ width: `${(gradingResult.rubricScores.authenticity / 20) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Execution */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">🎯</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">Execution</span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      {gradingResult.rubricScores.execution}
+                      <span className="text-xs text-gray-500">/15</span>
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div
+                      className="bg-orange-500 h-2.5 rounded-full transition-all"
+                      style={{ width: `${(gradingResult.rubricScores.execution / 15) * 100}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -161,6 +209,16 @@ function ResultsContent() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* History Link */}
+        <div className="text-center mt-6">
+          <Link
+            href="/history"
+            className="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline"
+          >
+            View all your games →
+          </Link>
         </div>
       </div>
     </div>

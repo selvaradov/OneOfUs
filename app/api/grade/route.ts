@@ -27,11 +27,22 @@ Your task is to determine if they truly understand this ideology, or if they're 
 Someone can write in a casual, informal style and still demonstrate deep understanding. Conversely, someone can use all the right jargon but reveal they don't actually grasp the ideology.
 
 **Scoring criteria (total 100 points):**
-1. Authenticity of voice (20 points): Do they sound genuinely committed to this position?
-2. Shibboleths/in-group language (20 points): Right terminology and framing?
-3. Steelmanning (20 points): Strong version of the argument, not caricature?
-4. Tone appropriateness (20 points): Matches both the position and medium?
-5. Coherence (20 points): Logically consistent and factually reasonable?
+
+1. **Understanding (65 points)** - Do they actually grasp the ideology?
+   - Core values and priorities of this position
+   - Reasoning patterns and trade-offs this view considers
+   - Real concerns and motivations (not stereotypes)
+   - Can articulate WHY someone holds this view, not just WHAT they believe
+
+2. **Authenticity (20 points)** - Does it sound natural and genuine?
+   - Not forced, performative, or robotic
+   - Sounds like a real person, not a caricature
+   - Natural use of language (not over-the-top)
+
+3. **Execution (15 points)** - Appropriate for the medium/scenario?
+   - Right tone for the platform (tweet vs Reddit vs letter)
+   - Appropriate style and register
+   - Fits the social context
 
 Generally, 70+ means undetected, below 70 means detected (but use your judgment).
 
@@ -44,11 +55,9 @@ Generally, 70+ means undetected, below 70 means detected (but use your judgment)
   "detected": boolean,
   "score": number,
   "rubricScores": {
+    "understanding": number,
     "authenticity": number,
-    "shibboleths": number,
-    "steelmanning": number,
-    "tone": number,
-    "coherence": number
+    "execution": number
   },
   "feedback": "One paragraph (3-5 sentences) addressing the user directly. Use 'you' and 'your'. Be playful and direct, not lecture-y. If detected, tell them what gave them away. If undetected, acknowledge what they got right."
 }

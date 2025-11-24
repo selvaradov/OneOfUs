@@ -9,16 +9,35 @@ interface OnboardingModalProps {
 }
 
 export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
-  const [alignment, setAlignment] = useState<PoliticalPosition | ''>('');
+  const [alignmentValue, setAlignmentValue] = useState(3); // Default to center (0-6 scale)
+  const [touched, setTouched] = useState(false);
   const [ageRange, setAgeRange] = useState('');
   const [country, setCountry] = useState('UK');
 
+  // Map slider values to positions
+  const sliderToPosition: PoliticalPosition[] = [
+    'left',
+    'left',
+    'centre-left',
+    'centre',
+    'centre-right',
+    'right',
+    'right'
+  ];
+
+  const sliderLabels = ['Left', '', 'Centre-left', 'Centre', 'Centre-right', '', 'Right'];
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAlignmentValue(Number(e.target.value));
+    setTouched(true);
+  };
+
   const handleSubmit = () => {
-    if (!alignment) return;
+    if (!touched) return;
 
     const userAlignment: UserAlignment = {
       id: crypto.randomUUID(),
-      politicalAlignment: alignment,
+      politicalAlignment: sliderToPosition[alignmentValue],
       ageRange: ageRange || undefined,
       country,
       createdAt: new Date().toISOString(),
@@ -27,14 +46,6 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
     saveUserAlignment(userAlignment);
     onComplete();
   };
-
-  const alignmentOptions: { value: PoliticalPosition; label: string }[] = [
-    { value: 'left', label: 'Left' },
-    { value: 'centre-left', label: 'Centre-left' },
-    { value: 'centre', label: 'Centre' },
-    { value: 'centre-right', label: 'Centre-right' },
-    { value: 'right', label: 'Right' },
-  ];
 
   const ageOptions = [
     { value: '18-24', label: '18-24' },
@@ -65,26 +76,40 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
         </p>
 
         <div className="space-y-6">
-          {/* Question 1: Political Alignment */}
+          {/* Question 1: Political Alignment Slider */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-900 dark:text-white">
               1. Your political alignment?
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              {alignmentOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => setAlignment(option.value)}
-                  className={`px-4 py-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                    alignment === option.value
-                      ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
+            <div className="px-2">
+              <input
+                type="range"
+                min="0"
+                max="6"
+                step="1"
+                value={alignmentValue}
+                onChange={handleSliderChange}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-orange-500"
+                style={{
+                  background: `linear-gradient(to right, #f97316 0%, #f97316 ${(alignmentValue / 6) * 100}%, #e5e7eb ${(alignmentValue / 6) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+              <div className="flex justify-between mt-2 text-xs text-gray-600 dark:text-gray-400">
+                {sliderLabels.map((label, idx) => (
+                  <span
+                    key={idx}
+                    className={`${alignmentValue === idx ? 'font-bold text-orange-600 dark:text-orange-400' : ''}`}
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
             </div>
+            {!touched && (
+              <p className="text-xs text-gray-500 dark:text-gray-500 italic">
+                Move the slider to select your position
+              </p>
+            )}
           </div>
 
           {/* Question 2: Age Range */}
@@ -135,7 +160,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
         {/* Submit Button */}
         <button
           onClick={handleSubmit}
-          disabled={!alignment}
+          disabled={!touched}
           className="mt-8 w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           Start Playing

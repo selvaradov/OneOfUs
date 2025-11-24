@@ -7,6 +7,19 @@ import { getRandomPrompt } from '@/lib/prompts';
 import { hasCompletedOnboarding, saveGameSession } from '@/lib/storage';
 import OnboardingModal from '@/components/OnboardingModal';
 
+const LOADING_MESSAGES = [
+  "Analyzing your chameleon skills...",
+  "Checking if you blend in...",
+  "Consulting the ideology experts...",
+  "Sniffing for tells...",
+  "Reading between the lines...",
+  "Checking your receipts...",
+  "Seeing if you pass the vibe check...",
+  "Testing your shapeshifting abilities...",
+  "Asking: who are you, really?",
+  "Detecting any sus energy...",
+];
+
 export default function GamePage() {
   const router = useRouter();
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -15,6 +28,7 @@ export default function GamePage() {
   const [userResponse, setUserResponse] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [charCount, setCharCount] = useState(0);
+  const [loadingMessage, setLoadingMessage] = useState('');
 
   // Check onboarding status and load prompt
   useEffect(() => {
@@ -41,6 +55,9 @@ export default function GamePage() {
   const handleSubmit = async () => {
     if (!prompt || !assignedPosition || !userResponse.trim()) return;
 
+    // Select random loading message
+    const randomMessage = LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)];
+    setLoadingMessage(randomMessage);
     setIsSubmitting(true);
 
     try {
@@ -187,7 +204,7 @@ export default function GamePage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Checking if you pass...
+                  {loadingMessage}
                 </span>
               ) : (
                 'Submit'
