@@ -26,10 +26,16 @@ Your task is to determine if they truly understand this ideology, or if they're 
 
 Someone can write in a casual, informal style and still demonstrate deep understanding. Conversely, someone can use all the right jargon but reveal they don't actually grasp the ideology.
 
-**Scoring:**
-- Give a score out of 100
-- Decide if they're DETECTED (pretending) or UNDETECTED (could be genuine)
-- Generally, 70+ means undetected, below 70 means detected (but use your judgment)
+**Scoring criteria (total 100 points):**
+1. Authenticity of voice (20 points): Do they sound genuinely committed to this position?
+2. Shibboleths/in-group language (20 points): Right terminology and framing?
+3. Steelmanning (20 points): Strong version of the argument, not caricature?
+4. Tone appropriateness (20 points): Matches both the position and medium?
+5. Coherence (20 points): Logically consistent and factually reasonable?
+
+Generally, 70+ means undetected, below 70 means detected (but use your judgment).
+
+**Important:** Address the user directly in second person ("you", "your") not third person ("they", "the player").
 
 **Output TWO things as JSON:**
 
@@ -37,7 +43,14 @@ Someone can write in a casual, informal style and still demonstrate deep underst
 {
   "detected": boolean,
   "score": number,
-  "feedback": "One paragraph (3-5 sentences) in a playful, direct tone. If detected, say what gave them away. If undetected, acknowledge what they understood well. Be specific and insightful, not lecture-y."
+  "rubricScores": {
+    "authenticity": number,
+    "shibboleths": number,
+    "steelmanning": number,
+    "tone": number,
+    "coherence": number
+  },
+  "feedback": "One paragraph (3-5 sentences) addressing the user directly. Use 'you' and 'your'. Be playful and direct, not lecture-y. If detected, tell them what gave them away. If undetected, acknowledge what they got right."
 }
 
 2. An AI-generated response from the same position:
@@ -101,6 +114,7 @@ export async function POST(request: NextRequest) {
       detected: parsedData.grading.detected,
       score: parsedData.grading.score,
       feedback: parsedData.grading.feedback,
+      rubricScores: parsedData.grading.rubricScores,
       timestamp: new Date().toISOString(),
     };
 

@@ -105,7 +105,7 @@ export default function GamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -122,7 +122,7 @@ export default function GamePage() {
           {/* Scenario */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 text-xs font-semibold text-indigo-600 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-900/30 rounded-full uppercase">
+              <span className="px-3 py-1 text-xs font-semibold text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-900/30 rounded-full uppercase">
                 {prompt.category}
               </span>
               {prompt.metadata?.topic && (
@@ -139,12 +139,12 @@ export default function GamePage() {
           </div>
 
           {/* Assigned Position */}
-          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg p-4 border-2 border-indigo-200 dark:border-indigo-800">
+          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-800">
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                 You&apos;re writing as someone who is:
               </p>
-              <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300 capitalize">
+              <p className="text-2xl font-bold text-orange-700 dark:text-orange-300 capitalize">
                 {assignedPosition}
               </p>
             </div>
@@ -160,7 +160,7 @@ export default function GamePage() {
               onChange={handleResponseChange}
               placeholder="Write your response here..."
               rows={6}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
             />
             <div className="flex items-center justify-between text-sm">
               <span className={`${isOverLimit ? 'text-red-600' : 'text-gray-600 dark:text-gray-400'}`}>
@@ -179,7 +179,7 @@ export default function GamePage() {
             <button
               onClick={handleSubmit}
               disabled={!canSubmit}
-              className="w-full px-6 py-4 text-lg font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full px-6 py-4 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
