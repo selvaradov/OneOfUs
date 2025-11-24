@@ -2,9 +2,9 @@
   {
     "id": "uk-nhs-tweet-1",
     "category": "tweet",
-    "scenario": "You're a politically active account with 25k followers. The NHS has just announced waiting times have hit a record high. Write a 3-tweet thread sharing your perspective on what should be done.",
+    "scenario": "The NHS just announced waiting times hit a record high. Tweet your take.",
     "positions": ["left", "centre", "right"],
-    "charLimit": 840,
+    "charLimit": 280,
     "metadata": {
       "region": "UK",
       "difficulty": "medium",
@@ -14,9 +14,9 @@
   {
     "id": "uk-housing-reddit-1",
     "category": "reddit",
-    "scenario": "You're in r/UKPolitics. Someone just posted: 'We need to build more houses, but everyone opposes development in their area. What's the solution?' Write your response.",
+    "scenario": "You're in r/UKPolitics. Someone posted: 'We need more houses but everyone opposes development in their area.' Write your response.",
     "positions": ["progressive", "conservative", "centre"],
-    "charLimit": 1000,
+    "charLimit": 500,
     "metadata": {
       "region": "UK",
       "difficulty": "medium",
@@ -24,12 +24,11 @@
     }
   },
   {
-    "id": "uk-climate-mp-letter-1",
-    "category": "letter-to-mp",
-    "scenario": "You're writing to your MP as a concerned constituent about the government's new climate policy announcement. They're considering expanding oil and gas licensing in the North Sea. Write a brief letter (200-250 words) explaining your position.",
+    "id": "uk-climate-tweet-1",
+    "category": "tweet",
+    "scenario": "Government just announced they're expanding oil and gas licensing in the North Sea. Tweet your reaction.",
     "positions": ["green", "conservative", "centre-left"],
-    "charLimit": 1500,
-    "wordLimit": 250,
+    "charLimit": 280,
     "metadata": {
       "region": "UK",
       "difficulty": "medium",
@@ -39,9 +38,9 @@
   {
     "id": "uk-immigration-news-1",
     "category": "news-comment",
-    "scenario": "You're commenting under a BBC article about the government's new immigration policy reducing visa numbers for care workers. Write a comment that gets upvoted by people who share your political perspective.",
+    "scenario": "BBC article: 'Government reduces visa numbers for care workers.' Write a quick comment.",
     "positions": ["left", "right", "centre"],
-    "charLimit": 800,
+    "charLimit": 400,
     "metadata": {
       "region": "UK",
       "difficulty": "hard",
@@ -51,9 +50,9 @@
   {
     "id": "uk-royal-family-whatsapp-1",
     "category": "whatsapp",
-    "scenario": "Your family WhatsApp group is discussing the Royal Family's latest controversy. Your aunt just sent: 'I don't understand why people are so upset about this - they do so much for charity!' Respond without starting a massive argument.",
+    "scenario": "Family WhatsApp: Your aunt says 'I don't understand why people are upset about this Royal Family controversy - they do so much for charity!' Reply without starting a fight.",
     "positions": ["left", "centre", "right"],
-    "charLimit": 500,
+    "charLimit": 300,
     "metadata": {
       "region": "UK",
       "difficulty": "easy",
@@ -61,12 +60,11 @@
     }
   },
   {
-    "id": "uk-brexit-reunion-1",
+    "id": "uk-brexit-pub-1",
     "category": "other",
-    "scenario": "You're at a school reunion. Someone mentions Brexit and says 'Well, it's done now, we just need to make the best of it.' You want to share your genuine political view without killing the vibe. What do you say? (100-150 words)",
+    "scenario": "At the pub, someone mentions Brexit: 'Well it's done now, we just need to make the best of it.' Quick reply?",
     "positions": ["left", "centre-right", "centre"],
-    "charLimit": 800,
-    "wordLimit": 150,
+    "charLimit": 250,
     "metadata": {
       "region": "UK",
       "difficulty": "medium",
@@ -76,9 +74,45 @@
   {
     "id": "uk-education-tweet-2",
     "category": "tweet",
-    "scenario": "You're tweeting about the news that university tuition fees might increase again. Write a 2-tweet thread expressing your view on higher education funding.",
+    "scenario": "News: University tuition fees might increase again. Tweet your view.",
     "positions": ["progressive", "conservative", "centre"],
-    "charLimit": 560,
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "education"
+    }
+  },
+  {
+    "id": "uk-strikes-tweet-1",
+    "category": "tweet",
+    "scenario": "Train drivers announce another strike. Tweet your reaction.",
+    "positions": ["left", "right", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "labour"
+    }
+  },
+  {
+    "id": "uk-benefits-reddit-1",
+    "category": "reddit",
+    "scenario": "r/UnitedKingdom post: 'Universal Credit is too low to live on.' Your comment?",
+    "positions": ["left", "right", "centre"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "welfare"
+    }
+  },
+  {
+    "id": "uk-private-schools-tweet-1",
+    "category": "tweet",
+    "scenario": "Labour proposes removing tax breaks for private schools. Tweet your take.",
+    "positions": ["left", "centre", "right"],
+    "charLimit": 280,
     "metadata": {
       "region": "UK",
       "difficulty": "medium",

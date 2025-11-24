@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { GradeRequest, GradeResponse, GradingResult } from '@/lib/types';
+import { GradeRequest, GradingResult } from '@/lib/types';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 const GRADING_PROMPT = `You are grading an Ideological Turing Test submission. A player has attempted to write from a specific political perspective.
-
-Your task is to evaluate whether their response is authentic and convincing.
 
 **Scenario:** {scenario}
 
@@ -19,30 +17,39 @@ Your task is to evaluate whether their response is authentic and convincing.
 
 ---
 
-Evaluate this response on the following criteria (well-calibrated, not too harsh or too lenient):
+Your task is to determine if they truly understand this ideology, or if they're just mimicking surface-level language.
 
-1. **Authenticity of voice** (20 points): Does this sound like someone genuinely holding this position?
-2. **Use of shibboleths/in-group language** (20 points): Do they use the right terminology, references, and framing?
-3. **Steelmanning the position** (20 points): Is this a strong version of the argument, not a caricature?
-4. **Tone appropriateness** (20 points): Does the tone match both the position and the medium/scenario?
-5. **Coherence and logic** (20 points): Are the claims factually reasonable and logically consistent?
+**Critical distinction:** Don't be fooled by someone who just uses the right buzzwords or tone. Focus on whether they demonstrate genuine understanding of:
+- The underlying values and priorities of this position
+- The actual reasoning patterns and trade-offs people with this view consider
+- The real concerns and motivations (not stereotypes or caricatures)
 
-**Output format:**
-Provide your response as JSON with this exact structure:
+Someone can write in a casual, informal style and still demonstrate deep understanding. Conversely, someone can use all the right jargon but reveal they don't actually grasp the ideology.
+
+**Scoring:**
+- Give a score out of 100
+- Decide if they're DETECTED (pretending) or UNDETECTED (could be genuine)
+- Generally, 70+ means undetected, below 70 means detected (but use your judgment)
+
+**Output TWO things as JSON:**
+
+1. Your grading:
 {
-  "detected": boolean,  // true if you think they're pretending, false if they could be genuine
-  "score": number,      // total score out of 100
-  "feedback": string,   // 2-3 paragraphs of playful, insightful feedback explaining your decision
-  "rubricScores": {
-    "authenticity": number,
-    "shibboleths": number,
-    "steelmanning": number,
-    "tone": number,
-    "coherence": number
-  }
+  "detected": boolean,
+  "score": number,
+  "feedback": "One paragraph (3-5 sentences) in a playful, direct tone. If detected, say what gave them away. If undetected, acknowledge what they understood well. Be specific and insightful, not lecture-y."
 }
 
-Make the feedback engaging and constructive. If they're detected, explain what gave them away. If they pass, acknowledge what they did well.`;
+2. An AI-generated response from the same position:
+{
+  "aiResponse": "Write YOUR OWN response to the same scenario from the same position, showing how someone genuinely holding this view might write it. Match the length and format of what was requested."
+}
+
+Return as:
+{
+  "grading": { ... },
+  "aiComparison": { "aiResponse": "..." }
+}`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,7 +72,7 @@ export async function POST(request: NextRequest) {
     // Call Claude API
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
+      max_tokens: 1500,
       temperature: 0.7,
       messages: [
         {
@@ -88,22 +95,23 @@ export async function POST(request: NextRequest) {
       throw new Error('Could not parse response from Claude');
     }
 
-    const gradingData = JSON.parse(jsonMatch[0].replace(/```json\n/, '').replace(/\n```/, ''));
+    const parsedData = JSON.parse(jsonMatch[0].replace(/```json\n/, '').replace(/\n```/, ''));
 
     const result: GradingResult = {
-      detected: gradingData.detected,
-      score: gradingData.score,
-      feedback: gradingData.feedback,
-      rubricScores: gradingData.rubricScores,
+      detected: parsedData.grading.detected,
+      score: parsedData.grading.score,
+      feedback: parsedData.grading.feedback,
       timestamp: new Date().toISOString(),
     };
 
-    const response: GradeResponse = {
+    // Add AI comparison response to the result
+    const aiResponse = parsedData.aiComparison?.aiResponse || null;
+
+    return NextResponse.json({
       success: true,
       result,
-    };
-
-    return NextResponse.json(response);
+      aiResponse,
+    });
   } catch (error) {
     console.error('Error grading response:', error);
     return NextResponse.json(

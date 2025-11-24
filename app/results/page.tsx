@@ -37,12 +37,12 @@ function ResultsContent() {
     );
   }
 
-  const { gradingResult, prompt, positionChosen, userResponse } = session;
+  const { gradingResult, prompt, positionChosen, userResponse, aiResponse } = session;
   const passed = !gradingResult.detected;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -73,72 +73,66 @@ function ResultsContent() {
               {gradingResult.score}
               <span className="text-2xl text-gray-500">/100</span>
             </div>
-            <p className="text-gray-600 dark:text-gray-400">Overall Score</p>
           </div>
 
           {/* Feedback */}
           <div className="space-y-3">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Feedback
+              What gave it away (or what worked)
             </h3>
             <div className="prose dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 {gradingResult.feedback}
               </p>
             </div>
           </div>
-
-          {/* Rubric Scores */}
-          {gradingResult.rubricScores && (
-            <div className="space-y-3">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Breakdown
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(gradingResult.rubricScores).map(([key, value]) => (
-                  <div key={key} className="space-y-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-700 dark:text-gray-300 capitalize">
-                        {key}
-                      </span>
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        {value}/20
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div
-                        className="bg-indigo-600 h-2 rounded-full transition-all"
-                        style={{ width: `${(value / 20) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Review Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-4 mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Your Submission
-          </h3>
+        {/* Scenario Context */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
           <div className="space-y-2">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Position:</span> {positionChosen}
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 text-xs font-semibold text-indigo-600 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-900/30 rounded-full uppercase">
+                {prompt.category}
+              </span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Position: <span className="font-semibold capitalize">{positionChosen}</span>
+              </span>
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-gray-700 dark:text-gray-300">
               <span className="font-medium">Scenario:</span> {prompt.scenario}
-            </div>
+            </p>
           </div>
-          <div className="pt-2">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Your response:
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+        </div>
+
+        {/* Side-by-side comparison */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* User Response */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <span className="text-2xl">👤</span>
+              Your Response
+            </h3>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 text-gray-700 dark:text-gray-300 whitespace-pre-wrap min-h-[120px]">
               {userResponse}
             </div>
           </div>
+
+          {/* AI Response */}
+          {aiResponse && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <span className="text-2xl">🤖</span>
+                AI Response
+              </h3>
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4 text-gray-700 dark:text-gray-300 whitespace-pre-wrap min-h-[120px]">
+                {aiResponse}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 italic">
+                How Claude would write from the same position
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Actions */}

@@ -42,6 +42,7 @@ export interface GameSession {
   positionChosen: PoliticalPosition;
   userResponse: string;
   gradingResult?: GradingResult;
+  aiResponse?: string;
   createdAt: string;
   completedAt?: string;
 }
