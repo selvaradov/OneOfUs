@@ -8,8 +8,8 @@ export default function Navbar() {
   const router = useRouter();
 
   const handleNewPrompt = () => {
-    // Just navigate to game page with a random query param to force remount
-    router.push(`/game?t=${Date.now()}`);
+    // Dispatch custom event to trigger new prompt
+    window.dispatchEvent(new CustomEvent('newPrompt'));
   };
 
   return (

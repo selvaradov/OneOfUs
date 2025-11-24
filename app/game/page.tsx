@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Prompt, PoliticalPosition, GameSession } from '@/lib/types';
 import { getRandomPrompt } from '@/lib/prompts';
 import { hasCompletedOnboarding, saveGameSession } from '@/lib/storage';
@@ -25,7 +25,6 @@ const LOADING_MESSAGES = [
 
 export default function GamePage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [assignedPosition, setAssignedPosition] = useState<PoliticalPosition | null>(null);
@@ -33,6 +32,7 @@ export default function GamePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [charCount, setCharCount] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Check onboarding status and load prompt
   useEffect(() => {
@@ -52,7 +52,17 @@ export default function GamePage() {
     // Reset form state
     setUserResponse('');
     setCharCount(0);
-  }, [searchParams]); // Re-run when search params change (new prompt request)
+  }, [refreshTrigger]);
+
+  // Listen for new prompt event
+  useEffect(() => {
+    const handleNewPrompt = () => {
+      setRefreshTrigger(prev => prev + 1);
+    };
+
+    window.addEventListener('newPrompt', handleNewPrompt);
+    return () => window.removeEventListener('newPrompt', handleNewPrompt);
+  }, []);
 
   const handleResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;

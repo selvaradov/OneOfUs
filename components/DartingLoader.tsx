@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Brain } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface DartingLoaderProps {
   message: string;
@@ -10,6 +10,8 @@ interface DartingLoaderProps {
 export default function DartingLoader({ message }: DartingLoaderProps) {
   const [position, setPosition] = useState({ x: 50, y: 50 });
   const [targetPosition, setTargetPosition] = useState({ x: 50, y: 50 });
+  const [opacity, setOpacity] = useState(1);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     // Generate a new random target position every 800ms
@@ -41,20 +43,39 @@ export default function DartingLoader({ message }: DartingLoaderProps) {
     return () => clearInterval(interval);
   }, [targetPosition]);
 
+  useEffect(() => {
+    // Shimmer effect - fade in and out
+    const interval = setInterval(() => {
+      setOpacity((prev) => {
+        const newOpacity = prev <= 0.2 ? 1 : prev - 0.15;
+        // Toggle icon when fading out
+        if (newOpacity < 0.3) {
+          setIsVisible((v) => !v);
+        }
+        return newOpacity;
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm flex items-center justify-center">
-      {/* Darting icon */}
+      {/* Darting/shimmering icon */}
       <div
         className="absolute transition-all duration-200 ease-out"
         style={{
           left: `${position.x}%`,
           top: `${position.y}%`,
           transform: 'translate(-50%, -50%)',
+          opacity: opacity,
         }}
       >
-        <div className="animate-bounce">
-          <Brain className="w-12 h-12 text-orange-500 animate-pulse" />
-        </div>
+        {isVisible ? (
+          <Eye className="w-12 h-12 text-orange-500" />
+        ) : (
+          <EyeOff className="w-12 h-12 text-orange-500/50" />
+        )}
       </div>
 
       {/* Message at bottom */}

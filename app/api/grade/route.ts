@@ -48,6 +48,14 @@ Generally, 70+ means undetected, below 70 means detected (but use your judgment)
 
 **Important:** Address the user directly in second person ("you", "your") not third person ("they", "the player").
 
+**Feedback style:** Never compare to what "genuine" or "real" people would do/say. Instead, focus on:
+- What's missing from the ideological perspective
+- What doesn't align with the core values/priorities
+- What reveals gaps in understanding
+- What works well or demonstrates insight
+
+Avoid phrases like "a genuine X would Y" or "real X tends to Z". Instead say things like "this misses the X perspective on Y" or "the ideology prioritizes X, but your response focuses on Y".
+
 **Output TWO things as JSON:**
 
 1. Your grading:
@@ -59,7 +67,7 @@ Generally, 70+ means undetected, below 70 means detected (but use your judgment)
     "authenticity": number,
     "execution": number
   },
-  "feedback": "One paragraph (3-5 sentences) addressing the user directly. Use 'you' and 'your'. Be playful and direct, not lecture-y. If detected, tell them what gave them away. If undetected, acknowledge what they got right."
+  "feedback": "One paragraph (3-5 sentences) addressing the user directly. Use 'you' and 'your'. Be playful and direct, not lecture-y. Focus on what's present/missing, not on what 'real people' would do. If detected, tell them what gave them away. If undetected, acknowledge what they got right."
 }
 
 2. An AI-generated response from the same position:
