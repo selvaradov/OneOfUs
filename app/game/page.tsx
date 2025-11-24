@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Prompt, PoliticalPosition, GameSession } from '@/lib/types';
 import { getRandomPrompt } from '@/lib/prompts';
 import { hasCompletedOnboarding, saveGameSession } from '@/lib/storage';
@@ -24,6 +24,7 @@ const LOADING_MESSAGES = [
 
 export default function GamePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [assignedPosition, setAssignedPosition] = useState<PoliticalPosition | null>(null);
@@ -46,7 +47,11 @@ export default function GamePage() {
       const randomIndex = Math.floor(Math.random() * randomPrompt.positions.length);
       setAssignedPosition(randomPrompt.positions[randomIndex]);
     }
-  }, []);
+
+    // Reset form state
+    setUserResponse('');
+    setCharCount(0);
+  }, [searchParams]); // Re-run when search params change (new prompt request)
 
   const handleResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;

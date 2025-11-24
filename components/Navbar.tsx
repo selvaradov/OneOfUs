@@ -7,11 +7,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleRefresh = () => {
-    if (pathname === '/game') {
-      router.refresh();
-      window.location.reload(); // Force full reload to get new prompt
-    }
+  const handleNewPrompt = () => {
+    // Just navigate to game page with a random query param to force remount
+    router.push(`/game?t=${Date.now()}`);
   };
 
   return (
@@ -27,13 +25,20 @@ export default function Navbar() {
 
         {/* Nav Links */}
         <div className="flex items-center gap-4">
-          {pathname === '/game' && (
+          {pathname === '/game' ? (
             <button
-              onClick={handleRefresh}
+              onClick={handleNewPrompt}
               className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
             >
               New Prompt
             </button>
+          ) : (
+            <Link
+              href="/game"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+            >
+              Play
+            </Link>
           )}
           <Link
             href="/history"

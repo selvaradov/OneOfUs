@@ -129,22 +129,6 @@ export default function HistoryPage() {
             ))}
           </div>
         )}
-
-        {/* Actions */}
-        <div className="mt-8 flex gap-4 justify-center">
-          <Link
-            href="/game"
-            className="px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
-          >
-            Play Again
-          </Link>
-          <Link
-            href="/"
-            className="px-6 py-3 text-lg font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            Home
-          </Link>
-        </div>
       </div>
     </div>
     </>

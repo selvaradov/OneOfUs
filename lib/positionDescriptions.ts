@@ -7,7 +7,7 @@ export function getPositionDescription(position: PoliticalPosition): string {
     'centre-left': 'a social democrat',
     'centre': 'a centrist pragmatist',
     'centre-right': 'a moderate conservative',
-    'right': 'a traditional conservative',
+    'right': 'a right-wing populist',
     'progressive': 'a progressive reformer',
     'conservative': 'a traditional conservative',
     'libertarian': 'a libertarian',
