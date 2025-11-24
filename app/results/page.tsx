@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Brain, Sparkles, Target } from 'lucide-react';
 import { GameSession } from '@/lib/types';
 import { getGameSessions } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
@@ -100,7 +101,7 @@ function ResultsContent() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">🧠</span>
+                      <Brain className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">Understanding</span>
                     </div>
                     <span className="text-lg font-bold text-gray-900 dark:text-white">
@@ -120,7 +121,7 @@ function ResultsContent() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">✨</span>
+                      <Sparkles className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">Authenticity</span>
                     </div>
                     <span className="text-lg font-bold text-gray-900 dark:text-white">
@@ -140,7 +141,7 @@ function ResultsContent() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">🎯</span>
+                      <Target className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">Execution</span>
                     </div>
                     <span className="text-lg font-bold text-gray-900 dark:text-white">
