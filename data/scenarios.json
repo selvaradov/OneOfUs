@@ -118,5 +118,341 @@
       "difficulty": "medium",
       "topic": "education"
     }
+  },
+  {
+    "id": "uk-reform-tweet-1",
+    "category": "tweet",
+    "scenario": "A new poll shows Reform UK overtaking the Conservatives in the 'Red Wall'. Tweet your take.",
+    "positions": ["nationalist-conservative", "conservative", "left"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "populism"
+    }
+  },
+  {
+    "id": "uk-gender-news-1",
+    "category": "news-comment",
+    "scenario": "Telegraph article: 'Government blocks Scottish gender recognition reforms.' Write a comment below the line.",
+    "positions": ["progressive", "conservative", "centre-left"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "hard",
+      "topic": "culture-war"
+    }
+  },
+  {
+    "id": "uk-crime-whatsapp-1",
+    "category": "whatsapp",
+    "scenario": "Neighbourhood Watch group chat: 'Saw someone shoplifting at the Co-op again and police didn't even turn up.' Reply...",
+    "positions": ["conservative", "left", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "policing"
+    }
+  },
+  {
+    "id": "uk-scotland-other-1",
+    "category": "other",
+    "scenario": "Pub conversation in Edinburgh: Someone argues, 'If we go independent, we'll be back in the EU within five years.' Your response?",
+    "positions": ["nationalist-conservative", "progressive", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "Scotland",
+      "difficulty": "medium",
+      "topic": "independence"
+    }
+  },
+  {
+    "id": "uk-housing-reddit-2",
+    "category": "reddit",
+    "scenario": "r/UKHousing: 'We need to abolish Right to Buy immediately to save our social housing stock.' Write your comment.",
+    "positions": ["left", "conservative", "centre-right"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "housing"
+    }
+  },
+  {
+    "id": "uk-grammar-tweet-1",
+    "category": "tweet",
+    "scenario": "A viral thread claims bringing back Grammar schools is the only way to boost social mobility for working-class kids. Quote tweet it.",
+    "positions": ["conservative", "left", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "education"
+    }
+  },
+  {
+    "id": "uk-bbc-news-1",
+    "category": "news-comment",
+    "scenario": "Article: 'BBC License Fee to rise by inflation next year.' Post a comment.",
+    "positions": ["nationalist-conservative", "centre-left", "centre"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "media"
+    }
+  },
+  {
+    "id": "uk-netzero-tweet-1",
+    "category": "tweet",
+    "scenario": "The PM is rolling back the ban on new petrol cars to 'ease the burden on families'. Tweet your reaction.",
+    "positions": ["green", "conservative", "centre-right"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "environment"
+    }
+  },
+  {
+    "id": "uk-farmers-other-1",
+    "category": "other",
+    "scenario": "At a country show, a farmer says: 'Supermarkets are squeezing us dry and cheap imports are finishing the job.' What do you say?",
+    "positions": ["conservative", "green", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "agriculture"
+    }
+  },
+  {
+    "id": "uk-asylum-tweet-1",
+    "category": "tweet",
+    "scenario": "Breaking: Another 500 people crossed the Channel in small boats yesterday. Tweet your view on the solution.",
+    "positions": ["nationalist-conservative", "progressive", "centre-right"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "hard",
+      "topic": "immigration"
+    }
+  },
+  {
+    "id": "uk-wfh-news-1",
+    "category": "news-comment",
+    "scenario": "Daily Mail headline: 'Civil servants refuse to return to office, leaving Whitehall a ghost town.' Write a comment.",
+    "positions": ["right", "left", "centre"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "employment"
+    }
+  },
+  {
+    "id": "uk-council-reddit-1",
+    "category": "reddit",
+    "scenario": "r/Birmingham: 'Council tax going up 10% because the council went bankrupt. Why am I paying for their mistakes?' Reply.",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "local-government"
+    }
+  },
+  {
+    "id": "uk-wales-tweet-1",
+    "category": "tweet",
+    "scenario": "The Welsh government is reviewing the 20mph speed limit after backlash. Tweet your opinion.",
+    "positions": ["conservative", "progressive", "centre-left"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "Wales",
+      "difficulty": "easy",
+      "topic": "transport"
+    }
+  },
+  {
+    "id": "uk-legal-migration-tweet-1",
+    "category": "tweet",
+    "scenario": "Report shows legal net migration still over 700,000 despite government promises to cut numbers. Tweet your view.",
+    "positions": ["nationalist-conservative", "progressive", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "immigration"
+    }
+  },
+  {
+    "id": "uk-pension-triple-lock-reddit-1",
+    "category": "reddit",
+    "scenario": "r/UKPersonalFinance: 'Pensioners get triple lock while working people pay more tax and NI. When does this end?' Your response.",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "pensions"
+    }
+  },
+  {
+    "id": "uk-planning-nimby-other-1",
+    "category": "other",
+    "scenario": "Parish council meeting: Developer wants to build 200 homes on field near your village. The debate gets heated. What's your view?",
+    "positions": ["conservative", "progressive", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "planning"
+    }
+  },
+  {
+    "id": "uk-gp-appointments-whatsapp-1",
+    "category": "whatsapp",
+    "scenario": "Neighbourhood WhatsApp: 'Tried to book a GP appointment today - nothing for 3 weeks. System is completely broken.' How do you respond?",
+    "positions": ["left", "right", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "healthcare"
+    }
+  },
+  {
+    "id": "uk-green-belt-news-1",
+    "category": "news-comment",
+    "scenario": "Telegraph: 'Government plans to build on green belt land to meet housing targets.' Post your comment.",
+    "positions": ["conservative", "progressive", "centre"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "housing"
+    }
+  },
+  {
+    "id": "uk-social-care-reddit-1",
+    "category": "reddit",
+    "scenario": "r/UnitedKingdom: 'My mum's care home costs £5k a month and she'll lose her house to pay for it. Meanwhile people who never saved get it free.' Your reply?",
+    "positions": ["right", "left", "centre"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "hard",
+      "topic": "social-care"
+    }
+  },
+  {
+    "id": "uk-skilled-visas-tweet-1",
+    "category": "tweet",
+    "scenario": "NHS and tech firms warn cutting skilled worker visas will cause staffing crisis. Tweet your take.",
+    "positions": ["progressive", "nationalist-conservative", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "immigration"
+    }
+  },
+  {
+    "id": "uk-police-funding-news-1",
+    "category": "news-comment",
+    "scenario": "BBC: 'Police forces across England say they can't attend most burglaries due to funding cuts.' Write a comment.",
+    "positions": ["conservative", "left", "centre"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "policing"
+    }
+  },
+  {
+    "id": "uk-holiday-lets-other-1",
+    "category": "other",
+    "scenario": "In a Cornwall pub, a local complains: 'Our village is full of empty Airbnbs while young families can't find anywhere to rent.' What do you say?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "housing"
+    }
+  },
+  {
+    "id": "uk-wfh-civil-servants-reddit-1",
+    "category": "reddit",
+    "scenario": "r/UKPolitics: 'Why are we still arguing about civil servants working from home? If they get the work done, who cares?' Your view.",
+    "positions": ["right", "left", "centre"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "employment"
+    }
+  },
+  {
+    "id": "uk-cash-isa-tweet-1",
+    "category": "tweet",
+    "scenario": "Budget set to cut cash ISA allowance from £20k to £12k to push savers into stocks. Tweet your reaction.",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "savings"
+    }
+  },
+  {
+    "id": "uk-student-loans-whatsapp-1",
+    "category": "whatsapp",
+    "scenario": "Family chat: Your cousin graduated with £50k debt and says 'I'll never pay this off - it's basically a graduate tax.' Your response?",
+    "positions": ["progressive", "conservative", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "education"
+    }
+  },
+  {
+    "id": "uk-council-bankruptcy-news-1",
+    "category": "news-comment",
+    "scenario": "Guardian: 'Fifth major council in two years declares bankruptcy as local services face collapse.' Comment below.",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "local-government"
+    }
+  },
+  {
+    "id": "uk-net-zero-costs-tweet-1",
+    "category": "tweet",
+    "scenario": "New analysis shows meeting net zero targets will cost average household £10k in home improvements. Tweet your view.",
+    "positions": ["green", "conservative", "centre-right"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "climate"
+    }
+  },
+  {
+    "id": "uk-grammar-schools-reddit-1",
+    "category": "reddit",
+    "scenario": "r/Education: 'Tories propose bringing back grammar schools in more areas. Thoughts?' Your comment.",
+    "positions": ["conservative", "progressive", "centre"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "education"
+    }
   }
 ]
