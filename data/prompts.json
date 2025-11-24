@@ -1,0 +1,88 @@
+[
+  {
+    "id": "uk-nhs-tweet-1",
+    "category": "tweet",
+    "scenario": "You're a politically active account with 25k followers. The NHS has just announced waiting times have hit a record high. Write a 3-tweet thread sharing your perspective on what should be done.",
+    "positions": ["left", "centre", "right"],
+    "charLimit": 840,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "healthcare"
+    }
+  },
+  {
+    "id": "uk-housing-reddit-1",
+    "category": "reddit",
+    "scenario": "You're in r/UKPolitics. Someone just posted: 'We need to build more houses, but everyone opposes development in their area. What's the solution?' Write your response.",
+    "positions": ["progressive", "conservative", "centre"],
+    "charLimit": 1000,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "housing"
+    }
+  },
+  {
+    "id": "uk-climate-mp-letter-1",
+    "category": "letter-to-mp",
+    "scenario": "You're writing to your MP as a concerned constituent about the government's new climate policy announcement. They're considering expanding oil and gas licensing in the North Sea. Write a brief letter (200-250 words) explaining your position.",
+    "positions": ["green", "conservative", "centre-left"],
+    "charLimit": 1500,
+    "wordLimit": 250,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "climate"
+    }
+  },
+  {
+    "id": "uk-immigration-news-1",
+    "category": "news-comment",
+    "scenario": "You're commenting under a BBC article about the government's new immigration policy reducing visa numbers for care workers. Write a comment that gets upvoted by people who share your political perspective.",
+    "positions": ["left", "right", "centre"],
+    "charLimit": 800,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "hard",
+      "topic": "immigration"
+    }
+  },
+  {
+    "id": "uk-royal-family-whatsapp-1",
+    "category": "whatsapp",
+    "scenario": "Your family WhatsApp group is discussing the Royal Family's latest controversy. Your aunt just sent: 'I don't understand why people are so upset about this - they do so much for charity!' Respond without starting a massive argument.",
+    "positions": ["left", "centre", "right"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "monarchy"
+    }
+  },
+  {
+    "id": "uk-brexit-reunion-1",
+    "category": "other",
+    "scenario": "You're at a school reunion. Someone mentions Brexit and says 'Well, it's done now, we just need to make the best of it.' You want to share your genuine political view without killing the vibe. What do you say? (100-150 words)",
+    "positions": ["left", "centre-right", "centre"],
+    "charLimit": 800,
+    "wordLimit": 150,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "brexit"
+    }
+  },
+  {
+    "id": "uk-education-tweet-2",
+    "category": "tweet",
+    "scenario": "You're tweeting about the news that university tuition fees might increase again. Write a 2-tweet thread expressing your view on higher education funding.",
+    "positions": ["progressive", "conservative", "centre"],
+    "charLimit": 560,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "education"
+    }
+  }
+]
