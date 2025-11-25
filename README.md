@@ -296,10 +296,11 @@ See [Production Deployment Checklist](#production-deployment-checklist) below fo
 - [ ] Run `./scripts/test-database.sh` against preview deployment
 
 **Recommended (Should Do Soon):**
-- [ ] Enable Vercel monitoring/logs for production
-- [ ] Verify Neon automatic backups enabled
-- [ ] Test full user flow on preview deployment
-- [ ] Add rate limiting to `/api/grade` endpoint (optional but recommended)
+- [x] Enable Vercel monitoring/logs for production
+- [x] Verify Neon automatic backups enabled
+- [x] Test full user flow on preview deployment
+- [ ] Add rate limiting to `/api/grade` endpoint (recommended)
+- [ ] Migrate production database schema (add avg_understanding, avg_authenticity, avg_execution columns)
 
 **Future Enhancements:**
 - [ ] **UI theme refresh**: More unique, quirky, internet-era feeling (not B2B SaaS)
@@ -488,10 +489,274 @@ CREATE TABLE prompts_analytics (
 
 **🔮 Post-Launch (Future Enhancements):**
 - [ ] Monitor for gaming/abuse of stats API
-- [ ] Add rate limiting to `/api/grade` if needed
+- [ ] Add rate limiting to `/api/grade` (see Rate Limiting Plan below)
 - [ ] Implement data retention policy (6-month auto-delete)
 - [ ] Add GDPR data export/deletion features
 - [ ] Consider IP hashing if privacy concerns arise
+
+---
+
+## Rate Limiting Implementation Plan
+
+### Why Rate Limiting?
+
+**Primary Concerns:**
+1. **Cost control**: Claude API calls cost money (~$3 per 1M input tokens, ~$15 per 1M output tokens)
+2. **Abuse prevention**: Bad actors automating requests to spam the service
+3. **Fair usage**: Prevent individual users from monopolizing resources
+4. **DoS protection**: Mitigate denial-of-service attacks
+
+**Current Risk Assessment:**
+- Each game costs ~$0.02-0.05 in API fees (estimate: 2-5K tokens total)
+- Without rate limiting, a single user could play 100 games → $2-5 in costs
+- Automated abuse could quickly drain budget
+
+### Rate Limiting Strategy
+
+**Recommended Limits:**
+
+| Endpoint | Limit | Window | Reasoning |
+|----------|-------|--------|-----------|
+| `/api/grade` | 10 requests | 1 hour | Primary cost endpoint; prevents rapid-fire abuse |
+| `/api/history` | 60 requests | 1 minute | Cheap query, but prevent scraping |
+| `/api/session` | 60 requests | 1 minute | Cheap query, but prevent scraping |
+| `/api/user` (POST) | 5 requests | 1 hour | Onboarding endpoint, rarely called |
+| `/api/stats` | 30 requests | 1 minute | Future analytics endpoint |
+
+**Identifier Strategy:**
+- **Primary**: IP address (available in Vercel via request headers)
+- **Secondary**: User ID from request body (if authenticated)
+- **Fallback**: If both unavailable, apply global rate limit
+
+### Implementation Options
+
+#### Option 1: Vercel Edge Config + Upstash Redis (Recommended)
+
+**Pros:**
+- Industry standard for serverless rate limiting
+- Persistent storage across invocations
+- Low latency (~5-10ms)
+- Free tier: 10K requests/day
+
+**Setup:**
+```bash
+npm install @upstash/ratelimit @upstash/redis
+```
+
+**Example Implementation:**
+```typescript
+// /lib/ratelimit.ts
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+// Create rate limiters for different endpoints
+export const gradeLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, '1 h'),
+  analytics: true,
+  prefix: 'ratelimit:grade',
+});
+
+export const historyLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, '1 m'),
+  analytics: true,
+  prefix: 'ratelimit:history',
+});
+
+// Utility to get client IP from Vercel headers
+export function getClientIP(request: Request): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIP = request.headers.get('x-real-ip');
+  return forwarded?.split(',')[0] || realIP || 'unknown';
+}
+```
+
+**Usage in API route:**
+```typescript
+// /app/api/grade/route.ts
+import { gradeLimiter, getClientIP } from '@/lib/ratelimit';
+
+export async function POST(request: Request) {
+  const ip = getClientIP(request);
+  const { success, limit, remaining, reset } = await gradeLimiter.limit(ip);
+
+  if (!success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Rate limit exceeded. Please try again later.',
+        retryAfter: Math.ceil((reset - Date.now()) / 1000), // seconds
+      },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': limit.toString(),
+          'X-RateLimit-Remaining': remaining.toString(),
+          'X-RateLimit-Reset': new Date(reset).toISOString(),
+        },
+      }
+    );
+  }
+
+  // Continue with normal grading logic...
+}
+```
+
+**Environment Variables Needed:**
+```bash
+UPSTASH_REDIS_REST_URL=your-url-here
+UPSTASH_REDIS_REST_TOKEN=your-token-here
+```
+
+---
+
+#### Option 2: Vercel KV (Native Alternative)
+
+**Pros:**
+- Native Vercel integration (no third party)
+- Similar API to Upstash
+- Included in Vercel Pro plan
+
+**Cons:**
+- Not available on Hobby tier (requires Pro: $20/month)
+- No free tier for this specific feature
+
+**Setup:**
+```bash
+npm install @vercel/kv
+```
+
+**Implementation:** Almost identical to Option 1, just swap `@upstash/redis` with `@vercel/kv`
+
+---
+
+#### Option 3: In-Memory Rate Limiting (Simple, No External Deps)
+
+**Pros:**
+- No external services needed
+- Zero cost
+- Simple implementation
+
+**Cons:**
+- Resets on cold starts (serverless limitations)
+- Not shared across regions/instances
+- Less effective against distributed attacks
+
+**Implementation:**
+```typescript
+// /lib/ratelimit-simple.ts
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+export function checkRateLimit(
+  identifier: string,
+  maxRequests: number,
+  windowMs: number
+): { allowed: boolean; remaining: number; resetTime: number } {
+  const now = Date.now();
+  const record = rateLimitStore.get(identifier);
+
+  // Clean up expired entries periodically
+  if (rateLimitStore.size > 10000) {
+    for (const [key, value] of rateLimitStore.entries()) {
+      if (value.resetTime < now) rateLimitStore.delete(key);
+    }
+  }
+
+  if (!record || record.resetTime < now) {
+    // New window
+    const resetTime = now + windowMs;
+    rateLimitStore.set(identifier, { count: 1, resetTime });
+    return { allowed: true, remaining: maxRequests - 1, resetTime };
+  }
+
+  if (record.count >= maxRequests) {
+    return { allowed: false, remaining: 0, resetTime: record.resetTime };
+  }
+
+  record.count++;
+  return { allowed: true, remaining: maxRequests - record.count, resetTime: record.resetTime };
+}
+```
+
+**Limitations:** This approach has significant limitations in a serverless environment and is only suitable for very basic protection during initial launch.
+
+---
+
+### Recommended Approach
+
+**For MVP/Launch:**
+- **Option 1 (Upstash Redis)** - Best balance of reliability, cost, and ease
+- Set up during deployment with Vercel integration
+- Free tier sufficient for early usage
+
+**Implementation Steps:**
+
+1. **Create Upstash account** and Redis database (free tier)
+2. **Add environment variables** to Vercel:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+3. **Install dependencies**: `npm install @upstash/ratelimit @upstash/redis`
+4. **Create `/lib/ratelimit.ts`** with rate limiter configurations
+5. **Update API routes** to check rate limits before processing
+6. **Add user-facing error handling** in frontend for 429 responses
+7. **Monitor** Upstash dashboard for rate limit hits
+
+**User Experience:**
+- When rate limited, show friendly message: "You're playing too fast! Take a break and try again in [X minutes]."
+- Display rate limit headers in developer console for transparency
+- Consider showing remaining requests on game page (optional)
+
+**Monitoring:**
+- Track rate limit hits in Vercel logs
+- Monitor Upstash analytics dashboard
+- Alert if abuse patterns detected (many 429s from same IP)
+
+---
+
+### Testing Rate Limits
+
+**Local Testing:**
+```bash
+# Test grade endpoint rate limit (10 requests/hour)
+for i in {1..12}; do
+  curl -X POST http://localhost:3000/api/grade \
+    -H "Content-Type: application/json" \
+    -d '{"promptId":"test","scenario":"test","position":"left","userResponse":"test","userId":"test"}'
+  echo "\nRequest $i"
+  sleep 1
+done
+# Should see 429 error after 10 requests
+```
+
+**Production Testing:**
+- Use `./scripts/test-database.sh` (add rate limit test case)
+- Monitor Upstash dashboard during testing
+- Test from different IPs to verify isolation
+
+---
+
+### Future Enhancements
+
+**Adaptive Rate Limiting:**
+- Increase limits for users with good history
+- Decrease limits for users who previously hit limits
+- Whitelist trusted IPs (e.g., your own for testing)
+
+**Advanced Abuse Detection:**
+- Track patterns: same response text, very short/long responses
+- Flag suspicious behavior for manual review
+- Implement CAPTCHA after multiple 429s
+
+**Cost Monitoring:**
+- Track daily/weekly API spend in separate database table
+- Alert when approaching budget thresholds
+- Implement emergency rate limit reduction if costs spike
 
 ### Database Utility Functions
 
@@ -520,26 +785,55 @@ CREATE TABLE prompts_analytics (
 - `checkDatabaseConnection()` → verify database is accessible
 - `initializeDatabase()` → create tables and indexes (via /api/init-db)
 
+### Data Storage Architecture (Current)
+
+**Three-layer storage system:**
+
+1. **Database (PostgreSQL) - Primary source of truth**
+   - Stores all game sessions permanently
+   - Stores user profiles (political alignment, age, country)
+   - Used for analytics and history
+
+2. **sessionStorage - Navigation cache**
+   - Temporary cache for instant page loads
+   - Populated by history page and after game completion
+   - Clears when tab closes (intentional - ensures fresh data)
+   - Eliminates loading flashes when navigating
+
+3. **localStorage - User preferences only**
+   - Stores user alignment (political position, age, country)
+   - Also saves to database, but localStorage provides instant access
+   - No longer used for game sessions (database is single source)
+
 ### Data Flow After Implementation
 
 1. **First Visit:**
-   - User completes onboarding → creates `users` record
+   - User completes onboarding → creates `users` record in database
+   - User alignment saved to both localStorage (instant access) and database (backup)
    - UUID stored in localStorage for subsequent visits
 
 2. **Game Session:**
    - User plays game → grading happens via API
-   - API saves to `game_sessions` table
-   - Also saved to localStorage for offline access
+   - API saves to `game_sessions` table (database only)
+   - Session cached in sessionStorage before navigating to results
+   - Results page loads instantly from sessionStorage cache
 
 3. **History Page:**
-   - Fetches from database (primary source)
-   - Falls back to localStorage if DB unavailable
-   - Shows paginated results with filtering options
+   - Fetches from database (single source of truth)
+   - Caches results in sessionStorage for instant navigation
+   - On error: shows clear message "Couldn't load your game history—try refreshing"
+   - No ambiguous empty states
 
-4. **Analytics (Future):**
+4. **Results Page:**
+   - Loads instantly from sessionStorage cache (if navigating from history or game)
+   - Falls back to database fetch for direct navigation (bookmarks, shared links)
+   - Database is authoritative source
+
+5. **Analytics (Auto-Populated):**
    - Aggregate queries for global stats
    - Track which positions/prompts are hardest
    - Monitor detection rates over time
+   - Rubric score breakdowns (understanding, authenticity, execution)
 
 ## Favicon prompt
 ```
