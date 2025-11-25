@@ -122,7 +122,23 @@ export default function GamePage() {
         session.aiResponse = data.aiResponse;
         session.completedAt = new Date().toISOString();
 
-        // Session is already saved to database by /api/grade
+        // Cache this session for instant access on results page
+        // (Database save happens in /api/grade, but cache ensures instant load)
+        try {
+          const cached = sessionStorage.getItem('cachedSessions');
+          const cachedSessions = cached ? JSON.parse(cached) : [];
+          // Add this session to cache (or update if exists)
+          const existingIndex = cachedSessions.findIndex((s: GameSession) => s.id === session.id);
+          if (existingIndex >= 0) {
+            cachedSessions[existingIndex] = session;
+          } else {
+            cachedSessions.unshift(session); // Add to front (most recent)
+          }
+          sessionStorage.setItem('cachedSessions', JSON.stringify(cachedSessions));
+        } catch (error) {
+          console.warn('Failed to cache session:', error);
+        }
+
         // Navigate to results page
         router.push(`/results?sessionId=${session.id}`);
       } else {
