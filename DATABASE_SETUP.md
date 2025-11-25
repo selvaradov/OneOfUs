@@ -1,15 +1,24 @@
 # Database Setup Guide
 
-This guide explains how to set up the Vercel Postgres database for the OneOfUs game.
+**Status: ✅ COMPLETE** - Database infrastructure fully implemented and tested.
+
+This guide explains the Vercel Postgres database setup for OneOfUs. For detailed implementation status, see the [Backend Database Infrastructure Plan](README.md#backend-database-infrastructure-plan) in README.md.
 
 ## Overview
 
-The application uses Vercel Postgres to store:
-- User profiles and aggregate statistics
-- Game session data (prompts, responses, grading results)
-- Analytics data for prompts and positions
+The application uses Vercel Postgres (Neon) to store:
+- **User profiles** and aggregate statistics (total_games, avg_score)
+- **Game sessions** with full grading results, rubrics, timing data
+- **Prompt analytics** (auto-populated aggregate stats per prompt)
 
-The database is optional - the app will fall back to localStorage if the database is unavailable.
+**Key Features:**
+- ✅ Graceful fallback to localStorage if database unavailable
+- ✅ Automatic analytics updates after each game session
+- ✅ User timing tracking (duration_seconds per session)
+- ✅ IP address and user agent capture for research
+- ✅ Comprehensive test suite (8 automated tests)
+
+**API Endpoints:** User management, game history, analytics, database initialization - see [API Endpoints](#api-endpoints) section below.
 
 ## Setup Steps
 
@@ -58,7 +67,7 @@ Once you have the database connection configured, initialize the tables by calli
 curl -X POST http://localhost:3000/api/init-db
 ```
 
-**Production:**
+**Production (SECURED):**
 The `/api/init-db` endpoint is protected by an `INIT_DB_SECRET` environment variable.
 
 1. Generate a secret:
@@ -74,16 +83,37 @@ The `/api/init-db` endpoint is protected by an `INIT_DB_SECRET` environment vari
      -H "Authorization: Bearer YOUR_SECRET_HERE"
    ```
 
-This will create the following tables:
-- `users` - User profiles and stats
-- `game_sessions` - Individual game attempts
-- `prompts_analytics` - Aggregate prompt difficulty data
+This will create the following tables with indexes:
+- `users` - User profiles and aggregate stats
+- `game_sessions` - Individual game attempts with full grading data
+- `prompts_analytics` - Auto-populated aggregate prompt stats
+
+**Indexes created:**
+- `idx_user_sessions` - Fast user history queries
+- `idx_prompt_performance` - Fast prompt analytics
+- `idx_position_performance` - Fast position-based analytics
 
 ### 4. Verify Setup
 
-You can verify the database connection by checking the console logs when:
-- A user completes onboarding (should see "User created in database with ID: ...")
-- A user submits a game response (should see "Game session saved to database for user: ...")
+**Automated Tests (Recommended):**
+```bash
+# Make sure dev server is running
+npm run dev
+
+# Run full test suite (8 tests)
+./scripts/test-database.sh
+```
+
+**Manual Verification:**
+Check browser console logs when:
+- User completes onboarding → "User created in database with ID: ..."
+- User submits game response → "Game session saved to database for user: ..."
+- History page loads → Should NOT show "Showing local data" indicator
+
+**Neon Dashboard Verification:**
+- Go to https://console.neon.tech/
+- SQL Editor: `SELECT COUNT(*) FROM game_sessions;`
+- Check prompts_analytics table is populating: `SELECT * FROM prompts_analytics;`
 
 ## Database Schema
 
@@ -153,17 +183,23 @@ CREATE TABLE prompts_analytics (
 5. User data also saved to localStorage as fallback
 
 ### Game Session
-1. User plays game and submits response
-2. Frontend calls `POST /api/grade` with userId, prompt data, and response
-3. Claude API grades the response
-4. Game session saved to database with full results
-5. Session also saved to localStorage for offline access
+1. User plays game (timer starts when prompt loads)
+2. User submits response (duration calculated)
+3. Frontend calls `POST /api/grade` with userId, prompt data, response, and durationSeconds
+4. Claude API grades the response
+5. Game session saved to database with:
+   - Full grading results and rubric breakdown
+   - User timing data (duration_seconds)
+   - IP address and user agent for research
 6. User stats automatically updated (total_games, avg_score)
+7. Prompt analytics automatically updated (prompts_analytics table)
+8. Session also saved to localStorage for offline access
 
 ### History Page
-1. Frontend fetches user history from localStorage
-2. (Future) Will fetch from database with pagination
+1. Frontend attempts to fetch user history from database (paginated)
+2. If successful, displays database data with no "local data" indicator
 3. Falls back to localStorage if database unavailable
+4. Supports pagination (default 50 sessions per page)
 
 ## API Endpoints
 
@@ -174,8 +210,10 @@ CREATE TABLE prompts_analytics (
 
 ### Game History & Analytics
 - `GET /api/history?userId=xxx&limit=20&offset=0` - Fetch user's game history with pagination
-- `GET /api/stats?userId=xxx` - Get user statistics (total games, avg score, detection rate)
-- `GET /api/stats?type=prompts` - Get global prompt analytics
+- `GET /api/stats?userId=xxx` - Get user statistics (total games, avg score, detection rate, per-position breakdown)
+- `GET /api/stats?type=prompts` - Get global prompt analytics (publicly accessible - see security note below)
+
+**Security Note:** The stats API does not require additional authentication beyond knowing a valid userId. The global prompts endpoint is public. This is intentional for MVP to enable research and transparency. See README.md Production Deployment Checklist for post-launch monitoring recommendations.
 
 ### Database Initialization
 - `POST /api/init-db` - Initialize database schema (protected in production)
@@ -202,35 +240,49 @@ CREATE TABLE prompts_analytics (
 - Ensure database connection is working (check logs)
 - Sessions will still save to localStorage as fallback
 
-## Privacy Considerations
+## Privacy & Data Collection
+
+**✅ Privacy Policy Implemented:** Comprehensive, honest policy at `/privacy` with footer links on all pages.
 
 The database stores:
-- User political alignment (1-5 scale)
-- Game responses and scores
-- IP addresses (hashed recommended for production)
-- User agents
+- User political alignment (1-5 scale), age range, country
+- All game responses and full grading results
+- **IP addresses (NOT hashed)** - collected for research purposes
+- User agents and session timing data
+- Indefinite data retention
 
-**Before deploying to production:**
-1. Add privacy policy to landing page
-2. Consider hashing IP addresses before storage
-3. Implement data retention policy (auto-delete old sessions)
-4. Add GDPR compliance features (data export/deletion)
+**Disclosures Made:**
+- ✅ Honest privacy policy page (`/privacy`)
+- ✅ Clear about collecting raw IPs (not hashed)
+- ✅ Transparent about indefinite retention
+- ✅ No promises of deletion features (not yet implemented)
+- ✅ User consent via "by playing, you consent" language
 
-See README.md Phase 6 for full privacy implementation plan.
+**Future Enhancements (Post-Launch):**
+- Data retention policy (6-month auto-delete)
+- User data export/deletion features
+- GDPR full compliance
+- IP hashing (if privacy concerns arise)
 
-## Next Steps
+See [README.md Production Deployment Checklist](README.md#production-deployment-checklist) for details.
 
-After setting up the database:
-1. ✅ Test user registration flow
-2. ✅ Test game session storage
-3. ✅ History page fetches from database with localStorage fallback
-4. ✅ Pagination implemented (limit 50 sessions)
-5. ✅ Analytics endpoints available (`/api/stats`)
-6. ⏭️ Implement privacy features before production (Phase 6):
-   - Hash IP addresses
-   - Add privacy policy
-   - Data retention policy
-   - GDPR compliance
+## Implementation Status - ALL COMPLETE ✅
+
+**✅ Completed Features:**
+1. ✅ User registration flow with database + localStorage
+2. ✅ Game session storage with full grading data
+3. ✅ History page with database-first, localStorage fallback
+4. ✅ Pagination implemented (default 50 sessions)
+5. ✅ Analytics endpoints (`/api/stats`) with live and cached queries
+6. ✅ Prompt analytics auto-population (prompts_analytics table)
+7. ✅ User timing analytics (duration_seconds per session)
+8. ✅ Privacy policy page with honest disclosures
+9. ✅ Comprehensive test suite (8 automated tests)
+10. ✅ Quality assurance scripts (type checking, git hooks)
+
+**🚀 Ready for Production Deployment**
+
+See [README.md Production Deployment Checklist](README.md#production-deployment-checklist) for step-by-step deployment guide.
 
 ## Local Development Without Database
 

@@ -195,25 +195,41 @@
 - ✅ **Grading improvements**: Focus on ideology, not social etiquette
 - ✅ **Code organization**: Separated grader prompt into data/ directory
 
-### Remaining Tasks
+### Backend Database Infrastructure - COMPLETE ✓
 
-**High Priority:**
-- [ ] **Backend database infrastructure**
-  - [ ] Set up database for logging user sessions
-  - [ ] Track: user IDs, profiles, IPs, timestamps, queries, grader outputs
-  - [ ] Migrate from localStorage to database persistence
-  - [ ] Consider: Vercel Postgres or Supabase
+**✅ All Phases Completed:**
+- ✅ **Phase 1-5**: Database setup, user management, session persistence, history/analytics, graceful fallback
+- ✅ **Analytics Features**: Prompt analytics table auto-populates, user timing tracked (duration_seconds)
+- ✅ **Privacy Policy**: Honest, transparent policy at /privacy with footer links across all pages
+- ✅ **Quality Assurance**: TypeScript type checking scripts and pre-commit hooks
+- ✅ **Testing Suite**: Automated database integration tests with 8 test cases
 
-**Medium Priority:**
+**See:** [Backend Database Infrastructure Plan](#backend-database-infrastructure-plan) below for full details.
+
+---
+
+### Remaining Tasks Before Production Deployment
+
+**Critical (Must Do Before Deploy):**
+- [ ] Set `INIT_DB_SECRET` in Vercel environment variables
+- [ ] Initialize production database with secure endpoint call
+- [ ] Verify all Postgres environment variables populated in Vercel
+- [ ] Run `./scripts/test-database.sh` against preview deployment
+
+**Recommended (Should Do Soon):**
+- [ ] Enable Vercel monitoring/logs for production
+- [ ] Verify Neon automatic backups enabled
+- [ ] Test full user flow on preview deployment
+- [ ] Add rate limiting to `/api/grade` endpoint (optional but recommended)
+
+**Future Enhancements:**
 - [ ] **UI theme refresh**: More unique, quirky, internet-era feeling (not B2B SaaS)
-  - Current orange theme is better than purple but could be more distinctive
 - [ ] **Add more UK prompts**: Expand from 10 to 20-30 scenarios
 - [ ] **Prompt difficulty system**: Tag scenarios by difficulty level
-
-**Low Priority - Future Features:**
 - [ ] **Recent news access**: Model awareness of current UK politics (e.g., Reform UK)
-- [ ] **Aggregate statistics**: Show global stats across all users
 - [ ] **Progressive difficulty**: Unlock harder prompts after success
+- [ ] **Data retention policy**: Auto-delete old sessions after 6 months
+- [ ] **GDPR features**: User data export/deletion on request
 
 ---
 
@@ -311,59 +327,119 @@ CREATE TABLE prompts_analytics (
 - ✅ Capture IP address and user agent from request headers
 - ✅ Store full grading result including rubric breakdown
 - ✅ Keep localStorage as fallback for offline/client-side access
-- ⏸️ Track session duration (would need client-side timing - deferred)
+- ✅ Track session duration (client-side timer implemented)
 
 **Phase 4: History & Analytics Queries - COMPLETE ✓**
 - ✅ Update history page to fetch from database instead of localStorage
 - ✅ Add pagination for user history (limit 50 per request)
 - ✅ Create `/app/api/history/route.ts` endpoint
 - ✅ Create `/app/api/stats` endpoint for aggregate data
-- ⏸️ Populate `prompts_analytics` table (future feature - analytics queries are ready)
+- ✅ Populate `prompts_analytics` table (auto-updates after each game session)
+- ✅ User timing analytics (duration_seconds tracked per session)
 
 **Phase 5: Migration & Fallback - COMPLETE ✓**
 - ✅ Add error handling: if DB unavailable, fall back to localStorage
 - ✅ Graceful degradation for DB connection failures (all API routes check connection)
 - ⏸️ Migration script for existing localStorage sessions (not needed - fresh start)
 
-**Phase 6: Privacy & Compliance - TODO (Pre-Production)**
-- [ ] Add privacy notice on landing page about data collection
-- [ ] Implement data retention policy (e.g., delete sessions after 6 months)
-- [ ] Optional: Allow users to export/delete their data
-- [ ] Hash IP addresses for privacy (store hash, not raw IP)
-- [ ] GDPR considerations: consent for data storage
+**Phase 6: Privacy & Compliance - PARTIALLY COMPLETE ✓**
+- ✅ Add privacy policy page (/privacy) with honest, transparent disclosures
+- ✅ Footer component with privacy link on all pages
+- ✅ Disclosed: Collecting raw IPs (not hashed), indefinite retention, no deletion features yet
+- ⏸️ Implement data retention policy (future enhancement)
+- ⏸️ Allow users to export/delete their data (future enhancement)
+- ⏸️ Hash IP addresses for privacy (decided against for MVP - research value)
+- ⏸️ GDPR full compliance features (future enhancement)
 
-### Production Readiness Checklist
+### Production Deployment Checklist
 
-**Completed:**
-- ✅ Database infrastructure fully implemented (Phases 1-5)
+**✅ Completed (Ready for Production):**
+- ✅ Database infrastructure fully implemented (Phases 1-6)
+- ✅ Prompt analytics auto-populating, user timing tracked
+- ✅ Privacy policy page with honest disclosures
+- ✅ Quality assurance scripts (type checking, database tests)
 - ✅ Secure `/api/init-db` endpoint with INIT_DB_SECRET
+- ✅ Graceful fallback to localStorage if database unavailable
+- ✅ Footer with privacy/GitHub links on all pages
 
-**Before Deploying to Production:**
-- [ ] **Set INIT_DB_SECRET** in Vercel environment variables (generate with `openssl rand -base64 32`)
-- [ ] **Initialize production database**: `curl -X POST https://your-domain.vercel.app/api/init-db \
-    -H "Authorization: Bearer YOUR_SECRET"`
-- [ ] **Privacy policy** - Add to landing page about data collection
-- [ ] **IP hashing** - Hash IP addresses before storage (currently storing raw IPs)
-- [ ] **Environment variables** - Verify all Postgres vars populated by Neon integration
-- [ ] **Error monitoring** - Enable Vercel monitoring/logs for production
-- [ ] **Database backups** - Verify Neon automatic backups are enabled (check Neon dashboard)
-- [ ] **Rate limiting** - Consider adding to `/api/grade` to prevent abuse
+**⚠️ Critical Steps Before Deploying:**
 
-**Optional (Future):**
-- [ ] CORS configuration if needed for specific domains
-- [ ] Data retention policy (auto-delete sessions after 6 months)
-- [ ] User data export/deletion features (GDPR compliance)
+1. **Generate and set INIT_DB_SECRET in Vercel:**
+   ```bash
+   openssl rand -base64 32
+   ```
+   Add to Vercel environment variables
+
+2. **Deploy to Vercel and get preview URL**
+
+3. **Initialize production database:**
+   ```bash
+   curl -X POST https://your-domain.vercel.app/api/init-db \
+     -H "Authorization: Bearer YOUR_INIT_DB_SECRET"
+   ```
+
+4. **Run tests against preview deployment:**
+   ```bash
+   BASE_URL=https://your-preview.vercel.app ./scripts/test-database.sh
+   ```
+
+5. **Manual testing:**
+   - Complete onboarding flow
+   - Play 2-3 games
+   - Check history page loads from database
+   - Verify browser console shows "saved to database" messages
+
+6. **Verify in Neon dashboard:**
+   - Check tables exist (users, game_sessions, prompts_analytics)
+   - Run query: `SELECT COUNT(*) FROM game_sessions;`
+   - Verify backups are enabled
+
+7. **Enable Vercel monitoring:**
+   - Go to Vercel project → Analytics
+   - Enable error tracking and logs
+
+**✅ Production Launch Checklist:**
+- [ ] INIT_DB_SECRET set in Vercel ✓
+- [ ] Production database initialized ✓
+- [ ] Preview deployment tested ✓
+- [ ] Manual user flow tested ✓
+- [ ] Database verified in Neon ✓
+- [ ] Monitoring enabled ✓
+- [ ] Promote preview to production
+
+**🔮 Post-Launch (Future Enhancements):**
+- [ ] Monitor for gaming/abuse of stats API
+- [ ] Add rate limiting to `/api/grade` if needed
+- [ ] Implement data retention policy (6-month auto-delete)
+- [ ] Add GDPR data export/deletion features
+- [ ] Consider IP hashing if privacy concerns arise
 
 ### Database Utility Functions
 
 **`/lib/db.ts`** - Core database operations:
+
+**User Management:**
 - `createUser(alignment, ageRange, country)` → returns user UUID
-- `saveGameSession(sessionData)` → saves game to DB
-- `getUserHistory(userId, limit, offset)` → paginated history
-- `getUserStats(userId)` → aggregate user performance
+- `getUser(userId)` → fetch user record
+- `updateUser(userId, alignment?, ageRange?, country?)` → update user info
 - `updateUserStats(userId)` → recalculate avg_score, total_games
-- `getPromptAnalytics(promptId)` → prompt difficulty stats
-- `getAllPromptsAnalytics()` → global prompt performance
+
+**Game Sessions:**
+- `saveGameSession(sessionData)` → saves game to DB (auto-updates user stats + prompt analytics)
+- `getUserHistory(userId, limit, offset)` → paginated history
+- `getUserStats(userId)` → aggregate user performance with position breakdown
+
+**Analytics (Auto-Populated):**
+- `updatePromptAnalytics(promptId)` → update aggregate stats for a prompt (called automatically)
+- `refreshAllPromptAnalytics()` → batch update all prompt stats
+- `getPromptAnalytics(promptId)` → query live from game_sessions (real-time)
+- `getAllPromptsAnalytics()` → query live global prompt performance
+- `getCachedPromptAnalytics(promptId)` → query from prompts_analytics table (cached)
+- `getAllCachedPromptsAnalytics()` → query all cached prompt analytics
+
+**Utilities:**
+- `checkDatabaseConnection()` → verify database is accessible
+- `initializeDatabase()` → create tables and indexes (via /api/init-db)
 
 ### Data Flow After Implementation
 
