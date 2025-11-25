@@ -33,7 +33,8 @@ Tests all database endpoints with actual API calls.
 4. `/api/stats?userId=` - Gets user statistics
 5. `/api/history?userId=` - Gets user history
 6. `/api/stats?type=prompts` - Gets global prompt analytics
-7. Database connectivity - Verifies database is accessible
+7. `prompts_analytics` table - Verifies analytics table is populated
+8. Database connectivity - Verifies database is accessible
 
 **Run it:**
 ```bash
@@ -111,7 +112,13 @@ After automated tests pass, manually verify:
    - Should see your games loaded from database
    - Should NOT see "Showing local data" indicator
 
-4. **Verify in Neon:**
+4. **Verify analytics features:**
+   - Play multiple games to populate analytics
+   - Check prompts_analytics table is updated automatically
+   - Session durations are tracked (check duration_seconds in game_sessions)
+   - Run test script again to verify prompts_analytics has data
+
+5. **Verify in Neon:**
    - Go to https://console.neon.tech/
    - Select your database
    - SQL Editor: `SELECT * FROM game_sessions ORDER BY created_at DESC LIMIT 5;`
@@ -159,3 +166,27 @@ npm run dev                   # Start server
 ```bash
 BASE_URL=https://your-preview.vercel.app ./scripts/test-database.sh
 ```
+
+---
+
+## Analytics Features
+
+The database tracks comprehensive analytics automatically:
+
+### Prompt Analytics (`prompts_analytics` table)
+- **Auto-populated:** Updates after each game session
+- **Tracks:** total attempts, average score, detection rate per prompt
+- **Purpose:** Identify which prompts are easiest/hardest
+- **Access:** `/api/stats?type=prompts`
+
+### User Timing Analytics
+- **Client-side timer:** Starts when prompt loads
+- **Stored:** `duration_seconds` in `game_sessions` table
+- **Purpose:** Analyze how long users take to respond
+- **Useful for:** Understanding engagement and difficulty patterns
+
+### How It Works
+1. User plays game → timer starts
+2. User submits → duration calculated and sent to API
+3. Game saved → `prompts_analytics` table auto-updates via trigger
+4. Analytics available immediately via `/api/stats`
