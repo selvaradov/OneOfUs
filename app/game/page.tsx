@@ -217,6 +217,7 @@ export default function GamePage() {
             </button>
           </div>
         </div>
+        </div>
       </div>
       <Footer />
     </div>

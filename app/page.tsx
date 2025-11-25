@@ -4,8 +4,8 @@ import Footer from '@/components/Footer';
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
-      <main className="flex flex-1 w-full max-w-4xl flex-col items-center justify-center px-6 py-16 mx-auto">
-        <div className="text-center space-y-8">
+      <main className="flex flex-1 w-full max-w-4xl flex-col items-center justify-center px-6 py-8 mx-auto">
+        <div className="text-center space-y-6">
           {/* Title */}
           <div className="space-y-4">
             <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -33,7 +33,7 @@ export default function Home() {
           </div>
 
           {/* CTA Button */}
-          <div className="pt-8">
+          <div className="pt-4">
             <Link
               href="/game"
               className="inline-flex items-center justify-center px-10 py-5 text-xl font-bold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-all shadow-lg hover:shadow-xl hover:scale-105"
@@ -43,7 +43,7 @@ export default function Home() {
           </div>
 
           {/* Additional Info */}
-          <div className="pt-8 text-sm text-gray-500 dark:text-gray-500">
+          <div className="pt-4 text-sm text-gray-500 dark:text-gray-500">
             <p>
               Answer 3 quick questions, then jump into scenarios like tweets,
               Reddit comments, and letters to MPs.
@@ -51,7 +51,7 @@ export default function Home() {
           </div>
 
           {/* History Link */}
-          <div className="pt-4">
+          <div className="pt-2">
             <Link
               href="/history"
               className="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline"

@@ -1,6 +1,61 @@
 # Test Scripts
 
-Automated tests to verify database integration is working correctly.
+Automated tests and checks to verify code quality and database integration.
+
+## Quality Checks (Run Before Committing)
+
+### `check-types.sh` - TypeScript Type Check ⚠️ **RUN BEFORE EVERY COMMIT**
+
+Catches syntax errors, unclosed JSX tags, and type errors before they break the build.
+
+**Run it:**
+```bash
+./scripts/check-types.sh
+```
+
+**What it catches:**
+- ✅ Unclosed JSX tags (missing `</div>`, `</span>`, etc.)
+- ✅ TypeScript type errors
+- ✅ Syntax errors in .ts/.tsx files
+- ✅ Import/export issues
+
+**When to use:** **ALWAYS** before committing code. This prevents broken builds.
+
+**Output example:**
+```bash
+🔍 Running TypeScript type checks...
+================================================
+
+Checking TypeScript files...
+
+✓ TypeScript check passed!
+No type errors or syntax issues found.
+```
+
+---
+
+### `setup-git-hooks.sh` - Automated Pre-Commit Checks
+
+Sets up Git hooks to automatically run type checks before every commit.
+
+**Run once to enable:**
+```bash
+./scripts/setup-git-hooks.sh
+```
+
+**What it does:**
+- Installs a pre-commit hook that runs `check-types.sh`
+- Blocks commits if TypeScript errors exist
+- Ensures you never commit broken code
+
+**To bypass (not recommended):**
+```bash
+git commit --no-verify
+```
+
+---
+
+## Database Tests
 
 ## Scripts
 
@@ -152,18 +207,25 @@ After automated tests pass, manually verify:
 
 **First time setup:**
 ```bash
-./scripts/verify-setup.sh    # Check configuration
-npm run dev                   # Start server
-./scripts/test-database.sh    # Run tests
+./scripts/setup-git-hooks.sh  # Enable pre-commit checks (recommended)
+./scripts/verify-setup.sh     # Check configuration
+npm run dev                    # Start server
+./scripts/test-database.sh     # Run tests
 ```
 
-**Before committing changes:**
+**Before committing changes (CRITICAL):**
 ```bash
-./scripts/test-database.sh    # Verify nothing broke
+./scripts/check-types.sh       # Run type check (REQUIRED)
+./scripts/test-database.sh     # Verify nothing broke (recommended)
+
+# If checks pass:
+git add .
+git commit -m "Your message"
 ```
 
 **Before deploying to production:**
 ```bash
+./scripts/check-types.sh       # Type check
 BASE_URL=https://your-preview.vercel.app ./scripts/test-database.sh
 ```
 
