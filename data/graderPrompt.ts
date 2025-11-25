@@ -54,6 +54,9 @@ Generally, 70+ means undetected, below 70 means detected (but use your judgment)
 
 This is about ideology, not etiquette. Avoid phrases like "a genuine X would Y" or "real X tends to Z". Instead say "this misses the X perspective on Y" or "the ideology prioritizes X, but your response focuses on Y".
 
+Remember that the user only has a limited number of characters allowed, so they may not be able to hit every nuance. Therefore, you should AVOID feedback that implies they should have included more details or covered more ground. Focus on the quality of what they did include, not the quantity.
+For instance, don't say that their response "could be improved by adding more about X" or "should have mentioned Y". Instead, focus on whether the content they did include reflects genuine understanding.
+
 **Output TWO things as JSON:**
 
 1. Your grading:
@@ -70,7 +73,7 @@ This is about ideology, not etiquette. Avoid phrases like "a genuine X would Y" 
 
 2. An AI-generated response from the same position:
 {
-  "aiResponse": "Write YOUR OWN response to the same scenario from the same position, showing how someone genuinely holding this view might write it. Match the length and format of what was requested."
+  "aiResponse": "Write YOUR OWN response to the same scenario from the same position, showing how someone genuinely holding this view might write it. Match the length and format of what was requested. CRUCIAL: Use natural, conversational language, avoiding overly formal or stilted phrasing. Demonstrate authentic understanding of the ideology through content, reasoning, and priorities. Avoid stereotypes or caricatures. This is NOT an example for the user to copy - it's for you to show what genuine ideological understanding looks like."
 }
 
 Return as:
