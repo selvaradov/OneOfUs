@@ -1,5 +1,84 @@
 # Ideological Turing Test game ("OneOfUs")
 
+## Development Workflow & Environments
+
+**Quick Reference:**
+
+| Environment | URL | Database | Use For | How to Deploy |
+|-------------|-----|----------|---------|---------------|
+| **Development** | `localhost:3000` | Local Neon DB | Daily coding, debugging | `npm run dev` |
+| **Preview** | `git-branch-xxx.vercel.app` | Production DB | Testing features, PRs | Auto-deploy on git push |
+| **Production** | `oneofus.vercel.app` | Production Neon DB | Live site | `vercel --prod` or merge to main |
+
+### Local Development Setup
+
+1. **Database:** Separate local Neon database (rename to `oneofus-local` in Neon dashboard for clarity)
+2. **Environment variables:** Stored in `.env.local` (gitignored)
+3. **Initialize local database:** `curl -X POST http://localhost:3000/api/init-db` (no auth required)
+4. **Run dev server:** `npm run dev`
+
+### Production Deployment
+
+1. **Database:** Separate production Neon database (auto-created by Vercel, rename to `oneofus-prod` for clarity)
+2. **Environment variables:** Stored in Vercel dashboard → Settings → Environment Variables
+3. **Initialize production database:** Requires `INIT_DB_SECRET` for security:
+   ```bash
+   curl -X POST https://oneofus.vercel.app/api/init-db \
+     -H "Authorization: Bearer YOUR_INIT_DB_SECRET"
+   ```
+4. **Deploy:** Push to main branch or run `vercel --prod`
+
+### Preview Deployments
+
+- **Auto-created** for every branch push and Pull Request
+- Get unique URLs like `https://one-of-us-git-feature-xyz.vercel.app`
+- Use production database (safe - just read operations typically)
+- Perfect for testing before merging to main
+
+### Typical Development Workflow
+
+```bash
+# 1. Create feature branch
+git checkout -b add-new-feature
+
+# 2. Develop locally
+npm run dev                      # Uses local database
+# Make changes, test at localhost:3000
+
+# 3. Run quality checks
+./scripts/check-types.sh         # TypeScript validation
+./scripts/test-database.sh       # Database integration tests
+
+# 4. Commit and push
+git add .
+git commit -m "Add new feature"
+git push origin add-new-feature  # Vercel auto-creates preview
+
+# 5. Test preview deployment
+# Visit https://one-of-us-git-add-new-feature.vercel.app
+# Run: BASE_URL=https://preview-url.vercel.app ./scripts/test-database.sh
+
+# 6. Merge to main (deploys to production)
+git checkout main
+git merge add-new-feature
+git push origin main             # Auto-deploys to production
+```
+
+### Environment Variables by Environment
+
+**Local (`.env.local` file):**
+- `ANTHROPIC_API_KEY` - Your API key
+- `POSTGRES_URL` and related - Points to local Neon database
+- `INIT_DB_SECRET` - Optional (not checked in development mode)
+
+**Vercel (dashboard → Environment Variables):**
+- `ANTHROPIC_API_KEY` - Same API key (All environments)
+- `INIT_DB_SECRET` - Generated secret (Production, Preview)
+- `POSTGRES_*` - Auto-populated by Vercel (All environments)
+
+See [Production Deployment Checklist](#production-deployment-checklist) below for detailed deployment steps.
+
+---
 
 ## AI planning
 - https://claude.ai/chat/574ff6bb-737a-4973-ad8f-4f225ae809f4
