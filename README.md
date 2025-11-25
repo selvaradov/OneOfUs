@@ -340,13 +340,14 @@ CREATE TABLE prompts_analytics (
 
 **Before Deploying to Production:**
 - [ ] **Set INIT_DB_SECRET** in Vercel environment variables (generate with `openssl rand -base64 32`)
+- [ ] **Initialize production database**: `curl -X POST https://your-domain.vercel.app/api/init-db \
+    -H "Authorization: Bearer YOUR_SECRET"`
 - [ ] **Privacy policy** - Add to landing page about data collection
 - [ ] **IP hashing** - Hash IP addresses before storage (currently storing raw IPs)
 - [ ] **Environment variables** - Verify all Postgres vars populated by Neon integration
 - [ ] **Error monitoring** - Enable Vercel monitoring/logs for production
 - [ ] **Database backups** - Verify Neon automatic backups are enabled (check Neon dashboard)
 - [ ] **Rate limiting** - Consider adding to `/api/grade` to prevent abuse
-- [ ] **Test database initialization** - Run init-db in production with secret
 
 **Optional (Future):**
 - [ ] CORS configuration if needed for specific domains
