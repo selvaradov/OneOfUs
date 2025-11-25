@@ -36,11 +36,42 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
     setTouched(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!touched) return;
 
+    let userId = crypto.randomUUID();
+
+    // Map slider value to 1-5 scale for database (1=left, 5=right)
+    // Our slider is 0-6, so we map: 0-1 -> 1, 2 -> 2, 3 -> 3, 4 -> 4, 5-6 -> 5
+    const dbAlignment = alignmentValue <= 1 ? 1 : alignmentValue >= 5 ? 5 : alignmentValue;
+
+    // Try to create user in database
+    try {
+      const response = await fetch('/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          politicalAlignment: dbAlignment,
+          ageRange: ageRange || null,
+          country,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.userId) {
+        userId = data.userId;
+        console.log('User created in database with ID:', userId);
+      } else {
+        console.warn('Failed to create user in database, using local UUID:', data.error);
+      }
+    } catch (error) {
+      console.warn('Database unavailable, using local storage only:', error);
+    }
+
+    // Always save to localStorage as well (fallback and offline access)
     const userAlignment: UserAlignment = {
-      id: crypto.randomUUID(),
+      id: userId,
       politicalAlignment: sliderToPosition[alignmentValue],
       ageRange: ageRange || undefined,
       country,
