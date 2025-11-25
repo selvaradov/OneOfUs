@@ -9,6 +9,7 @@ import { getPositionDescription } from '@/lib/positionDescriptions';
 import OnboardingModal from '@/components/OnboardingModal';
 import Navbar from '@/components/Navbar';
 import DartingLoader from '@/components/DartingLoader';
+import Footer from '@/components/Footer';
 
 const LOADING_MESSAGES = [
   "Analyzing your chameleon skills...",
@@ -33,6 +34,7 @@ export default function GamePage() {
   const [charCount, setCharCount] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [startTime, setStartTime] = useState<number>(0);
 
   // Check onboarding status and load prompt
   useEffect(() => {
@@ -49,9 +51,10 @@ export default function GamePage() {
       setAssignedPosition(randomPrompt.positions[randomIndex]);
     }
 
-    // Reset form state
+    // Reset form state and start timer
     setUserResponse('');
     setCharCount(0);
+    setStartTime(Date.now());
   }, [refreshTrigger]);
 
   // Listen for new prompt event
@@ -93,6 +96,9 @@ export default function GamePage() {
       const userAlignment = getUserAlignment();
       const userId = userAlignment?.id;
 
+      // Calculate duration in seconds
+      const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+
       // Call grading API
       const response = await fetch('/api/grade', {
         method: 'POST',
@@ -104,6 +110,7 @@ export default function GamePage() {
           position: assignedPosition,
           userResponse,
           userId, // Pass userId for database storage
+          durationSeconds, // Pass duration for analytics
         }),
       });
 
@@ -146,10 +153,10 @@ export default function GamePage() {
   }
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
       {isSubmitting && <DartingLoader message={loadingMessage} />}
       <Navbar />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+      <div className="flex-1 py-8 px-4">
         <div className="max-w-4xl mx-auto">
 
         {/* Main Card */}
@@ -211,7 +218,7 @@ export default function GamePage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
-    </>
   );
 }

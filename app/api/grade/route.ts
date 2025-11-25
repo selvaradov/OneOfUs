@@ -11,7 +11,7 @@ const anthropic = new Anthropic({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { scenario, position, userResponse, promptId, promptCategory, userId } = body;
+    const { scenario, position, userResponse, promptId, promptCategory, userId, durationSeconds } = body;
 
     if (!scenario || !position || !userResponse) {
       return NextResponse.json(
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
             aiComparisonResponse: aiResponse,
             ipAddress,
             userAgent,
-            // Duration would need to be tracked client-side and passed in
+            durationSeconds: durationSeconds || undefined,
           });
 
           console.log('Game session saved to database for user:', userId);
