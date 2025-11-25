@@ -21,15 +21,33 @@ function ResultsContent() {
       return;
     }
 
-    const sessions = getGameSessions();
-    const foundSession = sessions.find(s => s.id === sessionId);
+    // Try to fetch from database first
+    async function fetchSession() {
+      try {
+        const response = await fetch(`/api/session?sessionId=${sessionId}`);
+        const data = await response.json();
 
-    if (!foundSession || !foundSession.gradingResult) {
-      router.push('/game');
-      return;
+        if (data.success && data.session) {
+          setSession(data.session);
+          return;
+        }
+      } catch (error) {
+        console.warn('Failed to fetch session from database:', error);
+      }
+
+      // Fallback to localStorage if database fetch fails
+      const sessions = getGameSessions();
+      const foundSession = sessions.find(s => s.id === sessionId);
+
+      if (!foundSession || !foundSession.gradingResult) {
+        router.push('/game');
+        return;
+      }
+
+      setSession(foundSession);
     }
 
-    setSession(foundSession);
+    fetchSession();
   }, [sessionId, router]);
 
   if (!session || !session.gradingResult) {

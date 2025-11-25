@@ -52,6 +52,9 @@ CREATE TABLE IF NOT EXISTS prompts_analytics (
   prompt_id TEXT PRIMARY KEY,
   total_attempts INTEGER DEFAULT 0,
   avg_score DECIMAL(5,2),
+  avg_understanding DECIMAL(5,2),
+  avg_authenticity DECIMAL(5,2),
+  avg_execution DECIMAL(5,2),
   detection_rate DECIMAL(5,2), -- % detected
   last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

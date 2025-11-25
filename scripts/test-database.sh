@@ -130,7 +130,7 @@ echo "-------------------------------------------------"
 ANALYTICS_TABLE=$(curl -s "$BASE_URL/api/stats?type=prompts")
 if echo "$ANALYTICS_TABLE" | grep -q '"prompts":\['; then
     # Check if array has content (more than just [])
-    if echo "$ANALYTICS_TABLE" | grep -q '"prompt_id"'; then
+    if echo "$ANALYTICS_TABLE" | grep -q '"promptId"'; then
         test_result "prompts_analytics table has data (auto-populated after sessions)"
     else
         echo -e "${YELLOW}⚠ WARN${NC}: prompts_analytics table exists but is empty (expected if no games played yet)"

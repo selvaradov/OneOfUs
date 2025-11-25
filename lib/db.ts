@@ -366,11 +366,17 @@ export async function getAllPromptsAnalytics(): Promise<any[]> {
 export async function updatePromptAnalytics(promptId: string): Promise<void> {
   try {
     await sql`
-      INSERT INTO prompts_analytics (prompt_id, total_attempts, avg_score, detection_rate, last_updated)
+      INSERT INTO prompts_analytics (
+        prompt_id, total_attempts, avg_score, avg_understanding, avg_authenticity,
+        avg_execution, detection_rate, last_updated
+      )
       SELECT
         prompt_id,
         COUNT(*) as total_attempts,
         AVG(score) as avg_score,
+        AVG(rubric_understanding) as avg_understanding,
+        AVG(rubric_authenticity) as avg_authenticity,
+        AVG(rubric_execution) as avg_execution,
         AVG(CASE WHEN detected = true THEN 1.0 ELSE 0.0 END) * 100 as detection_rate,
         NOW() as last_updated
       FROM game_sessions
@@ -380,6 +386,9 @@ export async function updatePromptAnalytics(promptId: string): Promise<void> {
       DO UPDATE SET
         total_attempts = EXCLUDED.total_attempts,
         avg_score = EXCLUDED.avg_score,
+        avg_understanding = EXCLUDED.avg_understanding,
+        avg_authenticity = EXCLUDED.avg_authenticity,
+        avg_execution = EXCLUDED.avg_execution,
         detection_rate = EXCLUDED.detection_rate,
         last_updated = EXCLUDED.last_updated
     `;
@@ -395,11 +404,17 @@ export async function updatePromptAnalytics(promptId: string): Promise<void> {
 export async function refreshAllPromptAnalytics(): Promise<void> {
   try {
     await sql`
-      INSERT INTO prompts_analytics (prompt_id, total_attempts, avg_score, detection_rate, last_updated)
+      INSERT INTO prompts_analytics (
+        prompt_id, total_attempts, avg_score, avg_understanding, avg_authenticity,
+        avg_execution, detection_rate, last_updated
+      )
       SELECT
         prompt_id,
         COUNT(*) as total_attempts,
         AVG(score) as avg_score,
+        AVG(rubric_understanding) as avg_understanding,
+        AVG(rubric_authenticity) as avg_authenticity,
+        AVG(rubric_execution) as avg_execution,
         AVG(CASE WHEN detected = true THEN 1.0 ELSE 0.0 END) * 100 as detection_rate,
         NOW() as last_updated
       FROM game_sessions
@@ -409,6 +424,9 @@ export async function refreshAllPromptAnalytics(): Promise<void> {
       DO UPDATE SET
         total_attempts = EXCLUDED.total_attempts,
         avg_score = EXCLUDED.avg_score,
+        avg_understanding = EXCLUDED.avg_understanding,
+        avg_authenticity = EXCLUDED.avg_authenticity,
+        avg_execution = EXCLUDED.avg_execution,
         detection_rate = EXCLUDED.detection_rate,
         last_updated = EXCLUDED.last_updated
     `;
