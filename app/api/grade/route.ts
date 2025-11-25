@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { GradeRequest, GradingResult } from '@/lib/types';
 import { GRADING_PROMPT } from '@/data/graderPrompt';
+import { saveGameSession, checkDatabaseConnection } from '@/lib/db';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -9,8 +10,8 @@ const anthropic = new Anthropic({
 
 export async function POST(request: NextRequest) {
   try {
-    const body: GradeRequest = await request.json();
-    const { scenario, position, userResponse } = body;
+    const body = await request.json();
+    const { scenario, position, userResponse, promptId, promptCategory, userId } = body;
 
     if (!scenario || !position || !userResponse) {
       return NextResponse.json(
@@ -63,6 +64,48 @@ export async function POST(request: NextRequest) {
 
     // Add AI comparison response to the result
     const aiResponse = parsedData.aiComparison?.aiResponse || null;
+
+    // Save to database if user ID is provided
+    if (userId) {
+      try {
+        const isConnected = await checkDatabaseConnection();
+
+        if (isConnected) {
+          // Get IP address and user agent from request
+          const ipAddress = request.headers.get('x-forwarded-for') ||
+                           request.headers.get('x-real-ip') ||
+                           'unknown';
+          const userAgent = request.headers.get('user-agent') || 'unknown';
+
+          await saveGameSession({
+            userId,
+            promptId: promptId || 'unknown',
+            promptScenario: scenario,
+            promptCategory: promptCategory || 'other',
+            positionAssigned: position,
+            userResponse,
+            charCount: userResponse.length,
+            detected: result.detected,
+            score: result.score,
+            feedback: result.feedback,
+            rubricUnderstanding: result.rubricScores?.understanding,
+            rubricAuthenticity: result.rubricScores?.authenticity,
+            rubricExecution: result.rubricScores?.execution,
+            aiComparisonResponse: aiResponse,
+            ipAddress,
+            userAgent,
+            // Duration would need to be tracked client-side and passed in
+          });
+
+          console.log('Game session saved to database for user:', userId);
+        } else {
+          console.warn('Database connection unavailable, session not saved to DB');
+        }
+      } catch (error) {
+        // Don't fail the request if database save fails
+        console.error('Error saving session to database:', error);
+      }
+    }
 
     return NextResponse.json({
       success: true,

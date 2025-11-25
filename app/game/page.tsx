@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Prompt, PoliticalPosition, GameSession } from '@/lib/types';
 import { getRandomPrompt } from '@/lib/prompts';
-import { hasCompletedOnboarding, saveGameSession } from '@/lib/storage';
+import { hasCompletedOnboarding, saveGameSession, getUserAlignment } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
 import OnboardingModal from '@/components/OnboardingModal';
 import Navbar from '@/components/Navbar';
@@ -89,15 +89,21 @@ export default function GamePage() {
         createdAt: new Date().toISOString(),
       };
 
+      // Get user ID from localStorage
+      const userAlignment = getUserAlignment();
+      const userId = userAlignment?.id;
+
       // Call grading API
       const response = await fetch('/api/grade', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           promptId: prompt.id,
+          promptCategory: prompt.category,
           scenario: prompt.scenario,
           position: assignedPosition,
           userResponse,
+          userId, // Pass userId for database storage
         }),
       });
 
