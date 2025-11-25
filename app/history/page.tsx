@@ -66,6 +66,9 @@ export default function HistoryPage() {
           setDataSource('database');
           setHasMore(data.pagination?.hasMore || false);
           setIsLoading(false);
+
+          // Cache sessions for instant access from results page
+          sessionStorage.setItem('cachedSessions', JSON.stringify(dbSessions));
           return;
         }
       } catch (error) {
@@ -75,9 +78,13 @@ export default function HistoryPage() {
 
     // Fallback to localStorage
     const localSessions = getGameSessions();
-    setSessions(localSessions.reverse()); // Most recent first
+    const reversedSessions = localSessions.reverse(); // Most recent first
+    setSessions(reversedSessions);
     setDataSource('localStorage');
     setIsLoading(false);
+
+    // Cache sessions for instant access from results page
+    sessionStorage.setItem('cachedSessions', JSON.stringify(reversedSessions));
   };
 
   const formatDate = (dateString: string) => {

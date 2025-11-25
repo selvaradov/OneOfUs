@@ -13,7 +13,29 @@ function ResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('sessionId');
-  const [session, setSession] = useState<GameSession | null>(null);
+
+  // Initialize session from cache immediately to avoid loading flash
+  const [session, setSession] = useState<GameSession | null>(() => {
+    if (!sessionId) return null;
+
+    try {
+      const cachedData = sessionStorage.getItem('cachedSessions');
+      if (cachedData) {
+        const cachedSessions: GameSession[] = JSON.parse(cachedData);
+        const found = cachedSessions.find(s => s.id === sessionId);
+        if (found && found.gradingResult) return found;
+      }
+    } catch (error) {
+      // Ignore cache errors, will fetch in useEffect
+    }
+
+    // Also try localStorage for immediate initialization
+    const localSessions = getGameSessions();
+    const foundLocal = localSessions.find(s => s.id === sessionId);
+    if (foundLocal && foundLocal.gradingResult) return foundLocal;
+
+    return null;
+  });
 
   useEffect(() => {
     if (!sessionId) {
@@ -21,8 +43,13 @@ function ResultsContent() {
       return;
     }
 
-    // Try to fetch from database first
-    async function fetchSession() {
+    // If session already loaded from cache, skip fetch
+    if (session && session.gradingResult) {
+      return;
+    }
+
+    // Fetch from database as fallback (for direct navigation or cache miss)
+    async function fetchFromDatabase() {
       try {
         const response = await fetch(`/api/session?sessionId=${sessionId}`);
         const data = await response.json();
@@ -35,20 +62,12 @@ function ResultsContent() {
         console.warn('Failed to fetch session from database:', error);
       }
 
-      // Fallback to localStorage if database fetch fails
-      const sessions = getGameSessions();
-      const foundSession = sessions.find(s => s.id === sessionId);
-
-      if (!foundSession || !foundSession.gradingResult) {
-        router.push('/game');
-        return;
-      }
-
-      setSession(foundSession);
+      // Redirect only if database fetch also failed
+      router.push('/game');
     }
 
-    fetchSession();
-  }, [sessionId, router]);
+    fetchFromDatabase();
+  }, [sessionId, session, router]);
 
   if (!session || !session.gradingResult) {
     return (
