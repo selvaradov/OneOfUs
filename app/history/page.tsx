@@ -6,6 +6,7 @@ import { GameSession } from '@/lib/types';
 import { getGameSessions, getUserAlignment } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 export default function HistoryPage() {
   const [sessions, setSessions] = useState<GameSession[]>([]);
@@ -105,9 +106,9 @@ export default function HistoryPage() {
   }
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+      <div className="flex-1 py-8 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -216,7 +217,7 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
-    </>
   );
 }

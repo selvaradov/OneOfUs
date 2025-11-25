@@ -7,6 +7,7 @@ import { Brain, FingerprintPattern, Goal } from 'lucide-react';
 import { GameSession } from '@/lib/types';
 import { getGameSessions } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
+import Footer from '@/components/Footer';
 
 function ResultsContent() {
   const router = useRouter();
@@ -43,8 +44,9 @@ function ResultsContent() {
   const passed = !gradingResult.detected;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+      <div className="flex-1 py-6 px-4">
+        <div className="max-w-6xl mx-auto">
         {/* Compact Header */}
         <div className="text-center mb-4">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Results</h1>
@@ -218,7 +220,9 @@ function ResultsContent() {
             View all your games →
           </Link>
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

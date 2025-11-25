@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <main className="flex w-full max-w-4xl flex-col items-center justify-center px-6 py-16">
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+      <main className="flex flex-1 w-full max-w-4xl flex-col items-center justify-center px-6 py-16 mx-auto">
         <div className="text-center space-y-8">
           {/* Title */}
           <div className="space-y-4">
@@ -60,6 +61,7 @@ export default function Home() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
