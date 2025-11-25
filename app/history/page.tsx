@@ -9,23 +9,34 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function HistoryPage() {
-  const [sessions, setSessions] = useState<GameSession[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [dataSource, setDataSource] = useState<'database' | 'localStorage'>('localStorage');
-  const [hasMore, setHasMore] = useState(false);
+  // Initialize with cached/local data immediately (no loading screen)
+  const [sessions, setSessions] = useState<GameSession[]>(() => {
+    // Try sessionStorage cache first
+    try {
+      const cached = sessionStorage.getItem('cachedSessions');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (error) {
+      // Ignore cache errors
+    }
+
+    // Fallback to localStorage
+    const localSessions = getGameSessions();
+    return localSessions.reverse(); // Most recent first
+  });
 
   useEffect(() => {
     loadHistory();
   }, []);
 
   const loadHistory = async () => {
-    setIsLoading(true);
-
     // Get user ID from localStorage
     const userAlignment = getUserAlignment();
     const userId = userAlignment?.id;
 
-    // Try to fetch from database first
+    // Try to fetch from database
     if (userId) {
       try {
         const response = await fetch(`/api/history?userId=${userId}&limit=50&offset=0`);
@@ -63,28 +74,24 @@ export default function HistoryPage() {
           }));
 
           setSessions(dbSessions);
-          setDataSource('database');
-          setHasMore(data.pagination?.hasMore || false);
-          setIsLoading(false);
 
           // Cache sessions for instant access from results page
           sessionStorage.setItem('cachedSessions', JSON.stringify(dbSessions));
           return;
         }
       } catch (error) {
-        console.warn('Failed to fetch from database, falling back to localStorage:', error);
+        console.warn('Failed to fetch from database:', error);
+        // Keep showing cached/local data on error
       }
     }
 
-    // Fallback to localStorage
+    // Update cache with localStorage if database fetch failed
     const localSessions = getGameSessions();
-    const reversedSessions = localSessions.reverse(); // Most recent first
-    setSessions(reversedSessions);
-    setDataSource('localStorage');
-    setIsLoading(false);
-
-    // Cache sessions for instant access from results page
-    sessionStorage.setItem('cachedSessions', JSON.stringify(reversedSessions));
+    const reversedSessions = localSessions.reverse();
+    if (reversedSessions.length > 0) {
+      setSessions(reversedSessions);
+      sessionStorage.setItem('cachedSessions', JSON.stringify(reversedSessions));
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -97,21 +104,6 @@ export default function HistoryPage() {
     });
   };
 
-  if (isLoading) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-center py-20">
-              <div className="text-lg text-gray-600 dark:text-gray-400">Loading your history...</div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
       <Navbar />
@@ -119,16 +111,9 @@ export default function HistoryPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Your History
-              </h1>
-              {dataSource === 'localStorage' && sessions.length > 0 && (
-                <span className="text-xs text-gray-500 dark:text-gray-500 italic">
-                  Showing local data
-                </span>
-              )}
-            </div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Your History
+            </h1>
           </div>
 
         {/* Stats */}

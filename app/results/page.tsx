@@ -69,12 +69,9 @@ function ResultsContent() {
     fetchFromDatabase();
   }, [sessionId, session, router]);
 
+  // Don't show anything if session isn't loaded yet (should be instant from cache)
   if (!session || !session.gradingResult) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg text-gray-600">Loading...</div>
-      </div>
-    );
+    return null;
   }
 
   const { gradingResult, prompt, positionChosen, userResponse, aiResponse } = session;
