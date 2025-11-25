@@ -53,21 +53,31 @@ POSTGRES_DATABASE=database
 
 Once you have the database connection configured, initialize the tables by calling the init-db endpoint:
 
+**Local Development:**
 ```bash
 curl -X POST http://localhost:3000/api/init-db
 ```
 
-Or in production:
-```bash
-curl -X POST https://your-domain.vercel.app/api/init-db
-```
+**Production:**
+The `/api/init-db` endpoint is protected by an `INIT_DB_SECRET` environment variable.
+
+1. Generate a secret:
+   ```bash
+   openssl rand -base64 32
+   ```
+
+2. Add `INIT_DB_SECRET` to your Vercel environment variables
+
+3. Call the endpoint with authorization:
+   ```bash
+   curl -X POST https://your-domain.vercel.app/api/init-db \
+     -H "Authorization: Bearer YOUR_SECRET_HERE"
+   ```
 
 This will create the following tables:
 - `users` - User profiles and stats
 - `game_sessions` - Individual game attempts
 - `prompts_analytics` - Aggregate prompt difficulty data
-
-**Security Note:** In production, you should protect this endpoint or use a proper migration tool.
 
 ### 4. Verify Setup
 
@@ -162,8 +172,13 @@ CREATE TABLE prompts_analytics (
 - `GET /api/user?userId=xxx` - Get user info and stats
 - `PUT /api/user` - Update user information
 
+### Game History & Analytics
+- `GET /api/history?userId=xxx&limit=20&offset=0` - Fetch user's game history with pagination
+- `GET /api/stats?userId=xxx` - Get user statistics (total games, avg score, detection rate)
+- `GET /api/stats?type=prompts` - Get global prompt analytics
+
 ### Database Initialization
-- `POST /api/init-db` - Initialize database schema
+- `POST /api/init-db` - Initialize database schema (protected in production)
 
 ### Grading (with database integration)
 - `POST /api/grade` - Grade user response and save to database
@@ -205,13 +220,17 @@ See README.md Phase 6 for full privacy implementation plan.
 
 ## Next Steps
 
-After setting up the database, you can:
+After setting up the database:
 1. ✅ Test user registration flow
 2. ✅ Test game session storage
-3. ⏭️ Update history page to fetch from database
-4. ⏭️ Add pagination for user history
-5. ⏭️ Create analytics queries for aggregate data
-6. ⏭️ Implement privacy features (Phase 6)
+3. ✅ History page fetches from database with localStorage fallback
+4. ✅ Pagination implemented (limit 50 sessions)
+5. ✅ Analytics endpoints available (`/api/stats`)
+6. ⏭️ Implement privacy features before production (Phase 6):
+   - Hash IP addresses
+   - Add privacy policy
+   - Data retention policy
+   - GDPR compliance
 
 ## Local Development Without Database
 

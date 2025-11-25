@@ -292,48 +292,57 @@ CREATE TABLE prompts_analytics (
 
 ### Implementation Steps
 
-**Phase 1: Database Setup & Schema**
-- [ ] Create Vercel Postgres database in project
-- [ ] Run schema migrations to create tables
-- [ ] Set up connection pooling via `@vercel/postgres`
-- [ ] Create database utility functions in `/lib/db.ts`
-- [ ] Add database URL to environment variables
+**Phase 1: Database Setup & Schema - COMPLETE ✓**
+- ✅ Create Vercel Postgres database (Neon) in project
+- ✅ Run schema migrations to create tables
+- ✅ Set up connection pooling via `@vercel/postgres`
+- ✅ Create database utility functions in `/lib/db.ts`
+- ✅ Add database URL to environment variables
 
-**Phase 2: User Management**
-- [ ] Create `/app/api/user/route.ts` for user operations
-- [ ] Modify onboarding to create user record on first visit
-- [ ] Generate UUID for user, store in localStorage + database
-- [ ] Migrate existing localStorage alignment data to database
-- [ ] Update user stats after each game (total_games, avg_score)
+**Phase 2: User Management - COMPLETE ✓**
+- ✅ Create `/app/api/user/route.ts` for user operations
+- ✅ Modify onboarding to create user record on first visit
+- ✅ Generate UUID for user, store in localStorage + database
+- ✅ Update user stats after each game (total_games, avg_score)
+- ⏸️ Migrate existing localStorage alignment data (manual migration not needed)
 
-**Phase 3: Game Session Persistence**
-- [ ] Modify `/app/api/grade/route.ts` to save sessions to database
-- [ ] Capture IP address and user agent from request headers
-- [ ] Track session duration (submit time - page load time)
-- [ ] Store full grading result including rubric breakdown
-- [ ] Keep localStorage as fallback for offline/client-side access
+**Phase 3: Game Session Persistence - COMPLETE ✓**
+- ✅ Modify `/app/api/grade/route.ts` to save sessions to database
+- ✅ Capture IP address and user agent from request headers
+- ✅ Store full grading result including rubric breakdown
+- ✅ Keep localStorage as fallback for offline/client-side access
+- ⏸️ Track session duration (would need client-side timing - deferred)
 
-**Phase 4: History & Analytics Queries**
+**Phase 4: History & Analytics Queries - IN PROGRESS**
 - [ ] Update history page to fetch from database instead of localStorage
 - [ ] Add pagination for user history (limit 20 per page)
-- [ ] Create analytics queries:
-  - User stats: total games, avg score, detection rate by position
-  - Prompt difficulty: average scores per prompt
-  - Position performance: which positions are easiest/hardest
+- [ ] Create `/app/api/history/route.ts` endpoint
 - [ ] Optional: Create `/app/api/stats` endpoint for aggregate data
+- [ ] Optional: Populate `prompts_analytics` table for difficulty tracking
 
-**Phase 5: Migration & Fallback**
-- [ ] Create migration script to import existing localStorage sessions
-- [ ] Add error handling: if DB unavailable, fall back to localStorage
-- [ ] Test with existing users who have localStorage data
-- [ ] Graceful degradation for DB connection failures
+**Phase 5: Migration & Fallback - COMPLETE ✓**
+- ✅ Add error handling: if DB unavailable, fall back to localStorage
+- ✅ Graceful degradation for DB connection failures (all API routes check connection)
+- ⏸️ Migration script for existing localStorage sessions (not needed - fresh start)
 
-**Phase 6: Privacy & Compliance**
+**Phase 6: Privacy & Compliance - TODO (Pre-Production)**
 - [ ] Add privacy notice on landing page about data collection
 - [ ] Implement data retention policy (e.g., delete sessions after 6 months)
 - [ ] Optional: Allow users to export/delete their data
 - [ ] Hash IP addresses for privacy (store hash, not raw IP)
 - [ ] GDPR considerations: consent for data storage
+
+### Production Readiness Checklist
+
+**Before Deploying to Production:**
+- [ ] **Secure `/api/init-db` endpoint** - Remove or protect with authentication
+- [ ] **Privacy policy** - Add to landing page
+- [ ] **IP hashing** - Hash IP addresses before storage (Phase 6)
+- [ ] **Environment variables** - Verify all Vercel env vars are set
+- [ ] **Error monitoring** - Set up Vercel monitoring/logs
+- [ ] **Database backups** - Verify Neon automatic backups are enabled
+- [ ] **Rate limiting** - Consider adding to API routes (especially `/api/grade`)
+- [ ] **CORS configuration** - Verify domain restrictions if needed
 
 ### Database Utility Functions
 
