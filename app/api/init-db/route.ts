@@ -4,9 +4,31 @@ import { initializeDatabase } from '@/lib/db';
 /**
  * POST /api/init-db - Initialize database schema
  * This should be called once to set up the database tables and indexes
- * In production, you might want to protect this endpoint or use a migration tool
+ *
+ * SECURITY: Protected by INIT_DB_SECRET environment variable in production
+ * Usage: curl -X POST http://localhost:3000/api/init-db -H "Authorization: Bearer YOUR_SECRET"
  */
 export async function POST(request: NextRequest) {
+  // Check if we're in production and require auth
+  const isProduction = process.env.NODE_ENV === 'production';
+  const initSecret = process.env.INIT_DB_SECRET;
+
+  if (isProduction && initSecret) {
+    // Require authorization header in production
+    const authHeader = request.headers.get('authorization');
+    const providedSecret = authHeader?.replace('Bearer ', '');
+
+    if (providedSecret !== initSecret) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Unauthorized. This endpoint requires authorization in production.',
+        },
+        { status: 401 }
+      );
+    }
+  }
+
   try {
     await initializeDatabase();
 
