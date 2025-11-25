@@ -179,6 +179,8 @@ export async function saveGameSession(data: {
     // Update user stats after saving session
     if (data.score !== undefined) {
       await updateUserStats(data.userId);
+      // Also update prompt analytics
+      await updatePromptAnalytics(data.promptId);
     }
 
     return result.rows[0].id;
@@ -353,6 +355,97 @@ export async function getAllPromptsAnalytics(): Promise<any[]> {
     }));
   } catch (error) {
     console.error('Error fetching all prompts analytics:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update prompts_analytics table with latest aggregate data
+ * This should be called after each game session to keep analytics fresh
+ */
+export async function updatePromptAnalytics(promptId: string): Promise<void> {
+  try {
+    await sql`
+      INSERT INTO prompts_analytics (prompt_id, total_attempts, avg_score, detection_rate, last_updated)
+      SELECT
+        prompt_id,
+        COUNT(*) as total_attempts,
+        AVG(score) as avg_score,
+        AVG(CASE WHEN detected = true THEN 1.0 ELSE 0.0 END) * 100 as detection_rate,
+        NOW() as last_updated
+      FROM game_sessions
+      WHERE prompt_id = ${promptId} AND score IS NOT NULL
+      GROUP BY prompt_id
+      ON CONFLICT (prompt_id)
+      DO UPDATE SET
+        total_attempts = EXCLUDED.total_attempts,
+        avg_score = EXCLUDED.avg_score,
+        detection_rate = EXCLUDED.detection_rate,
+        last_updated = EXCLUDED.last_updated
+    `;
+  } catch (error) {
+    console.error('Error updating prompt analytics:', error);
+    throw error;
+  }
+}
+
+/**
+ * Refresh all prompt analytics (useful for batch updates)
+ */
+export async function refreshAllPromptAnalytics(): Promise<void> {
+  try {
+    await sql`
+      INSERT INTO prompts_analytics (prompt_id, total_attempts, avg_score, detection_rate, last_updated)
+      SELECT
+        prompt_id,
+        COUNT(*) as total_attempts,
+        AVG(score) as avg_score,
+        AVG(CASE WHEN detected = true THEN 1.0 ELSE 0.0 END) * 100 as detection_rate,
+        NOW() as last_updated
+      FROM game_sessions
+      WHERE score IS NOT NULL
+      GROUP BY prompt_id
+      ON CONFLICT (prompt_id)
+      DO UPDATE SET
+        total_attempts = EXCLUDED.total_attempts,
+        avg_score = EXCLUDED.avg_score,
+        detection_rate = EXCLUDED.detection_rate,
+        last_updated = EXCLUDED.last_updated
+    `;
+    console.log('All prompt analytics refreshed successfully');
+  } catch (error) {
+    console.error('Error refreshing all prompt analytics:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get analytics directly from prompts_analytics table (cached/aggregated)
+ */
+export async function getCachedPromptAnalytics(promptId: string) {
+  try {
+    const result = await sql`
+      SELECT * FROM prompts_analytics WHERE prompt_id = ${promptId}
+    `;
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error('Error fetching cached prompt analytics:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get all prompts analytics from the cached table
+ */
+export async function getAllCachedPromptsAnalytics(): Promise<any[]> {
+  try {
+    const result = await sql`
+      SELECT * FROM prompts_analytics
+      ORDER BY total_attempts DESC, avg_score DESC
+    `;
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching all cached prompts analytics:', error);
     throw error;
   }
 }
