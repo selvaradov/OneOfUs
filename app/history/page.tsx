@@ -3,17 +3,81 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { GameSession } from '@/lib/types';
-import { getGameSessions } from '@/lib/storage';
+import { getGameSessions, getUserAlignment } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
 import Navbar from '@/components/Navbar';
 
 export default function HistoryPage() {
   const [sessions, setSessions] = useState<GameSession[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dataSource, setDataSource] = useState<'database' | 'localStorage'>('localStorage');
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
-    const allSessions = getGameSessions();
-    setSessions(allSessions.reverse()); // Most recent first
+    loadHistory();
   }, []);
+
+  const loadHistory = async () => {
+    setIsLoading(true);
+
+    // Get user ID from localStorage
+    const userAlignment = getUserAlignment();
+    const userId = userAlignment?.id;
+
+    // Try to fetch from database first
+    if (userId) {
+      try {
+        const response = await fetch(`/api/history?userId=${userId}&limit=50&offset=0`);
+        const data = await response.json();
+
+        if (data.success && data.sessions) {
+          // Convert database format to GameSession format
+          const dbSessions: GameSession[] = data.sessions.map((dbSession: any) => ({
+            id: dbSession.id,
+            userId: dbSession.user_id,
+            promptId: dbSession.prompt_id,
+            prompt: {
+              id: dbSession.prompt_id,
+              category: dbSession.prompt_category,
+              scenario: dbSession.prompt_scenario,
+              positions: [],
+              charLimit: dbSession.char_count || 280,
+            },
+            positionChosen: dbSession.position_assigned,
+            userResponse: dbSession.user_response,
+            gradingResult: dbSession.score ? {
+              detected: dbSession.detected,
+              score: dbSession.score,
+              feedback: dbSession.feedback,
+              rubricScores: {
+                understanding: dbSession.rubric_understanding,
+                authenticity: dbSession.rubric_authenticity,
+                execution: dbSession.rubric_execution,
+              },
+              timestamp: dbSession.completed_at,
+            } : undefined,
+            aiResponse: dbSession.ai_comparison_response,
+            createdAt: dbSession.created_at,
+            completedAt: dbSession.completed_at,
+          }));
+
+          setSessions(dbSessions);
+          setDataSource('database');
+          setHasMore(data.pagination?.hasMore || false);
+          setIsLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.warn('Failed to fetch from database, falling back to localStorage:', error);
+      }
+    }
+
+    // Fallback to localStorage
+    const localSessions = getGameSessions();
+    setSessions(localSessions.reverse()); // Most recent first
+    setDataSource('localStorage');
+    setIsLoading(false);
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -25,6 +89,21 @@ export default function HistoryPage() {
     });
   };
 
+  if (isLoading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-center py-20">
+              <div className="text-lg text-gray-600 dark:text-gray-400">Loading your history...</div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Navbar />
@@ -32,9 +111,16 @@ export default function HistoryPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Your History
-            </h1>
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Your History
+              </h1>
+              {dataSource === 'localStorage' && sessions.length > 0 && (
+                <span className="text-xs text-gray-500 dark:text-gray-500 italic">
+                  Showing local data
+                </span>
+              )}
+            </div>
           </div>
 
         {/* Stats */}
