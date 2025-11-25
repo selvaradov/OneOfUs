@@ -3,15 +3,15 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { GameSession } from '@/lib/types';
-import { getGameSessions, getUserAlignment } from '@/lib/storage';
+import { getUserAlignment } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function HistoryPage() {
-  // Initialize with cached/local data immediately (no loading screen)
+  // Initialize with cached data immediately (no loading screen)
   const [sessions, setSessions] = useState<GameSession[]>(() => {
-    // Try sessionStorage cache first
+    // Try sessionStorage cache only
     try {
       const cached = sessionStorage.getItem('cachedSessions');
       if (cached) {
@@ -22,75 +22,74 @@ export default function HistoryPage() {
       // Ignore cache errors
     }
 
-    // Fallback to localStorage
-    const localSessions = getGameSessions();
-    return localSessions.reverse(); // Most recent first
+    return []; // Start empty, will load from database
   });
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadHistory();
   }, []);
 
   const loadHistory = async () => {
-    // Get user ID from localStorage
+    // Get user ID from localStorage (still used for user alignment)
     const userAlignment = getUserAlignment();
     const userId = userAlignment?.id;
 
-    // Try to fetch from database
-    if (userId) {
-      try {
-        const response = await fetch(`/api/history?userId=${userId}&limit=50&offset=0`);
-        const data = await response.json();
-
-        if (data.success && data.sessions) {
-          // Convert database format to GameSession format
-          const dbSessions: GameSession[] = data.sessions.map((dbSession: any) => ({
-            id: dbSession.id,
-            userId: dbSession.user_id,
-            promptId: dbSession.prompt_id,
-            prompt: {
-              id: dbSession.prompt_id,
-              category: dbSession.prompt_category,
-              scenario: dbSession.prompt_scenario,
-              positions: [],
-              charLimit: dbSession.char_count || 280,
-            },
-            positionChosen: dbSession.position_assigned,
-            userResponse: dbSession.user_response,
-            gradingResult: dbSession.score ? {
-              detected: dbSession.detected,
-              score: dbSession.score,
-              feedback: dbSession.feedback,
-              rubricScores: {
-                understanding: dbSession.rubric_understanding,
-                authenticity: dbSession.rubric_authenticity,
-                execution: dbSession.rubric_execution,
-              },
-              timestamp: dbSession.completed_at,
-            } : undefined,
-            aiResponse: dbSession.ai_comparison_response,
-            createdAt: dbSession.created_at,
-            completedAt: dbSession.completed_at,
-          }));
-
-          setSessions(dbSessions);
-
-          // Cache sessions for instant access from results page
-          sessionStorage.setItem('cachedSessions', JSON.stringify(dbSessions));
-          return;
-        }
-      } catch (error) {
-        console.warn('Failed to fetch from database:', error);
-        // Keep showing cached/local data on error
-      }
+    if (!userId) {
+      // User hasn't completed onboarding yet
+      return;
     }
 
-    // Update cache with localStorage if database fetch failed
-    const localSessions = getGameSessions();
-    const reversedSessions = localSessions.reverse();
-    if (reversedSessions.length > 0) {
-      setSessions(reversedSessions);
-      sessionStorage.setItem('cachedSessions', JSON.stringify(reversedSessions));
+    try {
+      const response = await fetch(`/api/history?userId=${userId}&limit=50&offset=0`);
+      const data = await response.json();
+
+      if (data.success && data.sessions) {
+        // Convert database format to GameSession format
+        const dbSessions: GameSession[] = data.sessions.map((dbSession: any) => ({
+          id: dbSession.id,
+          userId: dbSession.user_id,
+          promptId: dbSession.prompt_id,
+          prompt: {
+            id: dbSession.prompt_id,
+            category: dbSession.prompt_category,
+            scenario: dbSession.prompt_scenario,
+            positions: [],
+            charLimit: dbSession.char_count || 280,
+          },
+          positionChosen: dbSession.position_assigned,
+          userResponse: dbSession.user_response,
+          gradingResult: dbSession.score ? {
+            detected: dbSession.detected,
+            score: dbSession.score,
+            feedback: dbSession.feedback,
+            rubricScores: {
+              understanding: dbSession.rubric_understanding,
+              authenticity: dbSession.rubric_authenticity,
+              execution: dbSession.rubric_execution,
+            },
+            timestamp: dbSession.completed_at,
+          } : undefined,
+          aiResponse: dbSession.ai_comparison_response,
+          createdAt: dbSession.created_at,
+          completedAt: dbSession.completed_at,
+        }));
+
+        setSessions(dbSessions);
+        setError(null); // Clear any previous errors
+
+        // Cache sessions for instant access from results page
+        sessionStorage.setItem('cachedSessions', JSON.stringify(dbSessions));
+      } else {
+        throw new Error(data.error || 'Failed to load history');
+      }
+    } catch (error) {
+      console.error('Failed to fetch from database:', error);
+      // Only set error if we don't have cached data to show
+      if (sessions.length === 0) {
+        setError('Couldn\'t load your game history—try refreshing');
+      }
     }
   };
 
@@ -153,7 +152,19 @@ export default function HistoryPage() {
         )}
 
         {/* Sessions List */}
-        {sessions.length === 0 ? (
+        {error ? (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-8 text-center">
+            <p className="text-lg text-red-700 dark:text-red-400 mb-4">
+              {error}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2 text-sm font-semibold text-red-700 dark:text-red-400 border border-red-300 dark:border-red-700 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+            >
+              Refresh Page
+            </button>
+          </div>
+        ) : sessions.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 text-center">
             <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
               No games played yet!

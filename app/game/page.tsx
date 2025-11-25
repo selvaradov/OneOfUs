@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Prompt, PoliticalPosition, GameSession } from '@/lib/types';
 import { getRandomPrompt } from '@/lib/prompts';
-import { hasCompletedOnboarding, saveGameSession, getUserAlignment } from '@/lib/storage';
+import { hasCompletedOnboarding, getUserAlignment } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
 import OnboardingModal from '@/components/OnboardingModal';
 import Navbar from '@/components/Navbar';
@@ -122,9 +122,7 @@ export default function GamePage() {
         session.aiResponse = data.aiResponse;
         session.completedAt = new Date().toISOString();
 
-        // Save to localStorage
-        saveGameSession(session);
-
+        // Session is already saved to database by /api/grade
         // Navigate to results page
         router.push(`/results?sessionId=${session.id}`);
       } else {

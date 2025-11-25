@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Brain, FingerprintPattern, Goal } from 'lucide-react';
 import { GameSession } from '@/lib/types';
-import { getGameSessions } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
 import Footer from '@/components/Footer';
 
@@ -18,6 +17,7 @@ function ResultsContent() {
   const [session, setSession] = useState<GameSession | null>(() => {
     if (!sessionId) return null;
 
+    // Try sessionStorage cache only (populated by history page)
     try {
       const cachedData = sessionStorage.getItem('cachedSessions');
       if (cachedData) {
@@ -28,11 +28,6 @@ function ResultsContent() {
     } catch (error) {
       // Ignore cache errors, will fetch in useEffect
     }
-
-    // Also try localStorage for immediate initialization
-    const localSessions = getGameSessions();
-    const foundLocal = localSessions.find(s => s.id === sessionId);
-    if (foundLocal && foundLocal.gradingResult) return foundLocal;
 
     return null;
   });
