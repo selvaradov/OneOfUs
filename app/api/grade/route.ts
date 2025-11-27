@@ -4,6 +4,8 @@ import { GradeRequest, GradingResult } from '@/lib/types';
 import { GRADING_PROMPT } from '@/data/graderPrompt';
 import { saveGameSession, checkDatabaseConnection } from '@/lib/db';
 
+const MODEL = 'claude-haiku-4-5';
+
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
@@ -52,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Call Claude API
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: MODEL,
       max_tokens: 1500,
       temperature: 0.7,
       messages: [
