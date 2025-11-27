@@ -62,11 +62,10 @@ For instance, don't say that their response "could be improved by adding more ab
 1. Your grading:
 {
   "detected": boolean,
-  "score": number,
   "rubricScores": {
-    "understanding": number,
-    "authenticity": number,
-    "execution": number
+    "understanding": number (0-65),
+    "authenticity": number (0-20),
+    "execution": number (0-15)
   },
   "feedback": "One paragraph (3-5 sentences) addressing the user directly. Use 'you' and 'your'. Be playful and direct, not lecture-y. Focus ONLY on ideological gaps/strengths - never comment on social dynamics, family tension, finding common ground, or being diplomatic. This is about ideology, not etiquette. If detected, tell them what ideological understanding they're missing. If undetected, acknowledge what they got right about the ideology."
 }
@@ -75,9 +74,16 @@ For instance, don't say that their response "could be improved by adding more ab
 {
   "aiResponse": "Write YOUR OWN response to the same scenario from the same position, showing how someone genuinely holding this view might write it. Match the length and format of what was requested. CRUCIAL: Use natural, conversational language, avoiding overly formal or stilted phrasing. Demonstrate authentic understanding of the ideology through content, reasoning, and priorities. Avoid stereotypes or caricatures. This is NOT an example for the user to copy - it's for you to show what genuine ideological understanding looks like."
 }
-
-Return as:
+**Reminder.** Return only the following as valid JSON:
 {
-  "grading": { ... },
-  "aiComparison": { "aiResponse": "..." }
+  "grading": {
+    "detected": boolean,
+    "rubricScores": {
+      "understanding": number (0-65),
+      "authenticity": number (0-20),
+      "execution": number (0-15)
+    },
+    "feedback": "string"
+  },
+  "aiComparison": { "aiResponse": "string" }
 }`;

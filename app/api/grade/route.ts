@@ -8,6 +8,30 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+// Validation helper for rubric scores
+function validateAndClampRubricScores(scores: any): {
+  understanding: number;
+  authenticity: number;
+  execution: number;
+} {
+  const understanding = Math.max(0, Math.min(65, Number(scores.understanding) || 0));
+  const authenticity = Math.max(0, Math.min(20, Number(scores.authenticity) || 0));
+  const execution = Math.max(0, Math.min(15, Number(scores.execution) || 0));
+
+  // Log warning if scores were out of range
+  if (understanding !== Number(scores.understanding)) {
+    console.warn(`Understanding score out of range: ${scores.understanding}, clamped to ${understanding}`);
+  }
+  if (authenticity !== Number(scores.authenticity)) {
+    console.warn(`Authenticity score out of range: ${scores.authenticity}, clamped to ${authenticity}`);
+  }
+  if (execution !== Number(scores.execution)) {
+    console.warn(`Execution score out of range: ${scores.execution}, clamped to ${execution}`);
+  }
+
+  return { understanding, authenticity, execution };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -28,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // Call Claude API
     const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: 'claude-sonnet-4-5',
       max_tokens: 1500,
       temperature: 0.7,
       messages: [
@@ -49,16 +73,37 @@ export async function POST(request: NextRequest) {
     }
 
     if (!jsonMatch) {
-      throw new Error('Could not parse response from Claude');
+      console.error('Could not find JSON in Claude response:', responseText);
+      throw new Error('Could not parse response from Claude - no JSON found');
     }
 
-    const parsedData = JSON.parse(jsonMatch[0].replace(/```json\n/, '').replace(/\n```/, ''));
+    let parsedData;
+    try {
+      const jsonString = jsonMatch[0].replace(/```json\n/, '').replace(/\n```/, '');
+      parsedData = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Attempted to parse:', jsonMatch[0]);
+      throw new Error('Could not parse response from Claude - invalid JSON');
+    }
+
+    // Validate required fields
+    if (!parsedData.grading || !parsedData.grading.rubricScores) {
+      console.error('Missing required fields in parsed data:', parsedData);
+      throw new Error('Response missing required grading fields');
+    }
+
+    // Validate and clamp rubric scores to correct ranges
+    const rubricScores = validateAndClampRubricScores(parsedData.grading.rubricScores);
+
+    // Calculate total score from rubric scores (don't trust LLM to do this)
+    const totalScore = rubricScores.understanding + rubricScores.authenticity + rubricScores.execution;
 
     const result: GradingResult = {
       detected: parsedData.grading.detected,
-      score: parsedData.grading.score,
-      feedback: parsedData.grading.feedback,
-      rubricScores: parsedData.grading.rubricScores,
+      score: totalScore, // Calculated from rubric scores, not from LLM
+      feedback: parsedData.grading.feedback || 'No feedback provided',
+      rubricScores,
       timestamp: new Date().toISOString(),
     };
 
