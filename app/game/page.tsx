@@ -105,8 +105,6 @@ export default function GamePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           promptId: prompt.id,
-          promptCategory: prompt.category,
-          scenario: prompt.scenario,
           position: assignedPosition,
           userResponse,
           userId, // Pass userId for database storage

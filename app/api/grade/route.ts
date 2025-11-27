@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { GradeRequest, GradingResult } from '@/lib/types';
+import { GradingResult, PoliticalPosition, VALID_POSITIONS } from '@/lib/types';
 import { GRADING_PROMPT } from '@/data/graderPrompt';
 import { saveGameSession, checkDatabaseConnection } from '@/lib/db';
+import { getPromptById } from '@/lib/prompts';
 
 const MODEL = 'claude-haiku-4-5';
+
+function isValidPosition(position: string): position is PoliticalPosition {
+  return VALID_POSITIONS.includes(position as PoliticalPosition);
+}
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -37,11 +42,58 @@ function validateAndClampRubricScores(scores: any): {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { scenario, position, userResponse, promptId, promptCategory, userId, durationSeconds } = body;
+    const { position, userResponse, promptId, userId, durationSeconds } = body;
 
-    if (!scenario || !position || !userResponse) {
+    // Input validation - required fields
+    if (!position || !userResponse || !promptId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: 'Missing required fields: promptId, position, userResponse' },
+        { status: 400 }
+      );
+    }
+
+    // Basic type validation
+    if (typeof position !== 'string' || typeof userResponse !== 'string' || typeof promptId !== 'string') {
+      return NextResponse.json(
+        { success: false, error: 'Invalid field types' },
+        { status: 400 }
+      );
+    }
+
+    // Look up prompt by ID (single source of truth)
+    const prompt = getPromptById(promptId);
+    if (!prompt) {
+      return NextResponse.json(
+        { success: false, error: `Invalid promptId: ${promptId} not found` },
+        { status: 404 }
+      );
+    }
+
+    // Extract scenario and category from prompt (not from client)
+    const scenario = prompt.scenario;
+    const promptCategory = prompt.category;
+
+    // Length validation - reject if too long (don't truncate)
+    const MAX_LENGTH = 1000; // Safety cap (prompts have individual limits)
+    if (userResponse.length > MAX_LENGTH) {
+      return NextResponse.json(
+        { success: false, error: `Response exceeds ${MAX_LENGTH} character limit` },
+        { status: 400 }
+      );
+    }
+
+    // Empty/whitespace check
+    if (userResponse.trim().length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Response cannot be empty or whitespace only' },
+        { status: 400 }
+      );
+    }
+
+    // Position validation
+    if (!isValidPosition(position)) {
+      return NextResponse.json(
+        { success: false, error: `Invalid position. Must be one of: ${VALID_POSITIONS.join(', ')}` },
         { status: 400 }
       );
     }

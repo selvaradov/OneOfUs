@@ -26,6 +26,20 @@ export type PoliticalPosition =
   | 'green'
   | 'socialist';
 
+// Array of valid political positions for validation
+export const VALID_POSITIONS: readonly PoliticalPosition[] = [
+  'left',
+  'centre-left',
+  'centre',
+  'centre-right',
+  'right',
+  'progressive',
+  'conservative',
+  'libertarian',
+  'green',
+  'socialist'
+] as const;
+
 export interface UserAlignment {
   id: string;
   politicalAlignment: PoliticalPosition;
