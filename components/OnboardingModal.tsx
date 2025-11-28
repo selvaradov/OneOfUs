@@ -13,6 +13,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const [touched, setTouched] = useState(false);
   const [ageRange, setAgeRange] = useState('');
   const [country, setCountry] = useState('UK');
+  const [privacyConsent, setPrivacyConsent] = useState(false);
 
   // Map slider values to positions
   const sliderToPosition: PoliticalPosition[] = [
@@ -37,7 +38,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
   };
 
   const handleSubmit = async () => {
-    if (!touched) return;
+    if (!touched || !privacyConsent) return;
 
     let userId = crypto.randomUUID();
 
@@ -193,11 +194,34 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
           </div>
         </div>
 
+        {/* Privacy Policy Consent */}
+        <div className="mt-6 flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="privacy-consent"
+            checked={privacyConsent}
+            onChange={(e) => setPrivacyConsent(e.target.checked)}
+            className="mt-1 w-4 h-4 text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
+          />
+          <label htmlFor="privacy-consent" className="text-sm text-gray-600 dark:text-gray-400">
+            I agree to the{' '}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline"
+            >
+              privacy policy
+            </a>
+            {' '}and consent to data collection as described
+          </label>
+        </div>
+
         {/* Submit Button */}
         <button
           onClick={handleSubmit}
-          disabled={!touched}
-          className="mt-8 w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          disabled={!touched || !privacyConsent}
+          className="mt-6 w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           Start Playing
         </button>
