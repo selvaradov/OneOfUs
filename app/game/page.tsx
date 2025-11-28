@@ -114,6 +114,27 @@ export default function GamePage() {
 
       const data = await response.json();
 
+      // Handle rate limiting (429 Too Many Requests)
+      if (response.status === 429) {
+        const retryAfter = data.retryAfter || 3600; // Default to 1 hour
+        const hours = Math.floor(retryAfter / 3600);
+        const minutes = Math.floor((retryAfter % 3600) / 60);
+
+        let timeMessage = '';
+        if (hours > 0) {
+          timeMessage = `${hours} hour${hours > 1 ? 's' : ''}`;
+          if (minutes > 0) timeMessage += ` and ${minutes} minute${minutes > 1 ? 's' : ''}`;
+        } else {
+          timeMessage = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+        }
+
+        alert(
+          `Whoah, slow down!\n\n${data.error}\n\nPlease try again in ${timeMessage}.`
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
       if (data.success && data.result) {
         // Update session with grading result and AI response
         session.gradingResult = data.result;

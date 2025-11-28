@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.70.1",
+    "@upstash/ratelimit": "^2.0.7",
+    "@upstash/redis": "^1.35.7",
     "@vercel/postgres": "^0.10.0",
     "lucide-react": "^0.554.0",
     "next": "16.0.4",

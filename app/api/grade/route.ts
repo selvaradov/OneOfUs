@@ -4,6 +4,7 @@ import { GradingResult, PoliticalPosition, VALID_POSITIONS } from '@/lib/types';
 import { GRADING_PROMPT } from '@/data/graderPrompt';
 import { saveGameSession, checkDatabaseConnection } from '@/lib/db';
 import { getPromptById } from '@/lib/prompts';
+import { gradeRateLimiter, getClientIp, checkRateLimit } from '@/lib/ratelimit';
 
 const MODEL = 'claude-haiku-4-5';
 
@@ -41,6 +42,73 @@ function validateAndClampRubricScores(scores: any): {
 
 export async function POST(request: NextRequest) {
   try {
+    // Extract IP address for rate limiting
+    const clientIp = getClientIp(request);
+
+    // Check hourly rate limit (20 requests/hour)
+    const hourlyLimit = await checkRateLimit(
+      gradeRateLimiter.hourly,
+      clientIp,
+      'hourly'
+    );
+
+    if (hourlyLimit && !hourlyLimit.success) {
+      console.warn('[RATE_LIMIT] Hourly limit exceeded', {
+        ip: clientIp,
+        limit: hourlyLimit.limit,
+        reset: new Date(hourlyLimit.reset).toISOString(),
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Rate limit exceeded. You can make 20 requests per hour.',
+          retryAfter: Math.ceil((hourlyLimit.reset - Date.now()) / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil((hourlyLimit.reset - Date.now()) / 1000)),
+            'X-RateLimit-Limit': String(hourlyLimit.limit),
+            'X-RateLimit-Remaining': String(hourlyLimit.remaining),
+            'X-RateLimit-Reset': String(hourlyLimit.reset),
+          },
+        }
+      );
+    }
+
+    // Check daily rate limit (50 requests/day)
+    const dailyLimit = await checkRateLimit(
+      gradeRateLimiter.daily,
+      clientIp,
+      'daily'
+    );
+
+    if (dailyLimit && !dailyLimit.success) {
+      console.warn('[RATE_LIMIT] Daily limit exceeded', {
+        ip: clientIp,
+        limit: dailyLimit.limit,
+        reset: new Date(dailyLimit.reset).toISOString(),
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Daily rate limit exceeded. You can make 50 requests per day.',
+          retryAfter: Math.ceil((dailyLimit.reset - Date.now()) / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil((dailyLimit.reset - Date.now()) / 1000)),
+            'X-RateLimit-Limit': String(dailyLimit.limit),
+            'X-RateLimit-Remaining': String(dailyLimit.remaining),
+            'X-RateLimit-Reset': String(dailyLimit.reset),
+          },
+        }
+      );
+    }
+
     const body = await request.json();
     const { position, userResponse, promptId, userId, durationSeconds } = body;
 
