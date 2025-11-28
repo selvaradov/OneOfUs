@@ -1,14 +1,43 @@
-# Test Scripts
+# Scripts & Testing
 
 Automated tests and checks to verify code quality and database integration.
 
-## Quality Checks (Run Before Committing)
+## Pre-Commit Workflow
 
-### `check-types.sh` - TypeScript Type Check ⚠️ **RUN BEFORE EVERY COMMIT**
+**IMPORTANT: Run type checks before every commit to prevent syntax errors and broken code.**
+
+### Quick Workflow
+
+```bash
+# 1. Run type check (REQUIRED)
+./scripts/check-types.sh
+
+# 2. Run tests (recommended)
+./scripts/test-database.sh
+
+# 3. If checks pass, commit
+git add .
+git commit -m "Your message"
+```
+
+### Automated Pre-Commit Hook (Optional)
+
+Enable automatic checks before every commit:
+
+```bash
+./scripts/setup-git-hooks.sh
+```
+
+This blocks commits if TypeScript errors exist.
+
+---
+
+## Available Scripts
+
+### `check-types.sh` - TypeScript Type Check ⚠️ **REQUIRED BEFORE COMMITS**
 
 Catches syntax errors, unclosed JSX tags, and type errors before they break the build.
 
-**Run it:**
 ```bash
 ./scripts/check-types.sh
 ```
@@ -19,133 +48,103 @@ Catches syntax errors, unclosed JSX tags, and type errors before they break the 
 - ✅ Syntax errors in .ts/.tsx files
 - ✅ Import/export issues
 
-**When to use:** **ALWAYS** before committing code. This prevents broken builds.
-
 **Output example:**
 ```bash
 🔍 Running TypeScript type checks...
-================================================
-
-Checking TypeScript files...
-
 ✓ TypeScript check passed!
 No type errors or syntax issues found.
 ```
 
----
+### `test-database.sh` - Full Integration Test
 
-### `setup-git-hooks.sh` - Automated Pre-Commit Checks
+Tests all database endpoints with actual API calls.
 
-Sets up Git hooks to automatically run type checks before every commit.
+```bash
+# Start dev server first
+npm run dev
 
-**Run once to enable:**
+# Run tests in another terminal
+./scripts/test-database.sh
+```
+
+**What it tests:**
+1. Database initialization (`/api/init-db`)
+2. User creation and retrieval (`/api/user`)
+3. User statistics (`/api/stats?userId=`)
+4. Game history (`/api/history?userId=`)
+5. Global prompt analytics (`/api/stats?type=prompts`)
+6. Analytics table population
+7. Database connectivity
+
+**Testing production:**
+```bash
+BASE_URL=https://your-domain.vercel.app ./scripts/test-database.sh
+```
+
+### `test-rate-limit.sh` - Rate Limiting Test
+
+Tests rate limiting implementation for the `/api/grade` endpoint.
+
+```bash
+./scripts/test-rate-limit.sh
+```
+
+### `setup-git-hooks.sh` - Install Pre-Commit Hooks
+
+Sets up automatic type checking before commits.
+
 ```bash
 ./scripts/setup-git-hooks.sh
 ```
-
-**What it does:**
-- Installs a pre-commit hook that runs `check-types.sh`
-- Blocks commits if TypeScript errors exist
-- Ensures you never commit broken code
 
 **To bypass (not recommended):**
 ```bash
 git commit --no-verify
 ```
 
----
+### `verify-setup.sh` - Setup Verification
 
-## Database Tests
+Quick check that all files and configuration are in place.
 
-## Scripts
-
-### `verify-setup.sh` - Quick Setup Check
-Verifies that all files and configuration are in place.
-
-**What it checks:**
-- ✅ `.env.local` exists and has required variables
-- ✅ Database files exist (`lib/db.ts`, `db/schema.sql`)
-- ✅ All API endpoints are present
-- ✅ Dev server is running
-- ✅ Database connection works
-
-**Run it:**
 ```bash
 ./scripts/verify-setup.sh
 ```
 
-**When to use:** Before running tests, to make sure everything is configured.
+**Checks:**
+- ✅ `.env.local` exists with required variables
+- ✅ Database files exist
+- ✅ All API endpoints are present
+- ✅ Dev server is running
+- ✅ Database connection works
 
----
+## Development Workflow
 
-### `test-database.sh` - Full Integration Test
-Tests all database endpoints with actual API calls.
-
-**What it tests:**
-1. `/api/init-db` - Database initialization endpoint
-2. `/api/user` POST - Creates a test user
-3. `/api/user` GET - Retrieves user info
-4. `/api/stats?userId=` - Gets user statistics
-5. `/api/history?userId=` - Gets user history
-6. `/api/stats?type=prompts` - Gets global prompt analytics
-7. `prompts_analytics` table - Verifies analytics table is populated
-8. Database connectivity - Verifies database is accessible
-
-**Run it:**
-```bash
-# Make sure dev server is running first
-npm run dev
-
-# In another terminal:
-./scripts/test-database.sh
-```
-
-**Output example:**
-```
-🧪 Testing database integration at http://localhost:3000
-================================================
-
-Test 1: Check /api/init-db endpoint
-------------------------------------
-✓ PASS: init-db endpoint is accessible (HTTP 200)
-
-Test 2: Create test user via /api/user
----------------------------------------
-Response: {"success":true,"userId":"abc-123-def"}
-✓ PASS: User created successfully with ID: abc-123-def
-
-...
-
-================================================
-TEST SUMMARY
-================================================
-Total tests: 7
-Passed: 7
-Failed: 0
-
-✓ All tests passed!
-```
-
-**What each test does:**
-- Creates a temporary user in the database
-- Verifies all API endpoints respond correctly
-- Checks that database queries work
-- Tests both user-specific and global analytics
-
-**Note:** Test creates real records in your database. They're harmless but will appear in your Neon console.
-
----
-
-### Testing in Production
-
-To test your production deployment:
+### First Time Setup
 
 ```bash
-# Set the base URL to your production domain
-BASE_URL=https://your-domain.vercel.app ./scripts/test-database.sh
+./scripts/setup-git-hooks.sh  # Enable pre-commit checks (recommended)
+./scripts/verify-setup.sh     # Check configuration
+npm run dev                    # Start server
+./scripts/test-database.sh    # Run tests
 ```
 
-**Important:** You'll need to set `INIT_DB_SECRET` in Vercel first if testing initialization.
+### Before Committing (CRITICAL)
+
+```bash
+./scripts/check-types.sh      # Type check (REQUIRED)
+./scripts/test-database.sh    # Verify nothing broke (recommended)
+
+# If checks pass:
+git add .
+git commit -m "Your message"
+```
+
+### Before Deploying to Production
+
+```bash
+./scripts/check-types.sh
+BASE_URL=https://your-preview.vercel.app ./scripts/test-database.sh
+```
 
 ---
 
@@ -153,31 +152,24 @@ BASE_URL=https://your-domain.vercel.app ./scripts/test-database.sh
 
 After automated tests pass, manually verify:
 
-1. **Browser test:**
-   - Open http://localhost:3000
-   - Complete onboarding
-   - Check browser console for: `User created in database with ID: ...`
+### Browser Test
+1. Open http://localhost:3000
+2. Complete onboarding
+3. Check console: `User created in database with ID: ...`
 
-2. **Play a game:**
-   - Write a response and submit
-   - Check console for: `Game session saved to database for user: ...`
+### Play a Game
+1. Write and submit a response
+2. Check console: `Game session saved to database for user: ...`
 
-3. **Check history:**
-   - Go to http://localhost:3000/history
-   - Should see your games loaded from database
-   - Should NOT see "Showing local data" indicator
+### Check History
+1. Visit http://localhost:3000/history
+2. Games should load from database
+3. Should NOT see "Showing local data" indicator
 
-4. **Verify analytics features:**
-   - Play multiple games to populate analytics
-   - Check prompts_analytics table is updated automatically
-   - Session durations are tracked (check duration_seconds in game_sessions)
-   - Run test script again to verify prompts_analytics has data
-
-5. **Verify in Neon:**
-   - Go to https://console.neon.tech/
-   - Select your database
-   - SQL Editor: `SELECT * FROM game_sessions ORDER BY created_at DESC LIMIT 5;`
-   - Should see your test sessions
+### Verify in Neon
+1. Go to https://console.neon.tech/
+2. SQL Editor: `SELECT * FROM game_sessions ORDER BY created_at DESC LIMIT 5;`
+3. Should see your test sessions
 
 ---
 
@@ -185,70 +177,23 @@ After automated tests pass, manually verify:
 
 ### "Database connection unavailable"
 - Check `.env.local` has `POSTGRES_URL` set
-- Verify you ran `vercel env pull .env.local`
-- Check Neon database is active in console
+- Verify database is active in Neon console
+- Run `curl -X POST http://localhost:3000/api/init-db`
 
 ### "init-db endpoint returned HTTP 401"
-- In production: Need to set `INIT_DB_SECRET` and pass as Bearer token
-- In development: Should return 200, not 401
+- Production requires `INIT_DB_SECRET` as Bearer token
+- Development should return 200
 
 ### "Failed to create user"
-- Check database was initialized: `curl -X POST http://localhost:3000/api/init-db`
+- Initialize database: `curl -X POST http://localhost:3000/api/init-db`
 - Verify tables exist in Neon SQL Editor
 
-### Tests pass but browser console shows localStorage
+### Tests pass but browser uses localStorage
 - Clear browser localStorage: `localStorage.clear()` in console
 - Refresh and complete onboarding again
-- Should now use database
 
----
-
-## Development Workflow
-
-**First time setup:**
-```bash
-./scripts/setup-git-hooks.sh  # Enable pre-commit checks (recommended)
-./scripts/verify-setup.sh     # Check configuration
-npm run dev                    # Start server
-./scripts/test-database.sh     # Run tests
-```
-
-**Before committing changes (CRITICAL):**
-```bash
-./scripts/check-types.sh       # Run type check (REQUIRED)
-./scripts/test-database.sh     # Verify nothing broke (recommended)
-
-# If checks pass:
-git add .
-git commit -m "Your message"
-```
-
-**Before deploying to production:**
-```bash
-./scripts/check-types.sh       # Type check
-BASE_URL=https://your-preview.vercel.app ./scripts/test-database.sh
-```
-
----
-
-## Analytics Features
-
-The database tracks comprehensive analytics automatically:
-
-### Prompt Analytics (`prompts_analytics` table)
-- **Auto-populated:** Updates after each game session
-- **Tracks:** total attempts, average score, detection rate per prompt
-- **Purpose:** Identify which prompts are easiest/hardest
-- **Access:** `/api/stats?type=prompts`
-
-### User Timing Analytics
-- **Client-side timer:** Starts when prompt loads
-- **Stored:** `duration_seconds` in `game_sessions` table
-- **Purpose:** Analyze how long users take to respond
-- **Useful for:** Understanding engagement and difficulty patterns
-
-### How It Works
-1. User plays game → timer starts
-2. User submits → duration calculated and sent to API
-3. Game saved → `prompts_analytics` table auto-updates via trigger
-4. Analytics available immediately via `/api/stats`
+### Type Check Fails
+1. Read error output carefully
+2. Fix issues (usually unclosed tags or type errors)
+3. Re-run `./scripts/check-types.sh`
+4. Only commit when checks pass
