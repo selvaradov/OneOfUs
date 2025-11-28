@@ -1,9 +1,8 @@
-import { UserAlignment, GameSession } from './types';
+import { UserAlignment } from './types';
 
 // Keys for localStorage
 const KEYS = {
   USER_ALIGNMENT: 'oneofus_user_alignment',
-  GAME_SESSIONS: 'oneofus_game_sessions',
   ONBOARDING_COMPLETE: 'oneofus_onboarding_complete',
 };
 
@@ -23,29 +22,4 @@ export function getUserAlignment(): UserAlignment | null {
 export function hasCompletedOnboarding(): boolean {
   if (typeof window === 'undefined') return false;
   return localStorage.getItem(KEYS.ONBOARDING_COMPLETE) === 'true';
-}
-
-// Game Sessions
-export function saveGameSession(session: GameSession): void {
-  if (typeof window === 'undefined') return;
-  const sessions = getGameSessions();
-  sessions.push(session);
-  localStorage.setItem(KEYS.GAME_SESSIONS, JSON.stringify(sessions));
-}
-
-export function getGameSessions(): GameSession[] {
-  if (typeof window === 'undefined') return [];
-  const data = localStorage.getItem(KEYS.GAME_SESSIONS);
-  return data ? JSON.parse(data) : [];
-}
-
-export function getLatestGameSession(): GameSession | null {
-  const sessions = getGameSessions();
-  return sessions.length > 0 ? sessions[sessions.length - 1] : null;
-}
-
-// Clear all data (for testing/reset)
-export function clearAllData(): void {
-  if (typeof window === 'undefined') return;
-  Object.values(KEYS).forEach(key => localStorage.removeItem(key));
 }
