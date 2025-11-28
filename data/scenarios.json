@@ -123,7 +123,7 @@
     "id": "uk-reform-tweet-1",
     "category": "tweet",
     "scenario": "A new poll shows Reform UK overtaking the Conservatives in the 'Red Wall'. Tweet your take.",
-    "positions": ["nationalist-conservative", "conservative", "left"],
+    "positions": ["right", "conservative", "left"],
     "charLimit": 280,
     "metadata": {
       "region": "UK",
@@ -159,7 +159,7 @@
     "id": "uk-scotland-other-1",
     "category": "other",
     "scenario": "Pub conversation in Edinburgh: Someone argues, 'If we go independent, we'll be back in the EU within five years.' Your response?",
-    "positions": ["nationalist-conservative", "progressive", "centre"],
+    "positions": ["right", "progressive", "centre"],
     "charLimit": 250,
     "metadata": {
       "region": "Scotland",
@@ -195,7 +195,7 @@
     "id": "uk-bbc-news-1",
     "category": "news-comment",
     "scenario": "Article: 'BBC License Fee to rise by inflation next year.' Post a comment.",
-    "positions": ["nationalist-conservative", "centre-left", "centre"],
+    "positions": ["right", "centre-left", "centre"],
     "charLimit": 400,
     "metadata": {
       "region": "UK",
@@ -231,7 +231,7 @@
     "id": "uk-asylum-tweet-1",
     "category": "tweet",
     "scenario": "Breaking: Another 500 people crossed the Channel in small boats yesterday. Tweet your view on the solution.",
-    "positions": ["nationalist-conservative", "progressive", "centre-right"],
+    "positions": ["right", "progressive", "centre-right"],
     "charLimit": 280,
     "metadata": {
       "region": "UK",
@@ -279,7 +279,7 @@
     "id": "uk-legal-migration-tweet-1",
     "category": "tweet",
     "scenario": "Report shows legal net migration still over 700,000 despite government promises to cut numbers. Tweet your view.",
-    "positions": ["nationalist-conservative", "progressive", "centre"],
+    "positions": ["right", "progressive", "centre"],
     "charLimit": 280,
     "metadata": {
       "region": "UK",
@@ -351,7 +351,7 @@
     "id": "uk-skilled-visas-tweet-1",
     "category": "tweet",
     "scenario": "NHS and tech firms warn cutting skilled worker visas will cause staffing crisis. Tweet your take.",
-    "positions": ["progressive", "nationalist-conservative", "centre"],
+    "positions": ["progressive", "right", "centre"],
     "charLimit": 280,
     "metadata": {
       "region": "UK",
