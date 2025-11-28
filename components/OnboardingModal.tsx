@@ -201,9 +201,9 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
             id="privacy-consent"
             checked={privacyConsent}
             onChange={(e) => setPrivacyConsent(e.target.checked)}
-            className="mt-1 w-4 h-4 text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
+            className="mt-1 w-5 h-5 sm:w-4 sm:h-4 text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer flex-shrink-0"
           />
-          <label htmlFor="privacy-consent" className="text-sm text-gray-600 dark:text-gray-400">
+          <label htmlFor="privacy-consent" className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
             I agree to the{' '}
             <a
               href="/privacy"
