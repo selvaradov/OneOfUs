@@ -42,6 +42,24 @@ export const sessionRateLimiter = new Ratelimit({
   prefix: 'ratelimit:session',
 });
 
+// Rate limiter for /api/admin/auth endpoint (login attempts)
+// 10 attempts per minute per IP
+export const adminAuthRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, '1 m'),
+  analytics: true,
+  prefix: 'ratelimit:admin:auth',
+});
+
+// Rate limiter for /api/admin/* endpoints (general admin operations)
+// 100 requests per minute (relaxed for admin use)
+export const adminRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(100, '1 m'),
+  analytics: true,
+  prefix: 'ratelimit:admin',
+});
+
 // Helper to extract IP address from request
 export function getClientIp(request: Request): string {
   // Try x-forwarded-for first (Vercel sets this)
