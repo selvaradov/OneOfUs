@@ -6,14 +6,93 @@ import { AdminGameSession, GeolocationData } from '@/lib/types';
 interface SessionsTableProps {
   sessions: AdminGameSession[];
   token: string;
+  sortBy: 'created_at' | 'score' | 'detected';
+  sortOrder: 'ASC' | 'DESC';
+  onSortChange: (sortBy: 'created_at' | 'score' | 'detected') => void;
 }
 
-export default function SessionsTable({ sessions, token }: SessionsTableProps) {
+// Sortable header component
+function SortableHeader({
+  label,
+  field,
+  currentSort,
+  currentOrder,
+  onClick
+}: {
+  label: string;
+  field: 'created_at' | 'score' | 'detected';
+  currentSort: string;
+  currentOrder: string;
+  onClick: () => void;
+}) {
+  const isActive = currentSort === field;
+  return (
+    <th
+      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none"
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-1">
+        {label}
+        <div className="flex flex-col">
+          <svg
+            className={`w-3 h-3 ${isActive && currentOrder === 'ASC' ? 'text-orange-500' : 'text-gray-400'}`}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M5 10l5-5 5 5H5z" />
+          </svg>
+          <svg
+            className={`w-3 h-3 -mt-1 ${isActive && currentOrder === 'DESC' ? 'text-orange-500' : 'text-gray-400'}`}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M15 10l-5 5-5-5h10z" />
+          </svg>
+        </div>
+      </div>
+    </th>
+  );
+}
+
+export default function SessionsTable({ sessions, token, sortBy, sortOrder, onSortChange }: SessionsTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [geolocations, setGeolocations] = useState<Map<string, GeolocationData>>(
     new Map()
   );
   const [loadingGeo, setLoadingGeo] = useState(false);
+  const [clientSortBy, setClientSortBy] = useState<'created_at' | 'score' | 'detected'>(sortBy);
+  const [clientSortOrder, setClientSortOrder] = useState<'ASC' | 'DESC'>(sortOrder);
+
+  // Client-side sorting to avoid API calls
+  const sortedSessions = [...sessions].sort((a, b) => {
+    let aVal, bVal;
+
+    if (clientSortBy === 'created_at') {
+      aVal = new Date(a.created_at).getTime();
+      bVal = new Date(b.created_at).getTime();
+    } else if (clientSortBy === 'score') {
+      aVal = a.score;
+      bVal = b.score;
+    } else { // detected
+      aVal = a.detected ? 1 : 0;
+      bVal = b.detected ? 1 : 0;
+    }
+
+    if (clientSortOrder === 'ASC') {
+      return aVal > bVal ? 1 : -1;
+    } else {
+      return aVal < bVal ? 1 : -1;
+    }
+  });
+
+  const handleClientSortChange = (field: 'created_at' | 'score' | 'detected') => {
+    if (clientSortBy === field) {
+      setClientSortOrder(clientSortOrder === 'DESC' ? 'ASC' : 'DESC');
+    } else {
+      setClientSortBy(field);
+      setClientSortOrder('DESC');
+    }
+  };
 
   // Fetch geolocation data for visible sessions
   useEffect(() => {
@@ -112,18 +191,26 @@ export default function SessionsTable({ sessions, token }: SessionsTableProps) {
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Date
-              </th>
+              <SortableHeader
+                label="Date"
+                field="created_at"
+                currentSort={clientSortBy}
+                currentOrder={clientSortOrder}
+                onClick={() => handleClientSortChange('created_at')}
+              />
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Question ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Position
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Score
-              </th>
+              <SortableHeader
+                label="Score"
+                field="score"
+                currentSort={clientSortBy}
+                currentOrder={clientSortOrder}
+                onClick={() => handleClientSortChange('score')}
+              />
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Detected
               </th>
@@ -136,7 +223,7 @@ export default function SessionsTable({ sessions, token }: SessionsTableProps) {
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {sessions.map((session) => (
+            {sortedSessions.map((session) => (
               <>
                 {/* Collapsed Row */}
                 <tr

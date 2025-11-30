@@ -66,10 +66,7 @@ export async function GET(request: NextRequest) {
         exportDate: new Date().toISOString(),
         exportType: type,
         version: '1.0',
-        filters: {
-          dateFrom: dateFrom || null,
-          dateTo: dateTo || null,
-        },
+        note: 'Session exports may be filtered by date range. Analytics are always comprehensive.',
       },
     };
 

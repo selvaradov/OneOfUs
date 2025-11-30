@@ -124,9 +124,12 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
 
       {/* Question/Prompt Performance */}
       <div id="question-performance" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
           Question Performance (Top 20)
         </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Top 20 most-played scenarios with at least 2 attempts, ranked by average score. Higher scores indicate questions where users successfully embodied their assigned political position.
+        </p>
         {analytics.promptPerformance.length === 0 ? (
           <div className="text-center py-8 text-gray-600 dark:text-gray-400">
             <p>No question data available yet.</p>

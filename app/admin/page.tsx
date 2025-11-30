@@ -224,6 +224,23 @@ export default function AdminDashboard() {
     setToken(null);
   };
 
+  const handleSortChange = (newSortBy: 'created_at' | 'score' | 'detected') => {
+    if (filters.sortBy === newSortBy) {
+      // Toggle sort order if clicking the same column
+      setFilters({
+        ...filters,
+        sortOrder: filters.sortOrder === 'DESC' ? 'ASC' : 'DESC',
+      });
+    } else {
+      // Set new sort column with DESC as default
+      setFilters({
+        ...filters,
+        sortBy: newSortBy,
+        sortOrder: 'DESC',
+      });
+    }
+  };
+
   if (!authenticated) {
     return <AdminLogin onAuth={handleAuth} />;
   }
@@ -285,10 +302,14 @@ export default function AdminDashboard() {
 
           {/* Controls */}
           <div className="space-y-4 my-6">
+
             <FilterBar filters={filters} onFilterChange={setFilters} token={token || undefined} />
             {token && (
-              <div className="flex justify-start">
+              <div className="flex items-center gap-3">
                 <ExportButton token={token} filters={filters} />
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  Exports all records (filters not applied to analytics)
+                </span>
               </div>
             )}
           </div>
@@ -311,7 +332,13 @@ export default function AdminDashboard() {
           </div>
         ) : token ? (
           <>
-            <SessionsTable sessions={sessions} token={token} />
+            <SessionsTable
+              sessions={sessions}
+              token={token}
+              sortBy={filters.sortBy}
+              sortOrder={filters.sortOrder}
+              onSortChange={handleSortChange}
+            />
 
             {/* Pagination */}
             {totalPages > 1 && (
