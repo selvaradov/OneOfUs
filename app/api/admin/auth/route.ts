@@ -11,13 +11,26 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if admin password is configured
+    if (!process.env.ADMIN_DASHBOARD_PASSWORD) {
+      console.error('ADMIN_DASHBOARD_PASSWORD environment variable is not set');
+      return NextResponse.json(
+        { success: false, error: 'Admin dashboard is not configured. Please set ADMIN_DASHBOARD_PASSWORD environment variable.' },
+        { status: 500 }
+      );
+    }
+
     // Rate limiting
     const ip = getClientIp(request);
+    console.log(`Admin login attempt from IP: ${ip}`);
+
     const rateLimitResult = await checkRateLimit(
       adminAuthRateLimiter,
       ip,
       'admin auth'
     );
+
+    console.log('Rate limit result:', rateLimitResult ? 'limited' : 'allowed');
 
     if (rateLimitResult && !rateLimitResult.success) {
       return NextResponse.json(

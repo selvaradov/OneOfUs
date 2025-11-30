@@ -19,21 +19,27 @@ function AdminLogin({ onAuth }: { onAuth: (token: string) => void }) {
     setLoading(true);
 
     try {
+      console.log('Attempting admin login...');
       const response = await fetch('/api/admin/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
       });
 
+      console.log('Login response status:', response.status);
       const data = await response.json();
+      console.log('Login response data:', { success: data.success, hasToken: !!data.token });
 
       if (data.success && data.token) {
+        console.log('Login successful, storing token');
         sessionStorage.setItem('admin_token', data.token);
         onAuth(data.token);
       } else {
+        console.error('Login failed:', data.error);
         setError(data.error || 'Authentication failed');
       }
     } catch (err) {
+      console.error('Login network error:', err);
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -65,8 +71,10 @@ function AdminLogin({ onAuth }: { onAuth: (token: string) => void }) {
             />
           </div>
           {error && (
-            <div className="mb-4 text-red-600 dark:text-red-400 text-sm">
-              {error}
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+              <p className="text-red-800 dark:text-red-200 text-sm font-medium">
+                {error}
+              </p>
             </div>
           )}
           <button
@@ -101,8 +109,8 @@ export default function AdminDashboard() {
     sortBy: 'created_at' as 'created_at' | 'score' | 'detected',
     sortOrder: 'DESC' as 'ASC' | 'DESC',
     detected: 'all' as 'all' | 'true' | 'false',
-    position: 'all',
-    promptId: 'all',
+    position: [] as string[],
+    promptId: [] as string[],
     dateFrom: '',
     dateTo: '',
   });
@@ -169,11 +177,11 @@ export default function AdminDashboard() {
       if (filters.detected !== 'all') {
         params.append('detected', filters.detected);
       }
-      if (filters.position !== 'all') {
-        params.append('position', filters.position);
+      if (filters.position.length > 0) {
+        params.append('position', filters.position.join(','));
       }
-      if (filters.promptId !== 'all') {
-        params.append('promptId', filters.promptId);
+      if (filters.promptId.length > 0) {
+        params.append('promptId', filters.promptId.join(','));
       }
       if (filters.dateFrom) {
         params.append('dateFrom', filters.dateFrom);
@@ -248,14 +256,17 @@ export default function AdminDashboard() {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             Dashboard Sections
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <a href="#analytics" className="text-orange-600 dark:text-orange-400 hover:underline">
-              📊 Analytics & Statistics
+          <div className="flex flex-col gap-2 text-sm">
+            <a href="#summary-stats" className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
+              📊 Summary Statistics
             </a>
-            <a href="#score-dist" className="text-orange-600 dark:text-orange-400 hover:underline">
-              📈 Score Distribution
+            <a href="#performance-analysis" className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
+              📈 Performance & Score Analysis
             </a>
-            <a href="#sessions" className="text-orange-600 dark:text-orange-400 hover:underline">
+            <a href="#demographics" className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
+              👥 User Demographics
+            </a>
+            <a href="#sessions" className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
               💬 All Game Sessions
             </a>
           </div>
@@ -273,9 +284,13 @@ export default function AdminDashboard() {
           </h2>
 
           {/* Controls */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 my-6">
+          <div className="space-y-4 my-6">
             <FilterBar filters={filters} onFilterChange={setFilters} token={token || undefined} />
-            {token && <ExportButton token={token} filters={filters} />}
+            {token && (
+              <div className="flex justify-start">
+                <ExportButton token={token} filters={filters} />
+              </div>
+            )}
           </div>
 
           {/* Error Message */}

@@ -8,8 +8,8 @@ interface FilterBarProps {
     sortBy: 'created_at' | 'score' | 'detected';
     sortOrder: 'ASC' | 'DESC';
     detected: 'all' | 'true' | 'false';
-    position: string;
-    promptId: string;
+    position: string[];
+    promptId: string[];
     dateFrom: string;
     dateTo: string;
   };
@@ -40,8 +40,13 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
     }
   };
 
-  const handleChange = (key: string, value: string) => {
+  const handleChange = (key: string, value: string | string[]) => {
     onFilterChange({ ...filters, [key]: value });
+  };
+
+  const handleMultiSelectChange = (key: string, e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+    onFilterChange({ ...filters, [key]: selectedOptions });
   };
 
   return (
@@ -97,14 +102,15 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
         {/* Position Filter */}
         <div>
           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Position
+            Position <span className="text-gray-500">(Ctrl+Click for multiple)</span>
           </label>
           <select
+            multiple
             value={filters.position}
-            onChange={(e) => handleChange('position', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
+            onChange={(e) => handleMultiSelectChange('position', e)}
+            className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
+            size={5}
           >
-            <option value="all">All Positions</option>
             {VALID_POSITIONS.map((pos) => (
               <option key={pos} value={pos}>
                 {pos}
@@ -116,14 +122,15 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
         {/* Question ID Filter */}
         <div>
           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Question ID
+            Question ID <span className="text-gray-500">(Ctrl+Click for multiple)</span>
           </label>
           <select
+            multiple
             value={filters.promptId}
-            onChange={(e) => handleChange('promptId', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
+            onChange={(e) => handleMultiSelectChange('promptId', e)}
+            className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
+            size={5}
           >
-            <option value="all">All Questions</option>
             {promptIds.map((id) => (
               <option key={id} value={id}>
                 {id}
@@ -161,8 +168,8 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
 
       {/* Clear Filters Button */}
       {(filters.detected !== 'all' ||
-        filters.position !== 'all' ||
-        filters.promptId !== 'all' ||
+        filters.position.length > 0 ||
+        filters.promptId.length > 0 ||
         filters.dateFrom ||
         filters.dateTo) && (
         <button
@@ -170,8 +177,8 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
             onFilterChange({
               ...filters,
               detected: 'all',
-              position: 'all',
-              promptId: 'all',
+              position: [],
+              promptId: [],
               dateFrom: '',
               dateTo: '',
             })

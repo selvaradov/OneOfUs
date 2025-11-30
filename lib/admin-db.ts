@@ -10,8 +10,8 @@ export interface AdminSessionsQuery {
   sortBy?: 'created_at' | 'score' | 'detected';
   sortOrder?: 'ASC' | 'DESC';
   filterDetected?: boolean | null;
-  filterPosition?: PoliticalPosition | null;
-  filterPromptId?: string | null;
+  filterPosition?: PoliticalPosition | PoliticalPosition[] | null;
+  filterPromptId?: string | string[] | null;
   dateFrom?: string | null;
   dateTo?: string | null;
 }
@@ -56,13 +56,23 @@ export async function getAdminGameSessions(
     }
 
     if (filterPosition) {
-      params.push(filterPosition);
-      conditions.push(`gs.position_assigned = $${params.length}::text`);
+      if (Array.isArray(filterPosition)) {
+        params.push(filterPosition);
+        conditions.push(`gs.position_assigned = ANY($${params.length}::text[])`);
+      } else {
+        params.push(filterPosition);
+        conditions.push(`gs.position_assigned = $${params.length}::text`);
+      }
     }
 
     if (filterPromptId) {
-      params.push(filterPromptId);
-      conditions.push(`gs.prompt_id = $${params.length}::text`);
+      if (Array.isArray(filterPromptId)) {
+        params.push(filterPromptId);
+        conditions.push(`gs.prompt_id = ANY($${params.length}::text[])`);
+      } else {
+        params.push(filterPromptId);
+        conditions.push(`gs.prompt_id = $${params.length}::text`);
+      }
     }
 
     // Add limit and offset params
@@ -152,13 +162,23 @@ export async function getTotalSessionsCount(
     }
 
     if (filterPosition) {
-      params.push(filterPosition);
-      conditions.push(`position_assigned = $${params.length}::text`);
+      if (Array.isArray(filterPosition)) {
+        params.push(filterPosition);
+        conditions.push(`position_assigned = ANY($${params.length}::text[])`);
+      } else {
+        params.push(filterPosition);
+        conditions.push(`position_assigned = $${params.length}::text`);
+      }
     }
 
     if (filterPromptId) {
-      params.push(filterPromptId);
-      conditions.push(`prompt_id = $${params.length}::text`);
+      if (Array.isArray(filterPromptId)) {
+        params.push(filterPromptId);
+        conditions.push(`prompt_id = ANY($${params.length}::text[])`);
+      } else {
+        params.push(filterPromptId);
+        conditions.push(`prompt_id = $${params.length}::text`);
+      }
     }
 
     const whereClause = conditions.join(' AND ');

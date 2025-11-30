@@ -71,9 +71,15 @@ export async function GET(request: NextRequest) {
         ? false
         : null;
 
-    const filterPosition = (searchParams.get('position') ||
-      null) as PoliticalPosition | null;
-    const filterPromptId = searchParams.get('promptId') || null;
+    const positionParam = searchParams.get('position');
+    const filterPosition = positionParam
+      ? positionParam.split(',').map(p => p.trim()) as PoliticalPosition[]
+      : null;
+
+    const promptIdParam = searchParams.get('promptId');
+    const filterPromptId = promptIdParam
+      ? promptIdParam.split(',').map(id => id.trim())
+      : null;
     const dateFrom = searchParams.get('dateFrom') || null;
     const dateTo = searchParams.get('dateTo') || null;
 

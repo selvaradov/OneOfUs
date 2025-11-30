@@ -8,9 +8,13 @@ interface AnalyticsCardsProps {
 
 export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
   return (
-    <div className="space-y-6 mb-8">
-      {/* Top Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-8 mb-8">
+      {/* Summary Statistics Section */}
+      <section id="summary-stats">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Summary Statistics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Users"
           value={analytics.totalUsers.toLocaleString()}
@@ -31,10 +35,18 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
           value={`${analytics.detectionRate.toFixed(1)}%`}
           icon="👁️"
         />
-      </div>
+        </div>
+      </section>
 
-      {/* Score Distribution */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      {/* Performance & Score Analysis Section */}
+      <section id="performance-analysis">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Performance & Score Analysis
+        </h2>
+        <div className="space-y-6">
+
+        {/* Score Distribution */}
+        <div id="score-dist" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
           Score Distribution
         </h3>
@@ -62,36 +74,56 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
         </div>
       </div>
 
-      {/* Position Performance - Condensed */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+      {/* Position Performance */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
           Position Performance
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 text-xs">
-          {analytics.positionPerformance.map((pos) => (
-            <div
-              key={pos.position}
-              className="bg-gray-50 dark:bg-gray-700 rounded p-2"
-            >
-              <div className="font-medium text-gray-900 dark:text-white truncate">
-                {pos.position}
-              </div>
-              <div className="text-gray-600 dark:text-gray-400 mt-1">
-                {pos.total} attempts
-              </div>
-              <div className="text-gray-900 dark:text-white font-semibold">
-                {pos.avgScore.toFixed(1)} avg
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">
-                {pos.detectionRate.toFixed(0)}% detected
-              </div>
-            </div>
-          ))}
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="px-4 py-2 text-left font-medium text-gray-600 dark:text-gray-400">
+                  Position
+                </th>
+                <th className="px-4 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
+                  Attempts
+                </th>
+                <th className="px-4 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
+                  Avg Score
+                </th>
+                <th className="px-4 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
+                  Detection Rate
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {analytics.positionPerformance.map((pos) => (
+                <tr
+                  key={pos.position}
+                  className="border-b border-gray-100 dark:border-gray-700"
+                >
+                  <td className="px-4 py-2 text-gray-900 dark:text-white font-medium">
+                    {pos.position}
+                  </td>
+                  <td className="px-4 py-2 text-right text-gray-700 dark:text-gray-300">
+                    {pos.total}
+                  </td>
+                  <td className="px-4 py-2 text-right font-medium text-gray-900 dark:text-white">
+                    {pos.avgScore.toFixed(1)}
+                  </td>
+                  <td className="px-4 py-2 text-right text-gray-700 dark:text-gray-300">
+                    {pos.detectionRate.toFixed(1)}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
       {/* Question/Prompt Performance */}
-      <div id="score-dist" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div id="question-performance" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
           Question Performance (Top 20)
         </h3>
@@ -143,75 +175,147 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
           </table>
         </div>
       </div>
+      </div>
+      </section>
 
-      {/* Demographics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Demographics Section */}
+      <section id="demographics">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          User Demographics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* By Alignment */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-            By Political Alignment
+            Political Alignment
           </h3>
-          <div className="space-y-2 text-sm">
-            {analytics.demographicBreakdown.byAlignment.map((item) => (
-              <div
-                key={item.alignment}
-                className="flex justify-between items-center"
-              >
-                <span className="text-gray-700 dark:text-gray-300">
-                  Alignment {item.alignment}
-                </span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {item.count} users
-                </span>
-              </div>
-            ))}
+          <div className="space-y-3">
+            {analytics.demographicBreakdown.byAlignment.map((item) => {
+              const maxCount = Math.max(...analytics.demographicBreakdown.byAlignment.map(a => a.count));
+              const percentage = (item.count / maxCount) * 100;
+              const alignmentLabel =
+                item.alignment === 1 ? 'Far Left' :
+                item.alignment === 2 ? 'Left' :
+                item.alignment === 3 ? 'Center-Left' :
+                item.alignment === 4 ? 'Center' :
+                item.alignment === 5 ? 'Center-Right' :
+                item.alignment === 6 ? 'Right' :
+                item.alignment === 7 ? 'Far Right' : `${item.alignment}`;
+
+              return (
+                <div key={item.alignment}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {alignmentLabel}
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {item.count}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
+                    <div
+                      className="bg-blue-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      style={{
+                        width: `${percentage}%`,
+                        minWidth: item.count > 0 ? '30px' : '0',
+                      }}
+                    >
+                      {item.count > 0 && (
+                        <span className="text-xs font-medium text-white">
+                          {item.count}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* By Country */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-            By Country
+            Top Countries
           </h3>
-          <div className="space-y-2 text-sm">
-            {analytics.demographicBreakdown.byCountry.map((item) => (
-              <div
-                key={item.country}
-                className="flex justify-between items-center"
-              >
-                <span className="text-gray-700 dark:text-gray-300">
-                  {item.country}
-                </span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {item.count}
-                </span>
-              </div>
-            ))}
+          <div className="space-y-3">
+            {analytics.demographicBreakdown.byCountry.slice(0, 10).map((item) => {
+              const maxCount = Math.max(...analytics.demographicBreakdown.byCountry.map(c => c.count));
+              const percentage = (item.count / maxCount) * 100;
+
+              return (
+                <div key={item.country}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {item.country}
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {item.count}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
+                    <div
+                      className="bg-green-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      style={{
+                        width: `${percentage}%`,
+                        minWidth: item.count > 0 ? '30px' : '0',
+                      }}
+                    >
+                      {item.count > 0 && (
+                        <span className="text-xs font-medium text-white">
+                          {item.count}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* By Age */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-            By Age Range
+            Age Distribution
           </h3>
-          <div className="space-y-2 text-sm">
-            {analytics.demographicBreakdown.byAge.map((item) => (
-              <div
-                key={item.ageRange}
-                className="flex justify-between items-center"
-              >
-                <span className="text-gray-700 dark:text-gray-300">
-                  {item.ageRange}
-                </span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {item.count}
-                </span>
-              </div>
-            ))}
+          <div className="space-y-3">
+            {analytics.demographicBreakdown.byAge.map((item) => {
+              const maxCount = Math.max(...analytics.demographicBreakdown.byAge.map(a => a.count));
+              const percentage = (item.count / maxCount) * 100;
+
+              return (
+                <div key={item.ageRange}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {item.ageRange}
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {item.count}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
+                    <div
+                      className="bg-purple-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      style={{
+                        width: `${percentage}%`,
+                        minWidth: item.count > 0 ? '30px' : '0',
+                      }}
+                    >
+                      {item.count > 0 && (
+                        <span className="text-xs font-medium text-white">
+                          {item.count}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
+      </section>
     </div>
   );
 }
