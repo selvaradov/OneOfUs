@@ -6,12 +6,13 @@ interface ExportButtonProps {
   token: string;
 }
 
+type ExportType = 'sessions' | 'users' | 'analytics' | 'full';
+
 export default function ExportButton({ token }: ExportButtonProps) {
   const [exporting, setExporting] = useState(false);
-  const [exportType, setExportType] = useState<'sessions' | 'users' | 'analytics' | 'full'>('full');
   const [showMenu, setShowMenu] = useState(false);
 
-  const handleExport = async (type: typeof exportType) => {
+  const handleExport = async (type: ExportType) => {
     setExporting(true);
     setShowMenu(false);
 

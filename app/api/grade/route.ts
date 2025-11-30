@@ -18,7 +18,11 @@ const anthropic = new Anthropic({
 });
 
 // Validation helper for rubric scores
-function validateAndClampRubricScores(scores: any): {
+function validateAndClampRubricScores(scores: {
+  understanding?: number;
+  authenticity?: number;
+  execution?: number;
+}): {
   understanding: number;
   authenticity: number;
   execution: number;

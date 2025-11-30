@@ -25,7 +25,7 @@ function ResultsContent() {
         const found = cachedSessions.find((s) => s.id === sessionId);
         if (found && found.gradingResult) return found;
       }
-    } catch (error) {
+    } catch {
       // Ignore cache errors, will fetch in useEffect
     }
 
@@ -53,8 +53,8 @@ function ResultsContent() {
           setSession(data.session);
           return;
         }
-      } catch (error) {
-        console.warn('Failed to fetch session from database:', error);
+      } catch (err) {
+        console.warn('Failed to fetch session from database:', err);
       }
 
       // Redirect only if database fetch also failed

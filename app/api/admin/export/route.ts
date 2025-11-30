@@ -39,7 +39,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Build export data based on type
-    let exportData: any = {
+    const exportData: {
+      exportMetadata: { exportDate: string; exportType: string; version: string };
+      summary?: {
+        totalSessions?: number;
+        totalUsers?: number;
+        dateRange?: { earliest: string | null; latest: string | null };
+      };
+      sessions?: unknown[];
+      users?: unknown[];
+      analytics?: unknown;
+      data?: { users: unknown[]; sessions: unknown[]; analytics: unknown };
+    } = {
       exportMetadata: {
         exportDate: new Date().toISOString(),
         exportType: type,
@@ -53,8 +64,8 @@ export async function GET(request: NextRequest) {
         exportData.summary = {
           totalSessions: sessions.length,
           dateRange: {
-            earliest: sessions[sessions.length - 1]?.created_at || null,
-            latest: sessions[0]?.created_at || null,
+            earliest: (sessions[sessions.length - 1]?.created_at as string) || null,
+            latest: (sessions[0]?.created_at as string) || null,
           },
         };
         exportData.sessions = sessions;
@@ -84,8 +95,8 @@ export async function GET(request: NextRequest) {
           totalUsers: fullUsers.length,
           totalSessions: fullSessions.length,
           dateRange: {
-            earliest: fullSessions[fullSessions.length - 1]?.created_at || null,
-            latest: fullSessions[0]?.created_at || null,
+            earliest: (fullSessions[fullSessions.length - 1]?.created_at as string) || null,
+            latest: (fullSessions[0]?.created_at as string) || null,
           },
         };
 

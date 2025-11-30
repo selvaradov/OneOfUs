@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AdminGameSession, GeolocationData } from '@/lib/types';
 
 interface SessionsTableProps {
@@ -8,7 +8,6 @@ interface SessionsTableProps {
   token: string;
   sortBy: 'created_at' | 'score' | 'detected';
   sortOrder: 'ASC' | 'DESC';
-  onSortChange: (sortBy: 'created_at' | 'score' | 'detected') => void;
 }
 
 // Sortable header component
@@ -54,13 +53,7 @@ function SortableHeader({
   );
 }
 
-export default function SessionsTable({
-  sessions,
-  token,
-  sortBy,
-  sortOrder,
-  onSortChange,
-}: SessionsTableProps) {
+export default function SessionsTable({ sessions, token, sortBy, sortOrder }: SessionsTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [geolocations, setGeolocations] = useState<Map<string, GeolocationData>>(new Map());
   const [loadingGeo, setLoadingGeo] = useState(false);
@@ -99,12 +92,7 @@ export default function SessionsTable({
     }
   };
 
-  // Fetch geolocation data for visible sessions
-  useEffect(() => {
-    fetchGeolocations();
-  }, [sessions]);
-
-  const fetchGeolocations = async () => {
+  const fetchGeolocations = useCallback(async () => {
     if (loadingGeo) return;
 
     const ipsToFetch = sessions
@@ -146,7 +134,13 @@ export default function SessionsTable({
     } finally {
       setLoadingGeo(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessions, token]);
+
+  // Fetch geolocation data for visible sessions
+  useEffect(() => {
+    fetchGeolocations();
+  }, [fetchGeolocations]);
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -155,10 +149,6 @@ export default function SessionsTable({
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-  };
-
-  const truncateUUID = (uuid: string) => {
-    return uuid.slice(0, 8) + '...';
   };
 
   const getLocation = (ip: string): string => {

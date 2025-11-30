@@ -4,17 +4,19 @@ import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { VALID_POSITIONS } from '@/lib/types';
 
+interface FilterState {
+  sortBy: 'created_at' | 'score' | 'detected';
+  sortOrder: 'ASC' | 'DESC';
+  detected: 'all' | 'true' | 'false';
+  position: string[];
+  promptId: string[];
+  dateFrom: string;
+  dateTo: string;
+}
+
 interface FilterBarProps {
-  filters: {
-    sortBy: 'created_at' | 'score' | 'detected';
-    sortOrder: 'ASC' | 'DESC';
-    detected: 'all' | 'true' | 'false';
-    position: string[];
-    promptId: string[];
-    dateFrom: string;
-    dateTo: string;
-  };
-  onFilterChange: (filters: any) => void;
+  filters: FilterState;
+  onFilterChange: (filters: FilterState) => void;
   token?: string;
 }
 
@@ -22,31 +24,42 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
   const [promptIds, setPromptIds] = useState<string[]>([]);
 
   useEffect(() => {
-    if (token) {
-      fetchPromptIds();
-    }
-  }, [token]);
+    if (!token) return;
 
-  const fetchPromptIds = async () => {
-    try {
-      const response = await fetch('/api/admin/prompt-ids', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      if (data.success) {
-        setPromptIds(data.promptIds);
+    let cancelled = false;
+
+    const fetchPromptIds = async () => {
+      try {
+        const response = await fetch('/api/admin/prompt-ids', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (!cancelled && data.success) {
+          setPromptIds(data.promptIds);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Error fetching prompt IDs:', error);
+        }
       }
-    } catch (error) {
-      console.error('Error fetching prompt IDs:', error);
-    }
-  };
+    };
+
+    fetchPromptIds();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   const handleChange = (key: string, value: string | string[]) => {
     onFilterChange({ ...filters, [key]: value });
   };
 
-  const handleMultiSelectChange = (key: string, selectedOptions: any) => {
-    const values = selectedOptions ? selectedOptions.map((opt: any) => opt.value) : [];
+  const handleMultiSelectChange = (
+    key: string,
+    selectedOptions: readonly { value: string; label: string }[] | null
+  ) => {
+    const values = selectedOptions ? selectedOptions.map((opt) => opt.value) : [];
     onFilterChange({ ...filters, [key]: values });
   };
 
@@ -73,7 +86,7 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
                     ? 'Detected'
                     : 'Undetected',
             }}
-            onChange={(selected: any) => handleChange('detected', selected?.value || 'all')}
+            onChange={(selected) => handleChange('detected', selected?.value || 'all')}
             className="text-sm"
             classNamePrefix="react-select"
           />

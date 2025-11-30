@@ -8,7 +8,12 @@ interface AnalyticsCardsProps {
 }
 
 // Custom tooltip component for charts
-function AlignmentTooltip({ active, payload }: any) {
+interface TooltipPayload {
+  payload: { tooltipName: string };
+  value: number;
+}
+
+function AlignmentTooltip({ active, payload }: { active?: boolean; payload?: TooltipPayload[] }) {
   if (active && payload && payload.length) {
     return (
       <div

@@ -38,7 +38,7 @@ export async function getAdminGameSessions(
   try {
     // Build WHERE clause conditions
     const conditions: string[] = ['1=1']; // Always true base condition
-    const params: any[] = [];
+    const params: (string | boolean | string[] | number)[] = [];
 
     if (dateFrom) {
       params.push(dateFrom);
@@ -144,7 +144,7 @@ export async function getTotalSessionsCount(
 
   try {
     const conditions: string[] = ['1=1'];
-    const params: any[] = [];
+    const params: (string | boolean | string[])[] = [];
 
     if (dateFrom) {
       params.push(dateFrom);
@@ -364,7 +364,7 @@ export async function getAdminAnalytics(): Promise<AdminAnalytics> {
 /**
  * Get all users for export
  */
-export async function getAllUsers(): Promise<any[]> {
+export async function getAllUsers(): Promise<Record<string, unknown>[]> {
   try {
     const result = await sql`
       SELECT
@@ -393,10 +393,13 @@ export async function getAllUsers(): Promise<any[]> {
  * Get all sessions for export (without pagination)
  * WARNING: This can be a large dataset - use with caution
  */
-export async function getAllSessions(dateFrom?: string, dateTo?: string): Promise<any[]> {
+export async function getAllSessions(
+  dateFrom?: string,
+  dateTo?: string
+): Promise<Record<string, unknown>[]> {
   try {
     const conditions: string[] = ['1=1'];
-    const params: any[] = [];
+    const params: string[] = [];
 
     if (dateFrom) {
       params.push(dateFrom);

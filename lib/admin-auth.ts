@@ -115,6 +115,7 @@ export function verifyAdminPassword(password: string): boolean {
  * For now, logout is handled client-side by clearing the stored token.
  * The token will naturally expire after TOKEN_EXPIRY_SECONDS.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function revokeSessionToken(_token: string): void {
   // Stateless tokens can't be revoked server-side without a blocklist
   // Client-side logout clears sessionStorage, which is sufficient for most cases

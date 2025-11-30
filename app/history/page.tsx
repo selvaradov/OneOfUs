@@ -18,7 +18,7 @@ export default function HistoryPage() {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
-    } catch (error) {
+    } catch {
       // Ignore cache errors
     }
 
@@ -28,72 +28,82 @@ export default function HistoryPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadHistory();
-  }, []);
+    let cancelled = false;
 
-  const loadHistory = async () => {
-    // Get user ID from localStorage (still used for user alignment)
-    const userAlignment = getUserAlignment();
-    const userId = userAlignment?.id;
+    const loadHistory = async () => {
+      // Get user ID from localStorage (still used for user alignment)
+      const userAlignment = getUserAlignment();
+      const userId = userAlignment?.id;
 
-    if (!userId) {
-      // User hasn't completed onboarding yet
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/history?userId=${userId}&limit=50&offset=0`);
-      const data = await response.json();
-
-      if (data.success && data.sessions) {
-        // Convert database format to GameSession format
-        const dbSessions: GameSession[] = data.sessions.map((dbSession: any) => ({
-          id: dbSession.id,
-          userId: dbSession.user_id,
-          promptId: dbSession.prompt_id,
-          prompt: {
-            id: dbSession.prompt_id,
-            category: dbSession.prompt_category,
-            scenario: dbSession.prompt_scenario,
-            positions: [],
-            charLimit: dbSession.char_count || 280,
-          },
-          positionChosen: dbSession.position_assigned,
-          userResponse: dbSession.user_response,
-          gradingResult: dbSession.score
-            ? {
-                detected: dbSession.detected,
-                score: dbSession.score,
-                feedback: dbSession.feedback,
-                rubricScores: {
-                  understanding: dbSession.rubric_understanding,
-                  authenticity: dbSession.rubric_authenticity,
-                  execution: dbSession.rubric_execution,
-                },
-                timestamp: dbSession.completed_at,
-              }
-            : undefined,
-          aiResponse: dbSession.ai_comparison_response,
-          createdAt: dbSession.created_at,
-          completedAt: dbSession.completed_at,
-        }));
-
-        setSessions(dbSessions);
-        setError(null); // Clear any previous errors
-
-        // Cache sessions for instant access from results page
-        sessionStorage.setItem('cachedSessions', JSON.stringify(dbSessions));
-      } else {
-        throw new Error(data.error || 'Failed to load history');
+      if (!userId) {
+        // User hasn't completed onboarding yet
+        return;
       }
-    } catch (error) {
-      console.error('Failed to fetch from database:', error);
-      // Only set error if we don't have cached data to show
-      if (sessions.length === 0) {
+
+      try {
+        const response = await fetch(`/api/history?userId=${userId}&limit=50&offset=0`);
+        const data = await response.json();
+
+        if (cancelled) return;
+
+        if (data.success && data.sessions) {
+          // Convert database format to GameSession format
+          const dbSessions: GameSession[] = data.sessions.map(
+            (dbSession: Record<string, unknown>) => ({
+              id: dbSession.id,
+              userId: dbSession.user_id,
+              promptId: dbSession.prompt_id,
+              prompt: {
+                id: dbSession.prompt_id,
+                category: dbSession.prompt_category,
+                scenario: dbSession.prompt_scenario,
+                positions: [],
+                charLimit: dbSession.char_count || 280,
+              },
+              positionChosen: dbSession.position_assigned,
+              userResponse: dbSession.user_response,
+              gradingResult: dbSession.score
+                ? {
+                    detected: dbSession.detected,
+                    score: dbSession.score,
+                    feedback: dbSession.feedback,
+                    rubricScores: {
+                      understanding: dbSession.rubric_understanding,
+                      authenticity: dbSession.rubric_authenticity,
+                      execution: dbSession.rubric_execution,
+                    },
+                    timestamp: dbSession.completed_at,
+                  }
+                : undefined,
+              aiResponse: dbSession.ai_comparison_response,
+              createdAt: dbSession.created_at,
+              completedAt: dbSession.completed_at,
+            })
+          );
+
+          setSessions(dbSessions);
+          setError(null); // Clear any previous errors
+
+          // Cache sessions for instant access from results page
+          sessionStorage.setItem('cachedSessions', JSON.stringify(dbSessions));
+        } else {
+          throw new Error(data.error || 'Failed to load history');
+        }
+      } catch (err) {
+        if (cancelled) return;
+        console.error('Failed to fetch from database:', err);
+        // Only set error if we don't have cached data to show
+        // Note: sessions from outer scope may be stale here, but that's acceptable
         setError("Couldn't load your game history—try refreshing");
       }
-    }
-  };
+    };
+
+    loadHistory();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

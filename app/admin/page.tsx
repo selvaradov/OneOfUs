@@ -122,92 +122,108 @@ export default function AdminDashboard() {
 
   // Fetch analytics on auth
   useEffect(() => {
-    if (authenticated && token) {
-      fetchAnalytics();
-    }
+    if (!authenticated || !token) return;
+
+    let cancelled = false;
+
+    const fetchAnalytics = async () => {
+      try {
+        const response = await fetch('/api/admin/analytics', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          handleLogout();
+          return;
+        }
+
+        const data = await response.json();
+        if (!cancelled && data.success) {
+          setAnalytics(data.analytics);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Error fetching analytics:', err);
+        }
+      }
+    };
+
+    fetchAnalytics();
+
+    return () => {
+      cancelled = true;
+    };
   }, [authenticated, token]);
 
   // Fetch sessions when filters or page change
   useEffect(() => {
-    if (authenticated && token) {
-      fetchSessions();
-    }
+    if (!authenticated || !token) return;
+
+    let cancelled = false;
+
+    const fetchSessions = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const params = new URLSearchParams({
+          limit: String(limit),
+          offset: String(page * limit),
+          sortBy: filters.sortBy,
+          sortOrder: filters.sortOrder,
+        });
+
+        if (filters.detected !== 'all') {
+          params.append('detected', filters.detected);
+        }
+        if (filters.position.length > 0) {
+          params.append('position', filters.position.join(','));
+        }
+        if (filters.promptId.length > 0) {
+          params.append('promptId', filters.promptId.join(','));
+        }
+        if (filters.dateFrom) {
+          params.append('dateFrom', filters.dateFrom);
+        }
+        if (filters.dateTo) {
+          params.append('dateTo', filters.dateTo);
+        }
+
+        const response = await fetch(`/api/admin/sessions?${params}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          handleLogout();
+          return;
+        }
+
+        const data = await response.json();
+        if (!cancelled) {
+          if (data.success) {
+            setSessions(data.sessions);
+            setTotalCount(data.pagination.total);
+          } else {
+            setError(data.error || 'Failed to fetch sessions');
+          }
+        }
+      } catch {
+        if (!cancelled) {
+          setError('Network error. Please try again.');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchSessions();
+
+    return () => {
+      cancelled = true;
+    };
   }, [authenticated, token, filters, page]);
-
-  const fetchAnalytics = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch('/api/admin/analytics', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status === 401) {
-        handleLogout();
-        return;
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setAnalytics(data.analytics);
-      }
-    } catch (err) {
-      console.error('Error fetching analytics:', err);
-    }
-  };
-
-  const fetchSessions = async () => {
-    if (!token) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const params = new URLSearchParams({
-        limit: String(limit),
-        offset: String(page * limit),
-        sortBy: filters.sortBy,
-        sortOrder: filters.sortOrder,
-      });
-
-      if (filters.detected !== 'all') {
-        params.append('detected', filters.detected);
-      }
-      if (filters.position.length > 0) {
-        params.append('position', filters.position.join(','));
-      }
-      if (filters.promptId.length > 0) {
-        params.append('promptId', filters.promptId.join(','));
-      }
-      if (filters.dateFrom) {
-        params.append('dateFrom', filters.dateFrom);
-      }
-      if (filters.dateTo) {
-        params.append('dateTo', filters.dateTo);
-      }
-
-      const response = await fetch(`/api/admin/sessions?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status === 401) {
-        handleLogout();
-        return;
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setSessions(data.sessions);
-        setTotalCount(data.pagination.total);
-      } else {
-        setError(data.error || 'Failed to fetch sessions');
-      }
-    } catch (err) {
-      setError('Network error. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAuth = (newToken: string) => {
     setToken(newToken);
@@ -218,23 +234,6 @@ export default function AdminDashboard() {
     sessionStorage.removeItem('admin_token');
     setAuthenticated(false);
     setToken(null);
-  };
-
-  const handleSortChange = (newSortBy: 'created_at' | 'score' | 'detected') => {
-    if (filters.sortBy === newSortBy) {
-      // Toggle sort order if clicking the same column
-      setFilters({
-        ...filters,
-        sortOrder: filters.sortOrder === 'DESC' ? 'ASC' : 'DESC',
-      });
-    } else {
-      // Set new sort column with DESC as default
-      setFilters({
-        ...filters,
-        sortBy: newSortBy,
-        sortOrder: 'DESC',
-      });
-    }
   };
 
   if (!authenticated) {
@@ -338,7 +337,6 @@ export default function AdminDashboard() {
               token={token}
               sortBy={filters.sortBy}
               sortOrder={filters.sortOrder}
-              onSortChange={handleSortChange}
             />
 
             {/* Pagination */}

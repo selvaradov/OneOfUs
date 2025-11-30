@@ -1,5 +1,5 @@
 import { sql } from '@vercel/postgres';
-import { GameSession, GradingResult, PoliticalPosition } from './types';
+import { PoliticalPosition } from './types';
 
 // Database utility functions for OneOfUs game
 
@@ -200,7 +200,7 @@ export async function getUserHistory(
   userId: string,
   limit: number = 20,
   offset: number = 0
-): Promise<any[]> {
+): Promise<Record<string, unknown>[]> {
   try {
     const result = await sql`
       SELECT * FROM game_sessions
@@ -247,7 +247,10 @@ export async function getUserStats(userId: string): Promise<{
       GROUP BY position_assigned
     `;
 
-    const positionPerformance: Record<string, any> = {};
+    const positionPerformance: Record<
+      string,
+      { games: number; avgScore: number; detectionRate: number }
+    > = {};
     positionStats.rows.forEach((row) => {
       positionPerformance[row.position_assigned] = {
         games: parseInt(row.games),
@@ -336,7 +339,9 @@ export async function getPromptAnalytics(promptId: string): Promise<{
 /**
  * Get analytics for all prompts
  */
-export async function getAllPromptsAnalytics(): Promise<any[]> {
+export async function getAllPromptsAnalytics(): Promise<
+  { promptId: string; totalAttempts: number; avgScore: number; detectionRate: number }[]
+> {
   try {
     const result = await sql`
       SELECT
@@ -458,7 +463,7 @@ export async function getCachedPromptAnalytics(promptId: string) {
 /**
  * Get all prompts analytics from the cached table
  */
-export async function getAllCachedPromptsAnalytics(): Promise<any[]> {
+export async function getAllCachedPromptsAnalytics(): Promise<Record<string, unknown>[]> {
   try {
     const result = await sql`
       SELECT * FROM prompts_analytics
