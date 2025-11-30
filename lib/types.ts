@@ -16,26 +16,22 @@ export interface Prompt {
 
 export type PoliticalPosition =
   | 'left'
-  | 'social-democrat'
+  | 'centre-left'
   | 'centre'
-  | 'centre-right'
-  | 'right'
   | 'conservative'
+  | 'right'
   | 'libertarian'
-  | 'environmentalist'
-  | 'trade-unionist';
+  | 'environmentalist';
 
 // Array of valid political positions for validation
 export const VALID_POSITIONS: readonly PoliticalPosition[] = [
   'left',
-  'social-democrat',
+  'centre-left',
   'centre',
-  'centre-right',
-  'right',
   'conservative',
+  'right',
   'libertarian',
   'environmentalist',
-  'trade-unionist',
 ] as const;
 
 export interface UserAlignment {

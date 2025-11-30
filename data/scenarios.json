@@ -27,7 +27,7 @@
     "id": "uk-climate-tweet-1",
     "category": "tweet",
     "scenario": "Government just announced they're expanding oil and gas licensing in the North Sea. Tweet your reaction.",
-    "positions": ["environmentalist", "conservative", "social-democrat"],
+    "positions": ["environmentalist", "conservative", "centre-left"],
     "charLimit": 280,
     "metadata": {
       "region": "UK",
@@ -63,7 +63,7 @@
     "id": "uk-brexit-pub-1",
     "category": "other",
     "scenario": "At the pub, someone mentions Brexit: 'Well it's done now, we just need to make the best of it.' Quick reply?",
-    "positions": ["left", "centre-right", "centre"],
+    "positions": ["left", "conservative", "centre"],
     "charLimit": 250,
     "metadata": {
       "region": "UK",
@@ -135,7 +135,7 @@
     "id": "uk-gender-news-1",
     "category": "news-comment",
     "scenario": "Telegraph article: 'Government blocks Scottish gender recognition reforms.' Write a comment below the line.",
-    "positions": ["left", "conservative", "social-democrat"],
+    "positions": ["left", "conservative", "centre-left"],
     "charLimit": 400,
     "metadata": {
       "region": "UK",
@@ -171,7 +171,7 @@
     "id": "uk-housing-reddit-2",
     "category": "reddit",
     "scenario": "r/UKHousing: 'We need to abolish Right to Buy immediately to save our social housing stock.' Write your comment.",
-    "positions": ["left", "conservative", "centre-right"],
+    "positions": ["left", "conservative", "conservative"],
     "charLimit": 500,
     "metadata": {
       "region": "UK",
@@ -195,7 +195,7 @@
     "id": "uk-bbc-news-1",
     "category": "news-comment",
     "scenario": "Article: 'BBC License Fee to rise by inflation next year.' Post a comment.",
-    "positions": ["right", "social-democrat", "centre"],
+    "positions": ["right", "centre-left", "centre"],
     "charLimit": 400,
     "metadata": {
       "region": "UK",
@@ -207,7 +207,7 @@
     "id": "uk-netzero-tweet-1",
     "category": "tweet",
     "scenario": "The PM is rolling back the ban on new petrol cars to 'ease the burden on families'. Tweet your reaction.",
-    "positions": ["environmentalist", "conservative", "centre-right"],
+    "positions": ["environmentalist", "conservative", "conservative"],
     "charLimit": 280,
     "metadata": {
       "region": "UK",
@@ -231,7 +231,7 @@
     "id": "uk-asylum-tweet-1",
     "category": "tweet",
     "scenario": "Breaking: Another 500 people crossed the Channel in small boats yesterday. Tweet your view on the solution.",
-    "positions": ["right", "left", "centre-right"],
+    "positions": ["right", "left", "conservative"],
     "charLimit": 280,
     "metadata": {
       "region": "UK",
@@ -267,7 +267,7 @@
     "id": "uk-wales-tweet-1",
     "category": "tweet",
     "scenario": "The Welsh government is reviewing the 20mph speed limit after backlash. Tweet your opinion.",
-    "positions": ["conservative", "left", "social-democrat"],
+    "positions": ["conservative", "left", "centre-left"],
     "charLimit": 280,
     "metadata": {
       "region": "Wales",
@@ -435,7 +435,7 @@
     "id": "uk-net-zero-costs-tweet-1",
     "category": "tweet",
     "scenario": "New analysis shows meeting net zero targets will cost average household £10k in home improvements. Tweet your view.",
-    "positions": ["environmentalist", "conservative", "centre-right"],
+    "positions": ["environmentalist", "conservative", "conservative"],
     "charLimit": 280,
     "metadata": {
       "region": "UK",
