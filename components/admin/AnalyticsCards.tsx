@@ -15,6 +15,27 @@ interface AnalyticsCardsProps {
   analytics: AdminAnalytics;
 }
 
+// Custom tooltip component for Political Alignment chart
+function AlignmentTooltip({ active, payload }: any) {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: 'var(--tooltip-bg, #fff)',
+          border: '1px solid var(--tooltip-border, #ccc)',
+          borderRadius: '4px',
+          padding: '8px 12px',
+        }}
+      >
+        <p style={{ color: 'var(--tooltip-text, #000)', margin: 0 }}>
+          <span style={{ fontWeight: 600 }}>{payload[0].payload.tooltipName}:</span> {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
 export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
   return (
     <div className="space-y-8 mb-8">
@@ -261,17 +282,7 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
                 tick={{ fill: 'currentColor' }}
                 className="text-gray-600 dark:text-gray-400"
               />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'var(--tooltip-bg, #fff)',
-                  border: '1px solid var(--tooltip-border, #ccc)',
-                  borderRadius: '4px',
-                }}
-                labelStyle={{ color: 'var(--tooltip-text, #000)' }}
-                formatter={(value: any, _name: string, props: any) => {
-                  return [value, props.payload.tooltipName];
-                }}
-              />
+              <Tooltip content={<AlignmentTooltip />} />
               <Bar dataKey="count" fill="#6b7280" />
             </BarChart>
           </ResponsiveContainer>
