@@ -4,7 +4,7 @@ import { GradingResult, PoliticalPosition, VALID_POSITIONS } from '@/lib/types';
 import { GRADING_PROMPT } from '@/data/graderPrompt';
 import { saveGameSession, checkDatabaseConnection } from '@/lib/db';
 import { getPromptById } from '@/lib/prompts';
-import { getPositionDescription } from '@/lib/positionDescriptions';
+import { getPositionDescription, getExampleFigures } from '@/lib/positionDescriptions';
 import { gradeRateLimiter, getClientIp, checkRateLimit } from '@/lib/ratelimit';
 
 const MODEL = 'claude-haiku-4-5';
@@ -173,9 +173,11 @@ export async function POST(request: NextRequest) {
 
     // Prepare the grading prompt
     const positionDescription = getPositionDescription(position);
+    const exampleFigures = getExampleFigures(position).join(', ');
     const charLimit = prompt.charLimit.toString();
     const filledPrompt = GRADING_PROMPT.replace('{scenario}', scenario)
       .replace(/{position}/g, positionDescription)
+      .replace('{exampleFigures}', exampleFigures)
       .replace(/{charLimit}/g, charLimit)
       .replace('{userResponse}', userResponse);
 
