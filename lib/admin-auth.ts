@@ -1,36 +1,77 @@
 import { NextRequest } from 'next/server';
 import crypto from 'crypto';
 
-// Simple in-memory session store
-// For production with multiple instances, consider using Redis
-const sessions = new Map<string, { expires: number }>();
+// Token expiration time: 8 hours in seconds
+const TOKEN_EXPIRY_SECONDS = 8 * 60 * 60;
 
 /**
- * Generate a secure session token for admin authentication
- * Session expires after 8 hours
+ * Generate a secure session token for admin authentication (JWT-like stateless token)
+ * Format: base64(payload).base64(signature)
+ * Payload: { exp: expiration_timestamp }
+ * This is stateless and works across serverless function instances
  */
 export function generateSessionToken(): string {
-  const token = crypto.randomBytes(32).toString('hex');
-  // Session expires in 8 hours (28800000 ms)
-  sessions.set(token, { expires: Date.now() + 8 * 60 * 60 * 1000 });
-  return token;
+  const secret = process.env.ADMIN_DASHBOARD_PASSWORD;
+  if (!secret) {
+    throw new Error('ADMIN_DASHBOARD_PASSWORD not set');
+  }
+
+  const payload = {
+    exp: Math.floor(Date.now() / 1000) + TOKEN_EXPIRY_SECONDS,
+    iat: Math.floor(Date.now() / 1000),
+  };
+
+  const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', secret).update(payloadBase64).digest('base64url');
+
+  return `${payloadBase64}.${signature}`;
 }
 
 /**
  * Validate a session token
- * Returns true if token exists and hasn't expired
+ * Returns true if token signature is valid and hasn't expired
  */
 export function validateSessionToken(token: string): boolean {
-  const session = sessions.get(token);
-  if (!session) return false;
-
-  // Check if session has expired
-  if (Date.now() > session.expires) {
-    sessions.delete(token);
+  const secret = process.env.ADMIN_DASHBOARD_PASSWORD;
+  if (!secret) {
+    console.error('ADMIN_DASHBOARD_PASSWORD not set for token validation');
     return false;
   }
 
-  return true;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 2) {
+      console.warn('Admin auth: malformed token (wrong number of parts)');
+      return false;
+    }
+
+    const [payloadBase64, providedSignature] = parts;
+
+    // Verify signature
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(payloadBase64)
+      .digest('base64url');
+
+    if (providedSignature !== expectedSignature) {
+      console.warn('Admin auth: invalid token signature');
+      return false;
+    }
+
+    // Parse and check expiration
+    const payload = JSON.parse(Buffer.from(payloadBase64, 'base64url').toString());
+    const now = Math.floor(Date.now() / 1000);
+
+    if (!payload.exp || payload.exp < now) {
+      console.warn('Admin auth: token expired');
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Admin auth: token validation error:', error);
+    return false;
+  }
 }
 
 /**
@@ -70,25 +111,11 @@ export function verifyAdminPassword(password: string): boolean {
 
 /**
  * Revoke a session token (for logout functionality)
+ * Note: With stateless tokens, true revocation would require a blocklist.
+ * For now, logout is handled client-side by clearing the stored token.
+ * The token will naturally expire after TOKEN_EXPIRY_SECONDS.
  */
-export function revokeSessionToken(token: string): void {
-  sessions.delete(token);
-}
-
-/**
- * Clean up expired sessions (run periodically)
- * Helps prevent memory leaks in long-running processes
- */
-export function cleanupExpiredSessions(): void {
-  const now = Date.now();
-  for (const [token, session] of sessions.entries()) {
-    if (now > session.expires) {
-      sessions.delete(token);
-    }
-  }
-}
-
-// Run cleanup every hour
-if (typeof setInterval !== 'undefined') {
-  setInterval(cleanupExpiredSessions, 60 * 60 * 1000);
+export function revokeSessionToken(_token: string): void {
+  // Stateless tokens can't be revoked server-side without a blocklist
+  // Client-side logout clears sessionStorage, which is sufficient for most cases
 }

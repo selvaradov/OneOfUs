@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     // Verify authentication
     if (!verifyAdminAuth(request)) {
+      console.error('Admin sessions: authentication failed (401)');
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
