@@ -19,6 +19,7 @@ This isn't about trolling or caricature—it's about truly understanding the str
 - **Frontend**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4
 - **Backend**: Vercel Postgres (Neon), Upstash Redis (rate limiting)
 - **AI**: Anthropic Claude API (Haiku 4.5 for grading)
+- **Analytics**: Vercel Analytics
 - **Deployment**: Vercel
 
 _Code primarily written by [Claude](https://claude.ai/code)._

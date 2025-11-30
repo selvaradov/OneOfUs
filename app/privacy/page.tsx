@@ -40,6 +40,11 @@ export default function PrivacyPage() {
                   <strong>Anonymous identifier:</strong> A randomly generated UUID stored in your
                   browser to link your sessions together
                 </li>
+                <li>
+                  <strong>Analytics data:</strong> Anonymous page views and user interactions
+                  collected via Vercel Analytics to help us understand usage patterns and improve
+                  the experience
+                </li>
               </ul>
             </section>
 
@@ -75,7 +80,11 @@ export default function PrivacyPage() {
                 </li>
                 <li>
                   Your responses are processed by Anthropic&apos;s Claude AI for grading (subject to
-                  their privacy policy)
+                  their [privacy policy](https://privacy.claude.com/))
+                </li>
+                <li>
+                  Anonymous analytics data is collected by Vercel Analytics (subject to
+                  Vercel&apos;s [privacy policy](https://vercel.com/docs/analytics/privacy-policy))
                 </li>
                 <li>We may be required to disclose data if legally compelled to do so</li>
               </ul>

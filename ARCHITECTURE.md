@@ -19,14 +19,15 @@ This document covers the technical implementation of OneOfUs, including database
 
 ### Tech Stack
 
-| Layer    | Technology                       | Purpose                      |
-| -------- | -------------------------------- | ---------------------------- |
-| Frontend | Next.js 16, React 19, TypeScript | App router, SSR, type safety |
-| Styling  | Tailwind CSS 4                   | Utility-first CSS            |
-| Database | Vercel Postgres (Neon)           | Persistent storage           |
-| Cache    | Upstash Redis                    | Rate limiting                |
-| AI       | Anthropic Claude (Haiku 4.5)     | Response grading             |
-| Hosting  | Vercel                           | Deployment, edge functions   |
+| Layer     | Technology                       | Purpose                      |
+| --------- | -------------------------------- | ---------------------------- |
+| Frontend  | Next.js 16, React 19, TypeScript | App router, SSR, type safety |
+| Styling   | Tailwind CSS 4                   | Utility-first CSS            |
+| Database  | Vercel Postgres (Neon)           | Persistent storage           |
+| Cache     | Upstash Redis                    | Rate limiting                |
+| AI        | Anthropic Claude (Haiku 4.5)     | Response grading             |
+| Analytics | Vercel Analytics                 | Page views, user insights    |
+| Hosting   | Vercel                           | Deployment, edge functions   |
 
 ### Data Flow
 
