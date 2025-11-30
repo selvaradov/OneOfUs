@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { UserAlignment, PoliticalPosition } from '@/lib/types';
+import { UserAlignment } from '@/lib/types';
 import { saveUserAlignment } from '@/lib/storage';
 
 interface OnboardingModalProps {
@@ -9,24 +9,14 @@ interface OnboardingModalProps {
 }
 
 export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
-  const [alignmentValue, setAlignmentValue] = useState(3); // Default to center (0-6 scale)
+  const [alignmentValue, setAlignmentValue] = useState(3); // Default to center (1-5 scale)
   const [touched, setTouched] = useState(false);
   const [ageRange, setAgeRange] = useState('');
   const [country, setCountry] = useState('UK');
   const [privacyConsent, setPrivacyConsent] = useState(false);
 
-  // Map slider values to positions
-  const sliderToPosition: PoliticalPosition[] = [
-    'left',
-    'left',
-    'centre-left',
-    'centre',
-    'centre-right',
-    'right',
-    'right'
-  ];
-
-  const sliderLabels = ['Left', '', 'Centre-left', 'Centre', 'Centre-right', '', 'Right'];
+  // Slider labels: 1=Left, 2=Centre-left, 3=Centre, 4=Centre-right, 5=Right
+  const sliderLabels = ['Left', 'Centre-left', 'Centre', 'Centre-right', 'Right'];
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAlignmentValue(Number(e.target.value));
@@ -42,17 +32,13 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
 
     let userId = crypto.randomUUID();
 
-    // Map slider value to 1-5 scale for database (1=left, 5=right)
-    // Our slider is 0-6, so we map: 0-1 -> 1, 2 -> 2, 3 -> 3, 4 -> 4, 5-6 -> 5
-    const dbAlignment = alignmentValue <= 1 ? 1 : alignmentValue >= 5 ? 5 : alignmentValue;
-
     // Try to create user in database
     try {
       const response = await fetch('/api/user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          politicalAlignment: dbAlignment,
+          politicalAlignment: alignmentValue, // 1-5 scale
           ageRange: ageRange || null,
           country,
         }),
@@ -73,7 +59,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
     // Always save to localStorage as well (fallback and offline access)
     const userAlignment: UserAlignment = {
       id: userId,
-      politicalAlignment: sliderToPosition[alignmentValue],
+      politicalAlignment: alignmentValue, // 1-5 scale
       ageRange: ageRange || undefined,
       country,
       createdAt: new Date().toISOString(),
@@ -120,22 +106,22 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
             <div className="px-2">
               <input
                 type="range"
-                min="0"
-                max="6"
+                min="1"
+                max="5"
                 step="1"
                 value={alignmentValue}
                 onChange={handleSliderChange}
                 onClick={handleSliderClick}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-orange-500"
                 style={{
-                  background: `linear-gradient(to right, #f97316 0%, #f97316 ${(alignmentValue / 6) * 100}%, #e5e7eb ${(alignmentValue / 6) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #f97316 0%, #f97316 ${((alignmentValue - 1) / 4) * 100}%, #e5e7eb ${((alignmentValue - 1) / 4) * 100}%, #e5e7eb 100%)`
                 }}
               />
               <div className="flex justify-between mt-2 text-xs text-gray-600 dark:text-gray-400">
                 {sliderLabels.map((label, idx) => (
                   <span
                     key={idx}
-                    className={`${alignmentValue === idx ? 'font-bold text-orange-600 dark:text-orange-400' : ''}`}
+                    className={`${alignmentValue === idx + 1 ? 'font-bold text-orange-600 dark:text-orange-400' : ''}`}
                   >
                     {label}
                   </span>

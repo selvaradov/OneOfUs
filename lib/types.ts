@@ -42,7 +42,7 @@ export const VALID_POSITIONS: readonly PoliticalPosition[] = [
 
 export interface UserAlignment {
   id: string;
-  politicalAlignment: PoliticalPosition;
+  politicalAlignment: number; // 1=Left, 2=Centre-left, 3=Centre, 4=Centre-right, 5=Right
   ageRange?: string;
   country?: string;
   createdAt: string;
@@ -85,4 +85,75 @@ export interface GradeResponse {
   success: boolean;
   result?: GradingResult;
   error?: string;
+}
+
+// Admin Dashboard Types
+
+export interface GeolocationData {
+  city: string;
+  country: string;
+  countryCode: string;
+  region: string;
+  lat: number;
+  lon: number;
+}
+
+export interface AdminGameSession {
+  // Game session fields
+  id: string;
+  user_id: string;
+  created_at: string;
+  completed_at: string;
+  prompt_id: string;
+  prompt_scenario: string;
+  prompt_category: string;
+  position_assigned: PoliticalPosition;
+  user_response: string;
+  char_count: number;
+  detected: boolean;
+  score: number;
+  feedback: string;
+  rubric_understanding: number;
+  rubric_authenticity: number;
+  rubric_execution: number;
+  ai_comparison_response: string;
+  ip_address: string;
+  user_agent: string;
+  duration_seconds: number;
+
+  // Joined user fields
+  political_alignment: number;
+  age_range: string;
+  country: string;
+  user_total_games: number;
+  user_avg_score: number;
+
+  // Enriched geolocation data
+  geolocation?: GeolocationData;
+}
+
+export interface AdminAnalytics {
+  totalUsers: number;
+  totalGames: number;
+  avgScore: number;
+  detectionRate: number;
+  scoreDistribution: Array<{ range: string; count: number }>;
+  positionPerformance: Array<{
+    position: string;
+    total: number;
+    avgScore: number;
+    detectionRate: number;
+  }>;
+  promptPerformance: Array<{
+    promptId: string;
+    promptScenario: string;
+    attempts: number;
+    avgScore: number;
+    detectionRate: number;
+  }>;
+  demographicBreakdown: {
+    byAlignment: Array<{ alignment: number; count: number; avgScore: number }>;
+    byCountry: Array<{ country: string; count: number }>;
+    byAge: Array<{ ageRange: string; count: number }>;
+  };
 }

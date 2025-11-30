@@ -45,6 +45,7 @@ See `.env.example` for the full list. Required:
 - `ANTHROPIC_API_KEY` - For Claude API grading
 - `POSTGRES_URL` - Database connection (or skip for localStorage-only mode)
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` - For rate limiting
+- `ADMIN_DASHBOARD_PASSWORD` - Admin dashboard access (optional, for `/admin`)
 
 ### Initialize Database (Optional)
 
@@ -71,6 +72,39 @@ npm run lint         # Run linter
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details.
 
+## Admin Dashboard
+
+An admin dashboard is available at `/admin` for monitoring and data export.
+
+**Features:**
+- 📊 **Analytics**: Summary statistics, score distributions, position performance
+- 💬 **Session Browser**: View all game sessions with filtering by position, question, date, and detection status
+- 📥 **Data Export**: Export users, sessions, analytics, or full data dump as JSON
+- 🔍 **Question Analysis**: Performance metrics for each prompt (min. 2 attempts)
+- 👥 **Demographics**: User breakdown by political alignment, country, and age
+
+**Setup:**
+1. Set the `ADMIN_DASHBOARD_PASSWORD` environment variable
+2. Navigate to `/admin` and log in with your password
+3. Use multi-select filters (react-select powered) to find specific sessions
+4. Export data as JSON for analysis or backup
+
+**Rate Limits:**
+- Login: 10 attempts per minute per IP
+- Operations: 100 requests per minute per IP
+
+**Technical Implementation:**
+- **Client-side sorting**: Table sorting happens in-browser without re-fetching from the API, improving performance for paginated views
+- **Filtering scope**: Filters (position, question, date, detection status) apply only to the session table display and pagination. Exports always include all records to ensure complete data backup
+- **Pagination**: Sessions table loads 50 records per page with offset-based pagination
+
+**Known Limitations & TODOs:**
+- **Export filtering**: Currently, exports do not respect table filters and always return all records. Implementing filtered exports is complicated because:
+  - Analytics are pre-aggregated in the database for performance (via SQL `AVG()`, `COUNT()`, etc.)
+  - Filtering would require either (1) real-time recalculation of analytics on filtered datasets (slow, expensive), or (2) storing separate analytics per filter combination (storage-intensive, complex)
+  - For now, use post-processing on exported JSON if filtered analytics are needed
+- **Question Performance threshold**: Only shows questions with 2+ attempts. Early-stage data may show "No question data available yet"
+
 ---
 
 ## Current Status: MVP Complete ✅
@@ -89,6 +123,10 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details.
 ## Future Enhancements
 
 ### Gameplay Ideas
+
+**1v1 mode**
+- Receive the same prompts as friends playing simultaneously, and see who performs the best
+- Also add ability to share results with others
 
 **Immersive Group Chat Mode**
 - Drop the user into a conversation with NPC LLMs all roleplaying a political position
