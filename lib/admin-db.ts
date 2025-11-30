@@ -100,7 +100,7 @@ export async function getAdminGameSessions(
         gs.rubric_authenticity,
         gs.rubric_execution,
         gs.ai_comparison_response,
-        gs.ip_address::text as ip_address,
+        host(gs.ip_address) as ip_address,
         gs.user_agent,
         gs.duration_seconds,
         u.political_alignment,
@@ -413,7 +413,7 @@ export async function getAllSessions(dateFrom?: string, dateTo?: string): Promis
     const query = `
       SELECT
         gs.*,
-        gs.ip_address::text as ip_address,
+        host(gs.ip_address) as ip_address,
         u.political_alignment,
         u.age_range,
         u.country

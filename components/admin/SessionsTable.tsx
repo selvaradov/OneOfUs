@@ -117,43 +117,32 @@ export default function SessionsTable({
     setLoadingGeo(true);
 
     try {
-      // Fetch geolocation for each unique IP
+      // Use our server-side API to avoid mixed content issues
       const uniqueIps = [...new Set(ipsToFetch)];
-      const geoPromises = uniqueIps.map(async (ip) => {
-        try {
-          const response = await fetch(`http://ip-api.com/json/${ip}`);
-          const data = await response.json();
-          if (data.status === 'success') {
-            return {
-              ip,
-              geo: {
-                city: data.city || 'Unknown',
-                country: data.country || 'Unknown',
-                countryCode: data.countryCode || 'XX',
-                region: data.regionName || 'Unknown',
-                lat: data.lat || 0,
-                lon: data.lon || 0,
-              },
-            };
-          }
-        } catch (err) {
-          console.error(`Geolocation error for ${ip}:`, err);
-        }
-        return null;
+      const response = await fetch('/api/admin/geolocation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ips: uniqueIps }),
       });
 
-      const results = await Promise.all(geoPromises);
-      const newGeolocations = new Map(geolocations);
+      if (!response.ok) {
+        console.error('Geolocation API error:', response.status);
+        return;
+      }
 
-      results.forEach((result) => {
-        if (result) {
-          newGeolocations.set(result.ip, result.geo);
+      const data = await response.json();
+      if (data.success && data.geolocations) {
+        const newGeolocations = new Map(geolocations);
+        for (const [ip, geo] of Object.entries(data.geolocations)) {
+          newGeolocations.set(ip, geo as GeolocationData);
         }
-      });
-
-      setGeolocations(newGeolocations);
+        setGeolocations(newGeolocations);
+      }
     } catch (err) {
-      console.error('Geolocation batch error:', err);
+      console.error('Geolocation fetch error:', err);
     } finally {
       setLoadingGeo(false);
     }
