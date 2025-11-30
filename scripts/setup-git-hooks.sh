@@ -50,6 +50,22 @@ if ! ./scripts/check-types.sh; then
 fi
 
 echo ""
+
+# Run linter
+if ! npm run lint; then
+    echo ""
+    echo "❌ Commit blocked: Fix linting errors first"
+    echo ""
+    echo "Try auto-fixing issues:"
+    echo "  npm run lint -- --fix"
+    echo ""
+    echo "To bypass this check (not recommended):"
+    echo "  git commit --no-verify"
+    echo ""
+    exit 1
+fi
+
+echo ""
 echo "✓ Pre-commit checks passed!"
 echo ""
 EOF
@@ -61,7 +77,8 @@ echo ""
 echo "This hook will:"
 echo "  - Auto-format code with Prettier before every commit"
 echo "  - Run TypeScript type checks before every commit"
-echo "  - Catch unclosed JSX tags and syntax errors"
+echo "  - Run ESLint linter checks before every commit"
+echo "  - Catch unclosed JSX tags, syntax errors, and code quality issues"
 echo "  - Prevent commits if errors are found"
 echo ""
 echo "To bypass the hook (not recommended):"

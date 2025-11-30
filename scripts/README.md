@@ -12,10 +12,13 @@ Automated tests and checks to verify code quality and database integration.
 # 1. Run type check (REQUIRED)
 ./scripts/check-types.sh
 
-# 2. Run tests (recommended)
+# 2. Run linter (REQUIRED)
+npm run lint
+
+# 3. Run tests (recommended)
 ./scripts/test-database.sh
 
-# 3. If checks pass, commit
+# 4. If checks pass, commit
 git add .
 git commit -m "Your message"
 ```
@@ -28,7 +31,7 @@ Enable automatic checks before every commit:
 ./scripts/setup-git-hooks.sh
 ```
 
-This blocks commits if TypeScript errors exist.
+This blocks commits if TypeScript errors or linting issues exist. Once enabled, you only need to run `git add . && git commit`, and all checks run automatically.
 
 ---
 
@@ -138,6 +141,7 @@ npm run dev                    # Start server
 
 ```bash
 ./scripts/check-types.sh      # Type check (REQUIRED)
+npm run lint                  # Linter (REQUIRED)
 ./scripts/test-database.sh    # Verify nothing broke (recommended)
 
 # If checks pass:
@@ -212,3 +216,15 @@ After automated tests pass, manually verify:
 2. Fix issues (usually unclosed tags or type errors)
 3. Re-run `./scripts/check-types.sh`
 4. Only commit when checks pass
+
+### Linter Issues
+
+Many linting issues can be auto-fixed:
+
+```bash
+# Fix auto-fixable issues
+npm run lint -- --fix
+
+# Then address remaining issues manually
+npm run lint
+```
