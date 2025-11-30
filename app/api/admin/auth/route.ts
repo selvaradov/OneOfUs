@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  verifyAdminPassword,
-  generateSessionToken,
-} from '@/lib/admin-auth';
-import {
-  adminAuthRateLimiter,
-  getClientIp,
-  checkRateLimit,
-} from '@/lib/ratelimit';
+import { verifyAdminPassword, generateSessionToken } from '@/lib/admin-auth';
+import { adminAuthRateLimiter, getClientIp, checkRateLimit } from '@/lib/ratelimit';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +8,11 @@ export async function POST(request: NextRequest) {
     if (!process.env.ADMIN_DASHBOARD_PASSWORD) {
       console.error('ADMIN_DASHBOARD_PASSWORD environment variable is not set');
       return NextResponse.json(
-        { success: false, error: 'Admin dashboard is not configured. Please set ADMIN_DASHBOARD_PASSWORD environment variable.' },
+        {
+          success: false,
+          error:
+            'Admin dashboard is not configured. Please set ADMIN_DASHBOARD_PASSWORD environment variable.',
+        },
         { status: 500 }
       );
     }
@@ -24,11 +21,7 @@ export async function POST(request: NextRequest) {
     const ip = getClientIp(request);
     console.log(`Admin login attempt from IP: ${ip}`);
 
-    const rateLimitResult = await checkRateLimit(
-      adminAuthRateLimiter,
-      ip,
-      'admin auth'
-    );
+    const rateLimitResult = await checkRateLimit(adminAuthRateLimiter, ip, 'admin auth');
 
     console.log('Rate limit result:', rateLimitResult ? 'limited' : 'allowed');
 
@@ -41,9 +34,7 @@ export async function POST(request: NextRequest) {
         {
           status: 429,
           headers: {
-            'Retry-After': String(
-              Math.ceil((rateLimitResult.reset - Date.now()) / 1000)
-            ),
+            'Retry-After': String(Math.ceil((rateLimitResult.reset - Date.now()) / 1000)),
             'X-RateLimit-Limit': String(rateLimitResult.limit),
             'X-RateLimit-Remaining': String(rateLimitResult.remaining),
             'X-RateLimit-Reset': String(rateLimitResult.reset),
@@ -57,32 +48,22 @@ export async function POST(request: NextRequest) {
     const { password } = body;
 
     if (!password || typeof password !== 'string') {
-      return NextResponse.json(
-        { success: false, error: 'Password is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Password is required' }, { status: 400 });
     }
 
     // Verify password
     if (!verifyAdminPassword(password)) {
       // Log failed attempt
-      console.warn(
-        `Failed admin login attempt from IP: ${ip} at ${new Date().toISOString()}`
-      );
+      console.warn(`Failed admin login attempt from IP: ${ip} at ${new Date().toISOString()}`);
 
-      return NextResponse.json(
-        { success: false, error: 'Invalid password' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Invalid password' }, { status: 401 });
     }
 
     // Generate session token
     const token = generateSessionToken();
 
     // Log successful login
-    console.log(
-      `Successful admin login from IP: ${ip} at ${new Date().toISOString()}`
-    );
+    console.log(`Successful admin login from IP: ${ip} at ${new Date().toISOString()}`);
 
     return NextResponse.json({
       success: true,
@@ -90,9 +71,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Admin auth error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

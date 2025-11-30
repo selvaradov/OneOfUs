@@ -37,7 +37,7 @@ export const VALID_POSITIONS: readonly PoliticalPosition[] = [
   'conservative',
   'libertarian',
   'green',
-  'socialist'
+  'socialist',
 ] as const;
 
 export interface UserAlignment {

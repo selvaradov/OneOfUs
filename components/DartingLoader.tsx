@@ -68,9 +68,7 @@ export default function DartingLoader({ message }: DartingLoaderProps) {
 
       {/* Message at bottom */}
       <div className="absolute bottom-8 left-0 right-0 text-center">
-        <p className="text-lg font-medium text-gray-900 dark:text-white animate-pulse">
-          {message}
-        </p>
+        <p className="text-lg font-medium text-gray-900 dark:text-white animate-pulse">{message}</p>
       </div>
     </div>
   );

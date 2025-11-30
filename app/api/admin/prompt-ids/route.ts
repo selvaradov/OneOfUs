@@ -6,10 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     // Verify authentication
     if (!verifyAdminAuth(request)) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     // Fetch distinct prompt IDs
@@ -21,9 +18,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Admin prompt IDs API error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -10,9 +10,7 @@ export default function PrivacyPage() {
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Privacy Policy
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Last updated: November 2025
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Last updated: November 2025</p>
           </div>
 
           {/* Content */}
@@ -26,8 +24,8 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                 <li>
-                  <strong>Profile information:</strong> Your self-reported political alignment
-                  (1-5 scale), age range, and country from the onboarding process
+                  <strong>Profile information:</strong> Your self-reported political alignment (1-5
+                  scale), age range, and country from the onboarding process
                 </li>
                 <li>
                   <strong>Game sessions:</strong> Every prompt you receive, your written responses,
@@ -79,9 +77,7 @@ export default function PrivacyPage() {
                   Your responses are processed by Anthropic&apos;s Claude AI for grading (subject to
                   their privacy policy)
                 </li>
-                <li>
-                  We may be required to disclose data if legally compelled to do so
-                </li>
+                <li>We may be required to disclose data if legally compelled to do so</li>
               </ul>
             </section>
 
@@ -105,15 +101,16 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                 <li>
-                  You are pseudonymous by default, but your IP address could potentially identify you
+                  You are pseudonymous by default, but your IP address could potentially identify
+                  you
                 </li>
                 <li>
-                  If you clear your browser data, you will lose access to your game history (we cannot
-                  recover it without your UUID)
+                  If you clear your browser data, you will lose access to your game history (we
+                  cannot recover it without your UUID)
                 </li>
                 <li>
-                  We do not currently offer data export or deletion features, but may implement these
-                  in the future
+                  We do not currently offer data export or deletion features, but may implement
+                  these in the future
                 </li>
               </ul>
             </section>
@@ -150,12 +147,10 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
-                Consent
-              </h2>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-3">Consent</h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                By using One of Us, you consent to this data collection and use. If you do not agree,
-                please do not use the game.
+                By using One of Us, you consent to this data collection and use. If you do not
+                agree, please do not use the game.
               </p>
             </section>
           </div>

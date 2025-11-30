@@ -248,7 +248,7 @@ export async function getUserStats(userId: string): Promise<{
     `;
 
     const positionPerformance: Record<string, any> = {};
-    positionStats.rows.forEach(row => {
+    positionStats.rows.forEach((row) => {
       positionPerformance[row.position_assigned] = {
         games: parseInt(row.games),
         avgScore: parseFloat(row.avg_score),
@@ -350,7 +350,7 @@ export async function getAllPromptsAnalytics(): Promise<any[]> {
       ORDER BY total_attempts DESC
     `;
 
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       promptId: row.prompt_id,
       totalAttempts: parseInt(row.total_attempts),
       avgScore: parseFloat(row.avg_score),

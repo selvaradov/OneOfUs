@@ -43,12 +43,14 @@ Catches syntax errors, unclosed JSX tags, and type errors before they break the 
 ```
 
 **What it catches:**
+
 - ✅ Unclosed JSX tags (missing `</div>`, `</span>`, etc.)
 - ✅ TypeScript type errors
 - ✅ Syntax errors in .ts/.tsx files
 - ✅ Import/export issues
 
 **Output example:**
+
 ```bash
 🔍 Running TypeScript type checks...
 ✓ TypeScript check passed!
@@ -68,6 +70,7 @@ npm run dev
 ```
 
 **What it tests:**
+
 1. Database initialization (`/api/init-db`)
 2. User creation and retrieval (`/api/user`)
 3. User statistics (`/api/stats?userId=`)
@@ -77,6 +80,7 @@ npm run dev
 7. Database connectivity
 
 **Testing production:**
+
 ```bash
 BASE_URL=https://your-domain.vercel.app ./scripts/test-database.sh
 ```
@@ -98,6 +102,7 @@ Sets up automatic type checking before commits.
 ```
 
 **To bypass (not recommended):**
+
 ```bash
 git commit --no-verify
 ```
@@ -111,6 +116,7 @@ Quick check that all files and configuration are in place.
 ```
 
 **Checks:**
+
 - ✅ `.env.local` exists with required variables
 - ✅ Database files exist
 - ✅ All API endpoints are present
@@ -153,20 +159,24 @@ BASE_URL=https://your-preview.vercel.app ./scripts/test-database.sh
 After automated tests pass, manually verify:
 
 ### Browser Test
+
 1. Open http://localhost:3000
 2. Complete onboarding
 3. Check console: `User created in database with ID: ...`
 
 ### Play a Game
+
 1. Write and submit a response
 2. Check console: `Game session saved to database for user: ...`
 
 ### Check History
+
 1. Visit http://localhost:3000/history
 2. Games should load from database
 3. Should NOT see "Showing local data" indicator
 
 ### Verify in Neon
+
 1. Go to https://console.neon.tech/
 2. SQL Editor: `SELECT * FROM game_sessions ORDER BY created_at DESC LIMIT 5;`
 3. Should see your test sessions
@@ -176,23 +186,28 @@ After automated tests pass, manually verify:
 ## Troubleshooting
 
 ### "Database connection unavailable"
+
 - Check `.env.local` has `POSTGRES_URL` set
 - Verify database is active in Neon console
 - Run `curl -X POST http://localhost:3000/api/init-db`
 
 ### "init-db endpoint returned HTTP 401"
+
 - Production requires `INIT_DB_SECRET` as Bearer token
 - Development should return 200
 
 ### "Failed to create user"
+
 - Initialize database: `curl -X POST http://localhost:3000/api/init-db`
 - Verify tables exist in Neon SQL Editor
 
 ### Tests pass but browser uses localStorage
+
 - Clear browser localStorage: `localStorage.clear()` in console
 - Refresh and complete onboarding again
 
 ### Type Check Fails
+
 1. Read error output carefully
 2. Fix issues (usually unclosed tags or type errors)
 3. Re-run `./scripts/check-types.sh`

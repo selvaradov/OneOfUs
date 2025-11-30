@@ -1,33 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import {
-  getAllSessions,
-  getAllUsers,
-  getAdminAnalytics,
-} from '@/lib/admin-db';
-import {
-  adminRateLimiter,
-  getClientIp,
-  checkRateLimit,
-} from '@/lib/ratelimit';
+import { getAllSessions, getAllUsers, getAdminAnalytics } from '@/lib/admin-db';
+import { adminRateLimiter, getClientIp, checkRateLimit } from '@/lib/ratelimit';
 
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
     if (!verifyAdminAuth(request)) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     // Rate limiting
     const ip = getClientIp(request);
-    const rateLimitResult = await checkRateLimit(
-      adminRateLimiter,
-      ip,
-      'admin export'
-    );
+    const rateLimitResult = await checkRateLimit(adminRateLimiter, ip, 'admin export');
 
     if (rateLimitResult && !rateLimitResult.success) {
       return NextResponse.json(
@@ -38,9 +23,7 @@ export async function GET(request: NextRequest) {
         {
           status: 429,
           headers: {
-            'Retry-After': String(
-              Math.ceil((rateLimitResult.reset - Date.now()) / 1000)
-            ),
+            'Retry-After': String(Math.ceil((rateLimitResult.reset - Date.now()) / 1000)),
           },
         }
       );
@@ -52,10 +35,7 @@ export async function GET(request: NextRequest) {
 
     // Validate type
     if (!['sessions', 'users', 'analytics', 'full'].includes(type)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid export type' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Invalid export type' }, { status: 400 });
     }
 
     // Build export data based on type
@@ -118,9 +98,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Log export action
-    console.log(
-      `Admin export: type=${type}, IP=${ip}, timestamp=${new Date().toISOString()}`
-    );
+    console.log(`Admin export: type=${type}, IP=${ip}, timestamp=${new Date().toISOString()}`);
 
     // Return JSON with download headers
     const filename = `oneofus-export-${type}-${new Date().toISOString().split('T')[0]}.json`;
@@ -133,9 +111,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Admin export API error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

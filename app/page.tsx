@@ -24,7 +24,8 @@ export default function Home() {
             <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
               The Ideological Turing Test challenges you to understand opposing viewpoints so well
               that you can write from their perspective authentically. Write responses to political
-              scenarios, and see if an AI can detect whether you&apos;re being genuine or playing a role.
+              scenarios, and see if an AI can detect whether you&apos;re being genuine or playing a
+              role.
             </p>
             <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
               This isn&apos;t about trolling or caricature—it&apos;s about truly understanding the
@@ -45,8 +46,8 @@ export default function Home() {
           {/* Additional Info */}
           <div className="pt-4 text-sm text-gray-500 dark:text-gray-500">
             <p>
-              Answer 3 quick questions, then jump into scenarios like tweets,
-              Reddit comments, and letters to MPs.
+              Answer 3 quick questions, then jump into scenarios like tweets, Reddit comments, and
+              letters to MPs.
             </p>
           </div>
 

@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  createUser,
-  getUser,
-  updateUser,
-  getUserStats,
-  checkDatabaseConnection,
-} from '@/lib/db';
+import { createUser, getUser, updateUser, getUserStats, checkDatabaseConnection } from '@/lib/db';
 
 /**
  * POST /api/user - Create a new user
@@ -56,10 +50,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId');
 
     if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'userId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'userId is required' }, { status: 400 });
     }
 
     // Check database connection
@@ -74,10 +65,7 @@ export async function GET(request: NextRequest) {
     // Get user data
     const user = await getUser(userId);
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
 
     // Get user stats
@@ -111,10 +99,7 @@ export async function PUT(request: NextRequest) {
     const { userId, politicalAlignment, ageRange, country } = body;
 
     if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'userId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'userId is required' }, { status: 400 });
     }
 
     // Check database connection

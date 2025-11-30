@@ -28,10 +28,14 @@ function validateAndClampRubricScores(scores: any): {
 
   // Log warning if scores were out of range
   if (understanding !== Number(scores.understanding)) {
-    console.warn(`Understanding score out of range: ${scores.understanding}, clamped to ${understanding}`);
+    console.warn(
+      `Understanding score out of range: ${scores.understanding}, clamped to ${understanding}`
+    );
   }
   if (authenticity !== Number(scores.authenticity)) {
-    console.warn(`Authenticity score out of range: ${scores.authenticity}, clamped to ${authenticity}`);
+    console.warn(
+      `Authenticity score out of range: ${scores.authenticity}, clamped to ${authenticity}`
+    );
   }
   if (execution !== Number(scores.execution)) {
     console.warn(`Execution score out of range: ${scores.execution}, clamped to ${execution}`);
@@ -46,11 +50,7 @@ export async function POST(request: NextRequest) {
     const clientIp = getClientIp(request);
 
     // Check hourly rate limit (20 requests/hour)
-    const hourlyLimit = await checkRateLimit(
-      gradeRateLimiter.hourly,
-      clientIp,
-      'hourly'
-    );
+    const hourlyLimit = await checkRateLimit(gradeRateLimiter.hourly, clientIp, 'hourly');
 
     if (hourlyLimit && !hourlyLimit.success) {
       console.warn('[RATE_LIMIT] Hourly limit exceeded', {
@@ -78,11 +78,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check daily rate limit (50 requests/day)
-    const dailyLimit = await checkRateLimit(
-      gradeRateLimiter.daily,
-      clientIp,
-      'daily'
-    );
+    const dailyLimit = await checkRateLimit(gradeRateLimiter.daily, clientIp, 'daily');
 
     if (dailyLimit && !dailyLimit.success) {
       console.warn('[RATE_LIMIT] Daily limit exceeded', {
@@ -121,11 +117,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Basic type validation
-    if (typeof position !== 'string' || typeof userResponse !== 'string' || typeof promptId !== 'string') {
-      return NextResponse.json(
-        { success: false, error: 'Invalid field types' },
-        { status: 400 }
-      );
+    if (
+      typeof position !== 'string' ||
+      typeof userResponse !== 'string' ||
+      typeof promptId !== 'string'
+    ) {
+      return NextResponse.json({ success: false, error: 'Invalid field types' }, { status: 400 });
     }
 
     // Look up prompt by ID (single source of truth)
@@ -161,14 +158,16 @@ export async function POST(request: NextRequest) {
     // Position validation
     if (!isValidPosition(position)) {
       return NextResponse.json(
-        { success: false, error: `Invalid position. Must be one of: ${VALID_POSITIONS.join(', ')}` },
+        {
+          success: false,
+          error: `Invalid position. Must be one of: ${VALID_POSITIONS.join(', ')}`,
+        },
         { status: 400 }
       );
     }
 
     // Prepare the grading prompt
-    const filledPrompt = GRADING_PROMPT
-      .replace('{scenario}', scenario)
+    const filledPrompt = GRADING_PROMPT.replace('{scenario}', scenario)
       .replace('{position}', position)
       .replace('{userResponse}', userResponse);
 
@@ -219,7 +218,8 @@ export async function POST(request: NextRequest) {
     const rubricScores = validateAndClampRubricScores(parsedData.grading.rubricScores);
 
     // Calculate total score from rubric scores (don't trust LLM to do this)
-    const totalScore = rubricScores.understanding + rubricScores.authenticity + rubricScores.execution;
+    const totalScore =
+      rubricScores.understanding + rubricScores.authenticity + rubricScores.execution;
 
     const result: GradingResult = {
       detected: parsedData.grading.detected,
@@ -239,9 +239,8 @@ export async function POST(request: NextRequest) {
 
         if (isConnected) {
           // Get IP address and user agent from request
-          const ipAddress = request.headers.get('x-forwarded-for') ||
-                           request.headers.get('x-real-ip') ||
-                           'unknown';
+          const ipAddress =
+            request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
           const userAgent = request.headers.get('user-agent') || 'unknown';
 
           await saveGameSession({

@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0', 10);
 
     if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'userId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'userId is required' }, { status: 400 });
     }
 
     // Check database connection
@@ -26,7 +23,7 @@ export async function GET(request: NextRequest) {
         {
           success: false,
           error: 'Database connection unavailable',
-          fallbackToLocalStorage: true
+          fallbackToLocalStorage: true,
         },
         { status: 503 }
       );

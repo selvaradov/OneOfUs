@@ -114,7 +114,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
                 onClick={handleSliderClick}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-orange-500"
                 style={{
-                  background: `linear-gradient(to right, #f97316 0%, #f97316 ${((alignmentValue - 1) / 4) * 100}%, #e5e7eb ${((alignmentValue - 1) / 4) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #f97316 0%, #f97316 ${((alignmentValue - 1) / 4) * 100}%, #e5e7eb ${((alignmentValue - 1) / 4) * 100}%, #e5e7eb 100%)`,
                 }}
               />
               <div className="flex justify-between mt-2 text-xs text-gray-600 dark:text-gray-400">
@@ -189,7 +189,10 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
             onChange={(e) => setPrivacyConsent(e.target.checked)}
             className="mt-1 w-5 h-5 sm:w-4 sm:h-4 text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer flex-shrink-0"
           />
-          <label htmlFor="privacy-consent" className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+          <label
+            htmlFor="privacy-consent"
+            className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer"
+          >
             I agree to the{' '}
             <a
               href="/privacy"
@@ -198,8 +201,8 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
               className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline"
             >
               privacy policy
-            </a>
-            {' '}and consent to data collection as described
+            </a>{' '}
+            and consent to data collection as described
           </label>
         </div>
 

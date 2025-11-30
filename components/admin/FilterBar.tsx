@@ -50,7 +50,6 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
     onFilterChange({ ...filters, [key]: values });
   };
 
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -63,9 +62,17 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
             options={[
               { value: 'all', label: 'All' },
               { value: 'true', label: 'Detected' },
-              { value: 'false', label: 'Undetected' }
+              { value: 'false', label: 'Undetected' },
             ]}
-            value={{ value: filters.detected, label: filters.detected === 'all' ? 'All' : filters.detected === 'true' ? 'Detected' : 'Undetected' }}
+            value={{
+              value: filters.detected,
+              label:
+                filters.detected === 'all'
+                  ? 'All'
+                  : filters.detected === 'true'
+                    ? 'Detected'
+                    : 'Undetected',
+            }}
             onChange={(selected: any) => handleChange('detected', selected?.value || 'all')}
             className="text-sm"
             classNamePrefix="react-select"
@@ -80,8 +87,8 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
           <Select
             isMulti
             closeMenuOnSelect={false}
-            options={VALID_POSITIONS.map(pos => ({ value: pos, label: pos }))}
-            value={filters.position.map(p => ({ value: p, label: p }))}
+            options={VALID_POSITIONS.map((pos) => ({ value: pos, label: pos }))}
+            value={filters.position.map((p) => ({ value: p, label: p }))}
             onChange={(selected) => handleMultiSelectChange('position', selected)}
             placeholder="Select positions..."
             className="text-sm"
@@ -97,8 +104,8 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
           <Select
             isMulti
             closeMenuOnSelect={false}
-            options={promptIds.map(id => ({ value: id, label: id }))}
-            value={filters.promptId.map(id => ({ value: id, label: id }))}
+            options={promptIds.map((id) => ({ value: id, label: id }))}
+            value={filters.promptId.map((id) => ({ value: id, label: id }))}
             onChange={(selected) => handleMultiSelectChange('promptId', selected)}
             placeholder="Select questions..."
             className="text-sm"

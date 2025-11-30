@@ -8,9 +8,7 @@ interface ExportButtonProps {
 
 export default function ExportButton({ token }: ExportButtonProps) {
   const [exporting, setExporting] = useState(false);
-  const [exportType, setExportType] = useState<
-    'sessions' | 'users' | 'analytics' | 'full'
-  >('full');
+  const [exportType, setExportType] = useState<'sessions' | 'users' | 'analytics' | 'full'>('full');
   const [showMenu, setShowMenu] = useState(false);
 
   const handleExport = async (type: typeof exportType) => {
@@ -59,12 +57,7 @@ export default function ExportButton({ token }: ExportButtonProps) {
           </>
         ) : (
           <>
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -80,10 +73,7 @@ export default function ExportButton({ token }: ExportButtonProps) {
       {/* Dropdown Menu */}
       {showMenu && (
         <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setShowMenu(false)}
-          ></div>
+          <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)}></div>
           <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-20 border border-gray-200 dark:border-gray-700">
             <div className="py-1">
               <button

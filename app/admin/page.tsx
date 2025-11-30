@@ -49,9 +49,7 @@ function AdminLogin({ onAuth }: { onAuth: (token: string) => void }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-          Admin Login
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Admin Login</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
@@ -72,9 +70,7 @@ function AdminLogin({ onAuth }: { onAuth: (token: string) => void }) {
           </div>
           {error && (
             <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-              <p className="text-red-800 dark:text-red-200 text-sm font-medium">
-                {error}
-              </p>
+              <p className="text-red-800 dark:text-red-200 text-sm font-medium">{error}</p>
             </div>
           )}
           <button
@@ -253,9 +249,7 @@ export default function AdminDashboard() {
       <div className="bg-white dark:bg-gray-800 shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Admin Dashboard
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
             <button
               onClick={handleLogout}
               className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
@@ -274,25 +268,35 @@ export default function AdminDashboard() {
             Dashboard Sections
           </h2>
           <div className="flex flex-col gap-2 text-sm">
-            <a href="#summary-stats" className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
+            <a
+              href="#summary-stats"
+              className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+            >
               📊 Summary Statistics
             </a>
-            <a href="#performance-analysis" className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
+            <a
+              href="#performance-analysis"
+              className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+            >
               📈 Performance & Score Analysis
             </a>
-            <a href="#demographics" className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
+            <a
+              href="#demographics"
+              className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+            >
               👥 User Demographics
             </a>
-            <a href="#sessions" className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
+            <a
+              href="#sessions"
+              className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+            >
               💬 All Game Sessions
             </a>
           </div>
         </div>
 
         {/* Analytics Section */}
-        <div id="analytics">
-          {analytics && <AnalyticsCards analytics={analytics} />}
-        </div>
+        <div id="analytics">{analytics && <AnalyticsCards analytics={analytics} />}</div>
 
         {/* All Sessions Section */}
         <div id="sessions" className="mt-8">
@@ -302,7 +306,6 @@ export default function AdminDashboard() {
 
           {/* Controls */}
           <div className="space-y-4 my-6">
-
             <FilterBar filters={filters} onFilterChange={setFilters} token={token || undefined} />
             {token && (
               <div className="flex items-center gap-3">
@@ -326,9 +329,7 @@ export default function AdminDashboard() {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Loading sessions...
-            </p>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Loading sessions...</p>
           </div>
         ) : token ? (
           <>
@@ -344,9 +345,8 @@ export default function AdminDashboard() {
             {totalPages > 1 && (
               <div className="mt-6 flex justify-between items-center">
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Showing {page * limit + 1} to{' '}
-                  {Math.min((page + 1) * limit, totalCount)} of {totalCount}{' '}
-                  sessions
+                  Showing {page * limit + 1} to {Math.min((page + 1) * limit, totalCount)} of{' '}
+                  {totalCount} sessions
                 </div>
                 <div className="flex gap-2">
                   <button

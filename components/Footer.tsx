@@ -7,8 +7,8 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-2">
           {/* Left side - Project info */}
           <div className="text-sm text-gray-600 dark:text-gray-400">
-            <span className="font-semibold text-gray-900 dark:text-white">One of Us</span>
-            {' '}&mdash; The Ideological Turing Test
+            <span className="font-semibold text-gray-900 dark:text-white">One of Us</span> &mdash;
+            The Ideological Turing Test
           </div>
 
           {/* Right side - Links */}

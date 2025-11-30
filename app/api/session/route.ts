@@ -25,10 +25,7 @@ export async function GET(request: Request) {
     `;
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Session not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Session not found' }, { status: 404 });
     }
 
     const row = result.rows[0];
@@ -55,17 +52,25 @@ export async function GET(request: Request) {
       },
       positionChosen: row.position_assigned,
       userResponse: row.user_response,
-      gradingResult: row.score !== null ? {
-        detected: row.detected,
-        score: row.score,
-        feedback: row.feedback || '',
-        rubricScores: (row.rubric_understanding !== null && row.rubric_authenticity !== null && row.rubric_execution !== null) ? {
-          understanding: row.rubric_understanding,
-          authenticity: row.rubric_authenticity,
-          execution: row.rubric_execution,
-        } : undefined,
-        timestamp: row.completed_at || row.created_at,
-      } as GradingResult : undefined,
+      gradingResult:
+        row.score !== null
+          ? ({
+              detected: row.detected,
+              score: row.score,
+              feedback: row.feedback || '',
+              rubricScores:
+                row.rubric_understanding !== null &&
+                row.rubric_authenticity !== null &&
+                row.rubric_execution !== null
+                  ? {
+                      understanding: row.rubric_understanding,
+                      authenticity: row.rubric_authenticity,
+                      execution: row.rubric_execution,
+                    }
+                  : undefined,
+              timestamp: row.completed_at || row.created_at,
+            } as GradingResult)
+          : undefined,
       aiResponse: row.ai_comparison_response || undefined,
       createdAt: row.created_at,
       completedAt: row.completed_at || undefined,
@@ -74,9 +79,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: true, session });
   } catch (error) {
     console.error('Error fetching session:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch session' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to fetch session' }, { status: 500 });
   }
 }

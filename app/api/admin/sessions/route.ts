@@ -1,34 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import {
-  getAdminGameSessions,
-  getTotalSessionsCount,
-  AdminSessionsQuery,
-} from '@/lib/admin-db';
-import {
-  adminRateLimiter,
-  getClientIp,
-  checkRateLimit,
-} from '@/lib/ratelimit';
+import { getAdminGameSessions, getTotalSessionsCount, AdminSessionsQuery } from '@/lib/admin-db';
+import { adminRateLimiter, getClientIp, checkRateLimit } from '@/lib/ratelimit';
 import { PoliticalPosition } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
     if (!verifyAdminAuth(request)) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     // Rate limiting
     const ip = getClientIp(request);
-    const rateLimitResult = await checkRateLimit(
-      adminRateLimiter,
-      ip,
-      'admin sessions'
-    );
+    const rateLimitResult = await checkRateLimit(adminRateLimiter, ip, 'admin sessions');
 
     if (rateLimitResult && !rateLimitResult.success) {
       return NextResponse.json(
@@ -39,9 +24,7 @@ export async function GET(request: NextRequest) {
         {
           status: 429,
           headers: {
-            'Retry-After': String(
-              Math.ceil((rateLimitResult.reset - Date.now()) / 1000)
-            ),
+            'Retry-After': String(Math.ceil((rateLimitResult.reset - Date.now()) / 1000)),
           },
         }
       );
@@ -50,36 +33,25 @@ export async function GET(request: NextRequest) {
     // Parse query parameters
     const { searchParams } = new URL(request.url);
 
-    const limit = Math.min(
-      parseInt(searchParams.get('limit') || '50'),
-      100
-    ); // Max 100
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100); // Max 100
     const offset = parseInt(searchParams.get('offset') || '0');
     const sortBy = (searchParams.get('sortBy') || 'created_at') as
       | 'created_at'
       | 'score'
       | 'detected';
-    const sortOrder = (searchParams.get('sortOrder') || 'DESC') as
-      | 'ASC'
-      | 'DESC';
+    const sortOrder = (searchParams.get('sortOrder') || 'DESC') as 'ASC' | 'DESC';
 
     const detectedParam = searchParams.get('detected');
     const filterDetected =
-      detectedParam === 'true'
-        ? true
-        : detectedParam === 'false'
-        ? false
-        : null;
+      detectedParam === 'true' ? true : detectedParam === 'false' ? false : null;
 
     const positionParam = searchParams.get('position');
     const filterPosition = positionParam
-      ? positionParam.split(',').map(p => p.trim()) as PoliticalPosition[]
+      ? (positionParam.split(',').map((p) => p.trim()) as PoliticalPosition[])
       : null;
 
     const promptIdParam = searchParams.get('promptId');
-    const filterPromptId = promptIdParam
-      ? promptIdParam.split(',').map(id => id.trim())
-      : null;
+    const filterPromptId = promptIdParam ? promptIdParam.split(',').map((id) => id.trim()) : null;
     const dateFrom = searchParams.get('dateFrom') || null;
     const dateTo = searchParams.get('dateTo') || null;
 
@@ -135,9 +107,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Admin sessions API error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

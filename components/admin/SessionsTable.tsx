@@ -17,7 +17,7 @@ function SortableHeader({
   field,
   currentSort,
   currentOrder,
-  onClick
+  onClick,
 }: {
   label: string;
   field: 'created_at' | 'score' | 'detected';
@@ -54,11 +54,15 @@ function SortableHeader({
   );
 }
 
-export default function SessionsTable({ sessions, token, sortBy, sortOrder, onSortChange }: SessionsTableProps) {
+export default function SessionsTable({
+  sessions,
+  token,
+  sortBy,
+  sortOrder,
+  onSortChange,
+}: SessionsTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [geolocations, setGeolocations] = useState<Map<string, GeolocationData>>(
-    new Map()
-  );
+  const [geolocations, setGeolocations] = useState<Map<string, GeolocationData>>(new Map());
   const [loadingGeo, setLoadingGeo] = useState(false);
   const [clientSortBy, setClientSortBy] = useState<'created_at' | 'score' | 'detected'>(sortBy);
   const [clientSortOrder, setClientSortOrder] = useState<'ASC' | 'DESC'>(sortOrder);
@@ -73,7 +77,8 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder, onSo
     } else if (clientSortBy === 'score') {
       aVal = a.score;
       bVal = b.score;
-    } else { // detected
+    } else {
+      // detected
       aVal = a.detected ? 1 : 0;
       bVal = b.detected ? 1 : 0;
     }
@@ -178,9 +183,7 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder, onSo
   if (sessions.length === 0) {
     return (
       <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
-        <p className="text-gray-600 dark:text-gray-400">
-          No sessions found matching the filters.
-        </p>
+        <p className="text-gray-600 dark:text-gray-400">No sessions found matching the filters.</p>
       </div>
     );
   }
@@ -279,10 +282,7 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder, onSo
                 {/* Expanded Row */}
                 {expandedId === session.id && (
                   <tr>
-                    <td
-                      colSpan={7}
-                      className="px-6 py-6 bg-gray-50 dark:bg-gray-900"
-                    >
+                    <td colSpan={7} className="px-6 py-6 bg-gray-50 dark:bg-gray-900">
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Left Column - Q&A */}
                         <div className="space-y-4">

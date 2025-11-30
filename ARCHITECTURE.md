@@ -19,14 +19,14 @@ This document covers the technical implementation of OneOfUs, including database
 
 ### Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
+| Layer    | Technology                       | Purpose                      |
+| -------- | -------------------------------- | ---------------------------- |
 | Frontend | Next.js 16, React 19, TypeScript | App router, SSR, type safety |
-| Styling | Tailwind CSS 4 | Utility-first CSS |
-| Database | Vercel Postgres (Neon) | Persistent storage |
-| Cache | Upstash Redis | Rate limiting |
-| AI | Anthropic Claude (Haiku 4.5) | Response grading |
-| Hosting | Vercel | Deployment, edge functions |
+| Styling  | Tailwind CSS 4                   | Utility-first CSS            |
+| Database | Vercel Postgres (Neon)           | Persistent storage           |
+| Cache    | Upstash Redis                    | Rate limiting                |
+| AI       | Anthropic Claude (Haiku 4.5)     | Response grading             |
+| Hosting  | Vercel                           | Deployment, edge functions   |
 
 ### Data Flow
 
@@ -48,15 +48,16 @@ User → History → GET /api/history → Database
 
 Three-layer storage strategy:
 
-| Layer | Storage | Purpose | Persistence |
-|-------|---------|---------|-------------|
-| Primary | PostgreSQL | Source of truth for all game data | Permanent |
-| Cache | sessionStorage | Fast navigation, eliminates loading flash | Tab session |
-| Fallback | localStorage | User preferences, offline access | Browser |
+| Layer    | Storage        | Purpose                                   | Persistence |
+| -------- | -------------- | ----------------------------------------- | ----------- |
+| Primary  | PostgreSQL     | Source of truth for all game data         | Permanent   |
+| Cache    | sessionStorage | Fast navigation, eliminates loading flash | Tab session |
+| Fallback | localStorage   | User preferences, offline access          | Browser     |
 
 ### Graceful Degradation
 
 If the database is unavailable:
+
 1. User creation falls back to local UUID generation
 2. Game sessions are cached in sessionStorage only
 3. History page shows clear error message with retry option
@@ -141,32 +142,32 @@ CREATE TABLE prompts_analytics (
 
 ### User Management
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/user` | POST | Create new user |
-| `/api/user?userId=xxx` | GET | Get user info and stats |
-| `/api/user` | PUT | Update user information |
+| Endpoint               | Method | Purpose                 |
+| ---------------------- | ------ | ----------------------- |
+| `/api/user`            | POST   | Create new user         |
+| `/api/user?userId=xxx` | GET    | Get user info and stats |
+| `/api/user`            | PUT    | Update user information |
 
 ### Game & Grading
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/grade` | POST | Grade response, save to database |
-| `/api/session?sessionId=xxx` | GET | Fetch single game session |
+| Endpoint                     | Method | Purpose                          |
+| ---------------------------- | ------ | -------------------------------- |
+| `/api/grade`                 | POST   | Grade response, save to database |
+| `/api/session?sessionId=xxx` | GET    | Fetch single game session        |
 
 ### History & Analytics
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/history?userId=xxx&limit=20&offset=0` | GET | Paginated user history |
-| `/api/stats?userId=xxx` | GET | User statistics |
-| `/api/stats?type=prompts` | GET | Global prompt analytics |
+| Endpoint                                    | Method | Purpose                 |
+| ------------------------------------------- | ------ | ----------------------- |
+| `/api/history?userId=xxx&limit=20&offset=0` | GET    | Paginated user history  |
+| `/api/stats?userId=xxx`                     | GET    | User statistics         |
+| `/api/stats?type=prompts`                   | GET    | Global prompt analytics |
 
 ### Database Admin
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/init-db` | POST | Initialize database schema (protected in production) |
+| Endpoint       | Method | Purpose                                              |
+| -------------- | ------ | ---------------------------------------------------- |
+| `/api/init-db` | POST   | Initialize database schema (protected in production) |
 
 ---
 
@@ -202,8 +203,10 @@ if (!VALID_POSITIONS.includes(position)) → 400
 User responses are wrapped in XML tags with explicit anti-injection instructions:
 
 ```typescript
-const filledPrompt = GRADING_PROMPT
-  .replace('{userResponse}', `<user_response>\n${userResponse}\n</user_response>`);
+const filledPrompt = GRADING_PROMPT.replace(
+  '{userResponse}',
+  `<user_response>\n${userResponse}\n</user_response>`
+);
 ```
 
 The grading prompt includes:
@@ -236,11 +239,11 @@ Implemented using Upstash Redis with IP-based identification.
 
 ### Limits
 
-| Endpoint | Limit | Window |
-|----------|-------|--------|
-| `/api/grade` | 20 requests | 1 hour |
-| `/api/grade` | 50 requests | 24 hours |
-| `/api/history` | 30 requests | 1 minute |
+| Endpoint       | Limit        | Window   |
+| -------------- | ------------ | -------- |
+| `/api/grade`   | 20 requests  | 1 hour   |
+| `/api/grade`   | 50 requests  | 24 hours |
+| `/api/history` | 30 requests  | 1 minute |
 | `/api/session` | 100 requests | 24 hours |
 
 ### Implementation
@@ -294,11 +297,11 @@ Claude Haiku 4.5 (`claude-haiku-4-5`) - chosen for speed and cost efficiency.
 
 ### Rubric (100 points total)
 
-| Category | Points | Focus |
-|----------|--------|-------|
-| Understanding | 65 | Core values, reasoning patterns, real concerns (not stereotypes) |
-| Authenticity | 20 | Natural voice, not forced or robotic |
-| Execution | 15 | Appropriate tone for the medium |
+| Category      | Points | Focus                                                            |
+| ------------- | ------ | ---------------------------------------------------------------- |
+| Understanding | 65     | Core values, reasoning patterns, real concerns (not stereotypes) |
+| Authenticity  | 20     | Natural voice, not forced or robotic                             |
+| Execution     | 15     | Appropriate tone for the medium                                  |
 
 ### Detection Threshold
 
@@ -352,6 +355,7 @@ curl -X POST http://localhost:3000/api/init-db
    - Postgres variables (auto-populated by Vercel)
 
 2. **Deploy and initialize database:**
+
    ```bash
    curl -X POST https://oneofus.vercel.app/api/init-db \
      -H "Authorization: Bearer YOUR_INIT_DB_SECRET"
@@ -364,8 +368,8 @@ curl -X POST http://localhost:3000/api/init-db
 
 ### Environments
 
-| Environment | URL | Database |
-|-------------|-----|----------|
-| Development | localhost:3000 | Local Neon DB |
-| Preview | git-branch.vercel.app | Production DB |
-| Production | oneofus.vercel.app | Production DB |
+| Environment | URL                   | Database      |
+| ----------- | --------------------- | ------------- |
+| Development | localhost:3000        | Local Neon DB |
+| Preview     | git-branch.vercel.app | Production DB |
+| Production  | oneofus.vercel.app    | Production DB |

@@ -12,16 +12,16 @@ import DartingLoader from '@/components/DartingLoader';
 import Footer from '@/components/Footer';
 
 const LOADING_MESSAGES = [
-  "Analyzing your chameleon skills...",
-  "Checking if you blend in...",
-  "Consulting the ideology experts...",
-  "Sniffing for tells...",
-  "Reading between the lines...",
-  "Checking your receipts...",
-  "Seeing if you pass the vibe check...",
-  "Testing your shapeshifting abilities...",
-  "Asking: who are you, really?",
-  "Detecting any sus energy...",
+  'Analyzing your chameleon skills...',
+  'Checking if you blend in...',
+  'Consulting the ideology experts...',
+  'Sniffing for tells...',
+  'Reading between the lines...',
+  'Checking your receipts...',
+  'Seeing if you pass the vibe check...',
+  'Testing your shapeshifting abilities...',
+  'Asking: who are you, really?',
+  'Detecting any sus energy...',
 ];
 
 export default function GamePage() {
@@ -60,7 +60,7 @@ export default function GamePage() {
   // Listen for new prompt event
   useEffect(() => {
     const handleNewPrompt = () => {
-      setRefreshTrigger(prev => prev + 1);
+      setRefreshTrigger((prev) => prev + 1);
     };
 
     window.addEventListener('newPrompt', handleNewPrompt);
@@ -128,9 +128,7 @@ export default function GamePage() {
           timeMessage = `${minutes} minute${minutes > 1 ? 's' : ''}`;
         }
 
-        alert(
-          `Whoah, slow down!\n\n${data.error}\n\nPlease try again in ${timeMessage}.`
-        );
+        alert(`Whoah, slow down!\n\n${data.error}\n\nPlease try again in ${timeMessage}.`);
         setIsSubmitting(false);
         return;
       }
@@ -191,65 +189,66 @@ export default function GamePage() {
       <Navbar />
       <div className="flex-1 py-8 px-4">
         <div className="max-w-4xl mx-auto">
-
-        {/* Main Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-6">
-          {/* Scenario */}
-          <div className="space-y-3">
-            <div className="prose dark:prose-invert max-w-none">
-              <p className="text-lg text-gray-900 dark:text-gray-100 leading-relaxed">
-                {prompt.scenario}
-              </p>
+          {/* Main Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-6">
+            {/* Scenario */}
+            <div className="space-y-3">
+              <div className="prose dark:prose-invert max-w-none">
+                <p className="text-lg text-gray-900 dark:text-gray-100 leading-relaxed">
+                  {prompt.scenario}
+                </p>
+              </div>
             </div>
-          </div>
 
-          {/* Assigned Position */}
-          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-800">
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                You&apos;re writing as:
-              </p>
-              <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                {getPositionDescription(assignedPosition)}
-              </p>
+            {/* Assigned Position */}
+            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-800">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  You&apos;re writing as:
+                </p>
+                <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
+                  {getPositionDescription(assignedPosition)}
+                </p>
+              </div>
             </div>
-          </div>
 
-          {/* Text Input */}
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-900 dark:text-white">
-              Your response
-            </label>
-            <textarea
-              value={userResponse}
-              onChange={handleResponseChange}
-              placeholder="Write your response here..."
-              rows={6}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
-            />
-            <div className="flex items-center justify-between text-sm">
-              <span className={`${isOverLimit ? 'text-red-600' : 'text-gray-600 dark:text-gray-400'}`}>
-                {charCount} / {prompt.charLimit} characters
-              </span>
-              {isOverLimit && (
-                <span className="text-red-600 font-medium">
-                  Over limit by {charCount - prompt.charLimit}
+            {/* Text Input */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-900 dark:text-white">
+                Your response
+              </label>
+              <textarea
+                value={userResponse}
+                onChange={handleResponseChange}
+                placeholder="Write your response here..."
+                rows={6}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+              />
+              <div className="flex items-center justify-between text-sm">
+                <span
+                  className={`${isOverLimit ? 'text-red-600' : 'text-gray-600 dark:text-gray-400'}`}
+                >
+                  {charCount} / {prompt.charLimit} characters
                 </span>
-              )}
+                {isOverLimit && (
+                  <span className="text-red-600 font-medium">
+                    Over limit by {charCount - prompt.charLimit}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                className="w-full px-6 py-4 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              >
+                Submit
+              </button>
             </div>
           </div>
-
-          {/* Submit Button */}
-          <div className="pt-4">
-            <button
-              onClick={handleSubmit}
-              disabled={!canSubmit}
-              className="w-full px-6 py-4 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-            >
-              Submit
-            </button>
-          </div>
-        </div>
         </div>
       </div>
       <Footer />

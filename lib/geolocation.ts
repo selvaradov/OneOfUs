@@ -9,9 +9,7 @@ const geoCache = new Map<string, GeolocationData>();
  * @param ipAddress - The IP address to look up
  * @returns GeolocationData or null if lookup fails
  */
-export async function getGeolocation(
-  ipAddress: string
-): Promise<GeolocationData | null> {
+export async function getGeolocation(ipAddress: string): Promise<GeolocationData | null> {
   if (ipAddress === 'unknown' || !ipAddress) return null;
 
   // Check cache first
@@ -58,9 +56,7 @@ export async function batchGeolocation(
   const results = new Map<string, GeolocationData>();
 
   // Get unique IPs only
-  const unique = [...new Set(ipAddresses)].filter(
-    (ip) => ip && ip !== 'unknown'
-  );
+  const unique = [...new Set(ipAddresses)].filter((ip) => ip && ip !== 'unknown');
 
   // Process in batches of 10 with delays to respect rate limits
   // 45 req/min means we can do ~40 safely, so 10 per 15 seconds

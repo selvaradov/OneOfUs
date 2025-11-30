@@ -13,10 +13,10 @@ export function getRandomPrompt(): Prompt {
 
 export function getPromptById(id: string): Prompt | undefined {
   const prompts = getAllPrompts();
-  return prompts.find(prompt => prompt.id === id);
+  return prompts.find((prompt) => prompt.id === id);
 }
 
 export function getPromptsByCategory(category: string): Prompt[] {
   const prompts = getAllPrompts();
-  return prompts.filter(prompt => prompt.category === category);
+  return prompts.filter((prompt) => prompt.category === category);
 }
