@@ -45,6 +45,7 @@ See `.env.example` for the full list. Required:
 - `ANTHROPIC_API_KEY` - For Claude API grading
 - `POSTGRES_URL` - Database connection (or skip for localStorage-only mode)
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` - For rate limiting
+- `ADMIN_DASHBOARD_PASSWORD` - Admin dashboard access (optional, for `/admin`)
 
 ### Initialize Database (Optional)
 
@@ -70,6 +71,30 @@ npm run lint         # Run linter
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details.
+
+## Admin Dashboard
+
+An admin dashboard is available at `/admin` for monitoring and data export.
+
+**Features:**
+- 📊 **Analytics**: Summary statistics, score distributions, position performance
+- 💬 **Session Browser**: View all game sessions with filtering by position, question, date, and detection status
+- 📥 **Data Export**: Export users, sessions, analytics, or full data dump as JSON
+- 🔍 **Question Analysis**: Performance metrics for each prompt
+- 👥 **Demographics**: User breakdown by political alignment, country, and age
+
+**Setup:**
+1. Set the `ADMIN_DASHBOARD_PASSWORD` environment variable
+2. Navigate to `/admin` and log in with your password
+3. Use multi-select filters (react-select powered) to find specific sessions
+4. Export filtered data or full datasets for analysis
+
+**Rate Limits:**
+- Login: 10 attempts per minute per IP
+- Operations: 100 requests per minute per IP
+
+**Data Access:**
+The dashboard provides read-only access to all game data with powerful filtering options. Sessions can be exported in JSON format for further analysis or backup purposes.
 
 ---
 

@@ -259,7 +259,7 @@ export async function getAdminAnalytics(): Promise<AdminAnalytics> {
       ORDER BY avg_score DESC
     `;
 
-    // Get top/bottom prompt performance (min 5 attempts for statistical significance)
+    // Get prompt performance (min 2 attempts, showing top 20)
     const promptPerfResult = await sql`
       SELECT
         prompt_id,
@@ -270,7 +270,7 @@ export async function getAdminAnalytics(): Promise<AdminAnalytics> {
       FROM game_sessions
       WHERE score IS NOT NULL
       GROUP BY prompt_id, prompt_scenario
-      HAVING COUNT(*) >= 5
+      HAVING COUNT(*) >= 2
       ORDER BY avg_score DESC
       LIMIT 20
     `;

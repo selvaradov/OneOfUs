@@ -127,29 +127,35 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
           Question Performance (Top 20)
         </h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-400">
-                  Question ID
-                </th>
-                <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-400">
-                  Scenario
-                </th>
-                <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
-                  Attempts
-                </th>
-                <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
-                  Avg Score
-                </th>
-                <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
-                  Detection %
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {analytics.promptPerformance.map((prompt) => (
+        {analytics.promptPerformance.length === 0 ? (
+          <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+            <p>No question data available yet.</p>
+            <p className="text-sm mt-2">Questions need at least 2 attempts to appear here.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-400">
+                    Question ID
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-400">
+                    Scenario
+                  </th>
+                  <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
+                    Attempts
+                  </th>
+                  <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
+                    Avg Score
+                  </th>
+                  <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
+                    Detection %
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {analytics.promptPerformance.map((prompt) => (
                 <tr
                   key={prompt.promptId}
                   className="border-b border-gray-100 dark:border-gray-700"
@@ -174,6 +180,7 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
             </tbody>
           </table>
         </div>
+        )}
       </div>
       </div>
       </section>

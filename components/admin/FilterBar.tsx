@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { VALID_POSITIONS } from '@/lib/types';
 
 interface FilterBarProps {
@@ -44,9 +45,50 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
     onFilterChange({ ...filters, [key]: value });
   };
 
-  const handleMultiSelectChange = (key: string, e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
-    onFilterChange({ ...filters, [key]: selectedOptions });
+  const handleMultiSelectChange = (key: string, selectedOptions: any) => {
+    const values = selectedOptions ? selectedOptions.map((opt: any) => opt.value) : [];
+    onFilterChange({ ...filters, [key]: values });
+  };
+
+  // react-select custom styles for dark mode support
+  const selectStyles = {
+    control: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: 'rgb(var(--tw-color-gray-700) / 1)',
+      borderColor: state.isFocused ? 'rgb(var(--tw-color-orange-500) / 1)' : 'rgb(var(--tw-color-gray-600) / 1)',
+      minHeight: '38px',
+      fontSize: '0.875rem',
+    }),
+    menu: (base: any) => ({
+      ...base,
+      backgroundColor: 'rgb(var(--tw-color-gray-700) / 1)',
+      fontSize: '0.875rem',
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? 'rgb(var(--tw-color-orange-500) / 1)'
+        : state.isFocused
+        ? 'rgb(var(--tw-color-gray-600) / 1)'
+        : 'transparent',
+      color: 'rgb(var(--tw-color-white) / 1)',
+    }),
+    multiValue: (base: any) => ({
+      ...base,
+      backgroundColor: 'rgb(var(--tw-color-orange-500) / 0.3)',
+    }),
+    multiValueLabel: (base: any) => ({
+      ...base,
+      color: 'rgb(var(--tw-color-white) / 1)',
+    }),
+    multiValueRemove: (base: any) => ({
+      ...base,
+      color: 'rgb(var(--tw-color-white) / 1)',
+      ':hover': {
+        backgroundColor: 'rgb(var(--tw-color-orange-600) / 1)',
+        color: 'rgb(var(--tw-color-white) / 1)',
+      },
+    }),
   };
 
   return (
@@ -102,41 +144,35 @@ export default function FilterBar({ filters, onFilterChange, token }: FilterBarP
         {/* Position Filter */}
         <div>
           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Position <span className="text-gray-500">(Ctrl+Click for multiple)</span>
+            Position
           </label>
-          <select
-            multiple
-            value={filters.position}
-            onChange={(e) => handleMultiSelectChange('position', e)}
-            className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
-            size={5}
-          >
-            {VALID_POSITIONS.map((pos) => (
-              <option key={pos} value={pos}>
-                {pos}
-              </option>
-            ))}
-          </select>
+          <Select
+            isMulti
+            options={VALID_POSITIONS.map(pos => ({ value: pos, label: pos }))}
+            value={filters.position.map(p => ({ value: p, label: p }))}
+            onChange={(selected) => handleMultiSelectChange('position', selected)}
+            styles={selectStyles}
+            placeholder="Select positions..."
+            className="text-sm"
+            classNamePrefix="react-select"
+          />
         </div>
 
         {/* Question ID Filter */}
         <div>
           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Question ID <span className="text-gray-500">(Ctrl+Click for multiple)</span>
+            Question ID
           </label>
-          <select
-            multiple
-            value={filters.promptId}
-            onChange={(e) => handleMultiSelectChange('promptId', e)}
-            className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
-            size={5}
-          >
-            {promptIds.map((id) => (
-              <option key={id} value={id}>
-                {id}
-              </option>
-            ))}
-          </select>
+          <Select
+            isMulti
+            options={promptIds.map(id => ({ value: id, label: id }))}
+            value={filters.promptId.map(id => ({ value: id, label: id }))}
+            onChange={(selected) => handleMultiSelectChange('promptId', selected)}
+            styles={selectStyles}
+            placeholder="Select questions..."
+            className="text-sm"
+            classNamePrefix="react-select"
+          />
         </div>
 
         {/* Date From */}
