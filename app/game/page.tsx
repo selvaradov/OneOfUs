@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Prompt, PoliticalPosition, GameSession } from '@/lib/types';
 import { getRandomPrompt } from '@/lib/prompts';
 import { hasCompletedOnboarding, getUserAlignment } from '@/lib/storage';
-import { getPositionDescription } from '@/lib/positionDescriptions';
+import { getPositionDescription, getExampleFigures } from '@/lib/positionDescriptions';
 import OnboardingModal from '@/components/OnboardingModal';
 import Navbar from '@/components/Navbar';
 import DartingLoader from '@/components/DartingLoader';
@@ -206,9 +206,27 @@ export default function GamePage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   You&apos;re writing as:
                 </p>
-                <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                  {getPositionDescription(assignedPosition)}
-                </p>
+                <div className="inline-flex items-center gap-2">
+                  <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
+                    {getPositionDescription(assignedPosition)}
+                  </p>
+                  <div className="relative group">
+                    <button
+                      type="button"
+                      className="w-5 h-5 rounded-full bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300 text-xs font-bold hover:bg-orange-300 dark:hover:bg-orange-700 transition-colors flex items-center justify-center"
+                      aria-label="See example figures"
+                    >
+                      ?
+                    </button>
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+                      <div className="text-xs text-gray-300 mb-1">Think:</div>
+                      <div className="font-medium">
+                        {getExampleFigures(assignedPosition).join(', ')}
+                      </div>
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
