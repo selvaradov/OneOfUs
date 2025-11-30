@@ -44,11 +44,13 @@ Open [http://localhost:3000](http://localhost:3000).
 See `.env.example` for the full list. Required:
 
 - `ANTHROPIC_API_KEY` - For Claude API grading
-- `POSTGRES_URL` - Database connection (or skip for localStorage-only mode)
+- `POSTGRES_URL` - Database connection string (Vercel Postgres or Neon)
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` - For rate limiting
 - `ADMIN_DASHBOARD_PASSWORD` - Admin dashboard access (optional, for `/admin`)
 
-### Initialize Database (Optional)
+> **Note:** While the application has localStorage fallback logic for graceful degradation, `POSTGRES_URL` is required at startup since `@vercel/postgres` validates the connection on initialization. For local development, you can use a free [Neon](https://neon.tech) database or connect to the Vercel-provisioned database via `vercel env pull`.
+
+### Initialize Database
 
 ```bash
 # Local (no auth required)
@@ -122,7 +124,7 @@ An admin dashboard is available at `/admin` for monitoring and data export.
 - ✅ User history and statistics
 - ✅ Rate limiting (20/hour, 50/day per IP)
 - ✅ Prompt injection protection
-- ✅ Database persistence with localStorage fallback
+- ✅ Database persistence (localStorage used for client-side caching)
 - ✅ Privacy policy page
 
 ---
@@ -164,6 +166,8 @@ An admin dashboard is available at `/admin` for monitoring and data export.
 - [ ] Prompt difficulty tagging and progressive unlocking
 - [ ] Recent news awareness (e.g., Reform UK, current events)
 - [ ] Multiplayer mode with human judges
+- [ ] Apply filters for admin dashboard JSON exports
+- [ ] Potential UI refresh for a quirkier theme
 
 ### Grading Improvements
 

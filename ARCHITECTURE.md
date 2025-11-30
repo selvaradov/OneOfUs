@@ -169,6 +169,52 @@ CREATE TABLE prompts_analytics (
 | -------------- | ------ | ---------------------------------------------------- |
 | `/api/init-db` | POST   | Initialize database schema (protected in production) |
 
+### Admin Dashboard API
+
+All admin endpoints require Bearer token authentication (obtained via `/api/admin/auth`) and are rate-limited to 100 requests/minute per IP.
+
+| Endpoint                 | Method | Purpose                                             |
+| ------------------------ | ------ | --------------------------------------------------- |
+| `/api/admin/auth`        | POST   | Authenticate and receive session token              |
+| `/api/admin/analytics`   | GET    | Fetch dashboard analytics (stats, charts)           |
+| `/api/admin/sessions`    | GET    | Paginated game sessions with filtering              |
+| `/api/admin/export`      | GET    | Export data as JSON (sessions/users/analytics/full) |
+| `/api/admin/prompt-ids`  | GET    | List distinct prompt IDs used in sessions           |
+| `/api/admin/geolocation` | POST   | Batch IP geolocation lookup (max 50 IPs per req)    |
+
+#### Authentication Flow
+
+```
+POST /api/admin/auth
+Body: { "password": "your-admin-password" }
+Response: { "success": true, "token": "base64payload.signature" }
+
+# Use token in subsequent requests:
+Authorization: Bearer <token>
+```
+
+Tokens are stateless (HMAC-signed with expiration), valid for 8 hours.
+
+#### Sessions Endpoint Query Parameters
+
+| Parameter   | Type    | Description                            |
+| ----------- | ------- | -------------------------------------- |
+| `limit`     | number  | Results per page (default 50, max 100) |
+| `offset`    | number  | Pagination offset                      |
+| `sortBy`    | string  | `created_at`, `score`, or `detected`   |
+| `sortOrder` | string  | `ASC` or `DESC`                        |
+| `detected`  | boolean | Filter by detection status             |
+| `position`  | string  | Comma-separated position filter        |
+| `promptId`  | string  | Comma-separated prompt ID filter       |
+| `dateFrom`  | string  | ISO date string for start date         |
+| `dateTo`    | string  | ISO date string for end date           |
+
+#### Export Endpoint Query Parameters
+
+| Parameter | Values                                   | Description         |
+| --------- | ---------------------------------------- | ------------------- |
+| `type`    | `sessions`, `users`, `analytics`, `full` | Data type to export |
+
 ---
 
 ## API Security
@@ -239,12 +285,14 @@ Implemented using Upstash Redis with IP-based identification.
 
 ### Limits
 
-| Endpoint       | Limit        | Window   |
-| -------------- | ------------ | -------- |
-| `/api/grade`   | 20 requests  | 1 hour   |
-| `/api/grade`   | 50 requests  | 24 hours |
-| `/api/history` | 30 requests  | 1 minute |
-| `/api/session` | 100 requests | 24 hours |
+| Endpoint          | Limit        | Window   |
+| ----------------- | ------------ | -------- |
+| `/api/grade`      | 20 requests  | 1 hour   |
+| `/api/grade`      | 50 requests  | 24 hours |
+| `/api/history`    | 30 requests  | 1 minute |
+| `/api/session`    | 100 requests | 24 hours |
+| `/api/admin/auth` | 10 requests  | 1 minute |
+| `/api/admin/*`    | 100 requests | 1 minute |
 
 ### Implementation
 
