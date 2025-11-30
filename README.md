@@ -21,6 +21,8 @@ This isn't about trolling or caricature—it's about truly understanding the str
 - **AI**: Anthropic Claude API (Haiku 4.5 for grading)
 - **Deployment**: Vercel
 
+_Code primarily written by [Claude](https://claude.ai/code)._
+
 ## Quick Start
 
 ```bash
