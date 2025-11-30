@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { VALID_POSITIONS } from '@/lib/types';
 
 interface FilterBarProps {
@@ -8,13 +9,37 @@ interface FilterBarProps {
     sortOrder: 'ASC' | 'DESC';
     detected: 'all' | 'true' | 'false';
     position: string;
+    promptId: string;
     dateFrom: string;
     dateTo: string;
   };
   onFilterChange: (filters: any) => void;
+  token?: string;
 }
 
-export default function FilterBar({ filters, onFilterChange }: FilterBarProps) {
+export default function FilterBar({ filters, onFilterChange, token }: FilterBarProps) {
+  const [promptIds, setPromptIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (token) {
+      fetchPromptIds();
+    }
+  }, [token]);
+
+  const fetchPromptIds = async () => {
+    try {
+      const response = await fetch('/api/admin/prompt-ids', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPromptIds(data.promptIds);
+      }
+    } catch (error) {
+      console.error('Error fetching prompt IDs:', error);
+    }
+  };
+
   const handleChange = (key: string, value: string) => {
     onFilterChange({ ...filters, [key]: value });
   };
@@ -88,6 +113,25 @@ export default function FilterBar({ filters, onFilterChange }: FilterBarProps) {
           </select>
         </div>
 
+        {/* Question ID Filter */}
+        <div>
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Question ID
+          </label>
+          <select
+            value={filters.promptId}
+            onChange={(e) => handleChange('promptId', e.target.value)}
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="all">All Questions</option>
+            {promptIds.map((id) => (
+              <option key={id} value={id}>
+                {id}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Date From */}
         <div>
           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -118,6 +162,7 @@ export default function FilterBar({ filters, onFilterChange }: FilterBarProps) {
       {/* Clear Filters Button */}
       {(filters.detected !== 'all' ||
         filters.position !== 'all' ||
+        filters.promptId !== 'all' ||
         filters.dateFrom ||
         filters.dateTo) && (
         <button
@@ -126,6 +171,7 @@ export default function FilterBar({ filters, onFilterChange }: FilterBarProps) {
               ...filters,
               detected: 'all',
               position: 'all',
+              promptId: 'all',
               dateFrom: '',
               dateTo: '',
             })

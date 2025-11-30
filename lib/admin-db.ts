@@ -11,6 +11,7 @@ export interface AdminSessionsQuery {
   sortOrder?: 'ASC' | 'DESC';
   filterDetected?: boolean | null;
   filterPosition?: PoliticalPosition | null;
+  filterPromptId?: string | null;
   dateFrom?: string | null;
   dateTo?: string | null;
 }
@@ -29,6 +30,7 @@ export async function getAdminGameSessions(
     sortOrder = 'DESC',
     filterDetected = null,
     filterPosition = null,
+    filterPromptId = null,
     dateFrom = null,
     dateTo = null,
   } = options;
@@ -56,6 +58,11 @@ export async function getAdminGameSessions(
     if (filterPosition) {
       params.push(filterPosition);
       conditions.push(`gs.position_assigned = $${params.length}::text`);
+    }
+
+    if (filterPromptId) {
+      params.push(filterPromptId);
+      conditions.push(`gs.prompt_id = $${params.length}::text`);
     }
 
     // Add limit and offset params
@@ -120,6 +127,7 @@ export async function getTotalSessionsCount(
   const {
     filterDetected = null,
     filterPosition = null,
+    filterPromptId = null,
     dateFrom = null,
     dateTo = null,
   } = options;
@@ -146,6 +154,11 @@ export async function getTotalSessionsCount(
     if (filterPosition) {
       params.push(filterPosition);
       conditions.push(`position_assigned = $${params.length}::text`);
+    }
+
+    if (filterPromptId) {
+      params.push(filterPromptId);
+      conditions.push(`prompt_id = $${params.length}::text`);
     }
 
     const whereClause = conditions.join(' AND ');
@@ -181,26 +194,36 @@ export async function getAdminAnalytics(): Promise<AdminAnalytics> {
 
     const totals = totalsResult.rows[0];
 
-    // Get score distribution (10-point buckets)
+    // Get score distribution (10-point buckets) - always return all 10 bins
     const scoreDistResult = await sql`
-      SELECT
-        CASE
-          WHEN score < 10 THEN '0-9'
-          WHEN score < 20 THEN '10-19'
-          WHEN score < 30 THEN '20-29'
-          WHEN score < 40 THEN '30-39'
-          WHEN score < 50 THEN '40-49'
-          WHEN score < 60 THEN '50-59'
-          WHEN score < 70 THEN '60-69'
-          WHEN score < 80 THEN '70-79'
-          WHEN score < 90 THEN '80-89'
-          ELSE '90-100'
-        END as range,
-        COUNT(*) as count
-      FROM game_sessions
-      WHERE score IS NOT NULL
-      GROUP BY range
-      ORDER BY MIN(score)
+      WITH bins AS (
+        SELECT unnest(ARRAY['0-9', '10-19', '20-29', '30-39', '40-49',
+                            '50-59', '60-69', '70-79', '80-89', '90-100']) as range,
+               unnest(ARRAY[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) as bin_order
+      ),
+      score_counts AS (
+        SELECT
+          CASE
+            WHEN score < 10 THEN '0-9'
+            WHEN score < 20 THEN '10-19'
+            WHEN score < 30 THEN '20-29'
+            WHEN score < 40 THEN '30-39'
+            WHEN score < 50 THEN '40-49'
+            WHEN score < 60 THEN '50-59'
+            WHEN score < 70 THEN '60-69'
+            WHEN score < 80 THEN '70-79'
+            WHEN score < 90 THEN '80-89'
+            ELSE '90-100'
+          END as range,
+          COUNT(*) as count
+        FROM game_sessions
+        WHERE score IS NOT NULL
+        GROUP BY range
+      )
+      SELECT bins.range, COALESCE(score_counts.count, 0) as count
+      FROM bins
+      LEFT JOIN score_counts ON bins.range = score_counts.range
+      ORDER BY bins.bin_order
     `;
 
     // Get position performance
@@ -389,6 +412,24 @@ export async function getAllSessions(dateFrom?: string, dateTo?: string): Promis
     }));
   } catch (error) {
     console.error('Error fetching all sessions:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get list of distinct prompt IDs for filtering
+ */
+export async function getDistinctPromptIds(): Promise<string[]> {
+  try {
+    const result = await sql`
+      SELECT DISTINCT prompt_id
+      FROM game_sessions
+      ORDER BY prompt_id
+    `;
+
+    return result.rows.map((row) => row.prompt_id);
+  } catch (error) {
+    console.error('Error fetching distinct prompt IDs:', error);
     throw error;
   }
 }

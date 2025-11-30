@@ -116,7 +116,7 @@ export default function SessionsTable({ sessions, token }: SessionsTableProps) {
                 Date
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                User ID
+                Question ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Position
@@ -148,7 +148,7 @@ export default function SessionsTable({ sessions, token }: SessionsTableProps) {
                     {formatDate(session.created_at)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600 dark:text-gray-400">
-                    {truncateUUID(session.user_id)}
+                    {session.prompt_id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                     {session.position_assigned}

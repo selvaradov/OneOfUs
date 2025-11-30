@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
 
     const filterPosition = (searchParams.get('position') ||
       null) as PoliticalPosition | null;
+    const filterPromptId = searchParams.get('promptId') || null;
     const dateFrom = searchParams.get('dateFrom') || null;
     const dateTo = searchParams.get('dateTo') || null;
 
@@ -99,6 +100,7 @@ export async function GET(request: NextRequest) {
       sortOrder,
       filterDetected,
       filterPosition,
+      filterPromptId,
       dateFrom,
       dateTo,
     };
@@ -109,6 +111,7 @@ export async function GET(request: NextRequest) {
       getTotalSessionsCount({
         filterDetected,
         filterPosition,
+        filterPromptId,
         dateFrom,
         dateTo,
       }),

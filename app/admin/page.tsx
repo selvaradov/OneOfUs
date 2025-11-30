@@ -102,6 +102,7 @@ export default function AdminDashboard() {
     sortOrder: 'DESC' as 'ASC' | 'DESC',
     detected: 'all' as 'all' | 'true' | 'false',
     position: 'all',
+    promptId: 'all',
     dateFrom: '',
     dateTo: '',
   });
@@ -171,6 +172,9 @@ export default function AdminDashboard() {
       if (filters.position !== 'all') {
         params.append('position', filters.position);
       }
+      if (filters.promptId !== 'all') {
+        params.append('promptId', filters.promptId);
+      }
       if (filters.dateFrom) {
         params.append('dateFrom', filters.dateFrom);
       }
@@ -239,21 +243,48 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Analytics Cards */}
-        {analytics && <AnalyticsCards analytics={analytics} />}
-
-        {/* Controls */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 my-6">
-          <FilterBar filters={filters} onFilterChange={setFilters} />
-          {token && <ExportButton token={token} filters={filters} />}
+        {/* Table of Contents */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            Dashboard Sections
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <a href="#analytics" className="text-orange-600 dark:text-orange-400 hover:underline">
+              📊 Analytics & Statistics
+            </a>
+            <a href="#score-dist" className="text-orange-600 dark:text-orange-400 hover:underline">
+              📈 Score Distribution
+            </a>
+            <a href="#sessions" className="text-orange-600 dark:text-orange-400 hover:underline">
+              💬 All Game Sessions
+            </a>
+          </div>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p className="text-red-800 dark:text-red-200">{error}</p>
+        {/* Analytics Section */}
+        <div id="analytics">
+          {analytics && <AnalyticsCards analytics={analytics} />}
+        </div>
+
+        {/* All Sessions Section */}
+        <div id="sessions" className="mt-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            All Game Sessions
+          </h2>
+
+          {/* Controls */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 my-6">
+            <FilterBar filters={filters} onFilterChange={setFilters} token={token || undefined} />
+            {token && <ExportButton token={token} filters={filters} />}
           </div>
-        )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-red-800 dark:text-red-200">{error}</p>
+            </div>
+          )}
+        </div>
 
         {/* Sessions Table */}
         {loading ? (

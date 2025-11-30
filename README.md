@@ -90,6 +90,10 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details.
 
 ### Gameplay Ideas
 
+**1v1 mode**
+- Receive the same prompts as friends playing simultaneously, and see who performs the best
+- Also add ability to share results with others
+
 **Immersive Group Chat Mode**
 - Drop the user into a conversation with NPC LLMs all roleplaying a political position
 - User must blend in without getting "detected" over an extended multi-turn conversation

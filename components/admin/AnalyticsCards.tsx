@@ -62,46 +62,80 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
         </div>
       </div>
 
-      {/* Position Performance */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+      {/* Position Performance - Condensed */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
           Position Performance
         </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 text-xs">
+          {analytics.positionPerformance.map((pos) => (
+            <div
+              key={pos.position}
+              className="bg-gray-50 dark:bg-gray-700 rounded p-2"
+            >
+              <div className="font-medium text-gray-900 dark:text-white truncate">
+                {pos.position}
+              </div>
+              <div className="text-gray-600 dark:text-gray-400 mt-1">
+                {pos.total} attempts
+              </div>
+              <div className="text-gray-900 dark:text-white font-semibold">
+                {pos.avgScore.toFixed(1)} avg
+              </div>
+              <div className="text-gray-600 dark:text-gray-400">
+                {pos.detectionRate.toFixed(0)}% detected
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Question/Prompt Performance */}
+      <div id="score-dist" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+          Question Performance (Top 20)
+        </h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full">
+          <table className="min-w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Position
+                <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-400">
+                  Question ID
                 </th>
-                <th className="px-4 py-2 text-right text-sm font-medium text-gray-600 dark:text-gray-400">
+                <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-400">
+                  Scenario
+                </th>
+                <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
                   Attempts
                 </th>
-                <th className="px-4 py-2 text-right text-sm font-medium text-gray-600 dark:text-gray-400">
+                <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
                   Avg Score
                 </th>
-                <th className="px-4 py-2 text-right text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Detection Rate
+                <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400">
+                  Detection %
                 </th>
               </tr>
             </thead>
             <tbody>
-              {analytics.positionPerformance.map((pos) => (
+              {analytics.promptPerformance.map((prompt) => (
                 <tr
-                  key={pos.position}
+                  key={prompt.promptId}
                   className="border-b border-gray-100 dark:border-gray-700"
                 >
-                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                    {pos.position}
+                  <td className="px-3 py-2 font-mono text-xs text-gray-700 dark:text-gray-300">
+                    {prompt.promptId}
                   </td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-700 dark:text-gray-300">
-                    {pos.total}
+                  <td className="px-3 py-2 text-gray-900 dark:text-white max-w-md truncate">
+                    {prompt.promptScenario}
                   </td>
-                  <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">
-                    {pos.avgScore.toFixed(1)}
+                  <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">
+                    {prompt.attempts}
                   </td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-700 dark:text-gray-300">
-                    {pos.detectionRate.toFixed(1)}%
+                  <td className="px-3 py-2 text-right font-medium text-gray-900 dark:text-white">
+                    {prompt.avgScore.toFixed(1)}
+                  </td>
+                  <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">
+                    {prompt.detectionRate.toFixed(1)}%
                   </td>
                 </tr>
               ))}
