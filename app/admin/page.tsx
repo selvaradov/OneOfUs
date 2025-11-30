@@ -306,9 +306,9 @@ export default function AdminDashboard() {
             <FilterBar filters={filters} onFilterChange={setFilters} token={token || undefined} />
             {token && (
               <div className="flex items-center gap-3">
-                <ExportButton token={token} filters={filters} />
+                <ExportButton token={token} />
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Exports all records (filters not applied to analytics)
+                  Exports all records (filters apply only to table display)
                 </span>
               </div>
             )}

@@ -4,13 +4,9 @@ import { useState } from 'react';
 
 interface ExportButtonProps {
   token: string;
-  filters: {
-    dateFrom: string;
-    dateTo: string;
-  };
 }
 
-export default function ExportButton({ token, filters }: ExportButtonProps) {
+export default function ExportButton({ token }: ExportButtonProps) {
   const [exporting, setExporting] = useState(false);
   const [exportType, setExportType] = useState<
     'sessions' | 'users' | 'analytics' | 'full'
@@ -23,13 +19,6 @@ export default function ExportButton({ token, filters }: ExportButtonProps) {
 
     try {
       const params = new URLSearchParams({ type });
-
-      if (filters.dateFrom) {
-        params.append('dateFrom', filters.dateFrom);
-      }
-      if (filters.dateTo) {
-        params.append('dateTo', filters.dateTo);
-      }
 
       const response = await fetch(`/api/admin/export?${params}`, {
         headers: { Authorization: `Bearer ${token}` },

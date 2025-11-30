@@ -49,8 +49,6 @@ export async function GET(request: NextRequest) {
     // Parse query parameters
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'full'; // sessions | users | analytics | full
-    const dateFrom = searchParams.get('dateFrom') || undefined;
-    const dateTo = searchParams.get('dateTo') || undefined;
 
     // Validate type
     if (!['sessions', 'users', 'analytics', 'full'].includes(type)) {
@@ -66,13 +64,12 @@ export async function GET(request: NextRequest) {
         exportDate: new Date().toISOString(),
         exportType: type,
         version: '1.0',
-        note: 'Session exports may be filtered by date range. Analytics are always comprehensive.',
       },
     };
 
     switch (type) {
       case 'sessions':
-        const sessions = await getAllSessions(dateFrom, dateTo);
+        const sessions = await getAllSessions();
         exportData.summary = {
           totalSessions: sessions.length,
           dateRange: {
@@ -98,7 +95,7 @@ export async function GET(request: NextRequest) {
 
       case 'full':
         const [fullSessions, fullUsers, fullAnalytics] = await Promise.all([
-          getAllSessions(dateFrom, dateTo),
+          getAllSessions(),
           getAllUsers(),
           getAdminAnalytics(),
         ]);
@@ -122,7 +119,7 @@ export async function GET(request: NextRequest) {
 
     // Log export action
     console.log(
-      `Admin export: type=${type}, dateFrom=${dateFrom}, dateTo=${dateTo}, IP=${ip}, timestamp=${new Date().toISOString()}`
+      `Admin export: type=${type}, IP=${ip}, timestamp=${new Date().toISOString()}`
     );
 
     // Return JSON with download headers
