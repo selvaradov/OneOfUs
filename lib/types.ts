@@ -42,7 +42,7 @@ export const VALID_POSITIONS: readonly PoliticalPosition[] = [
 
 export interface UserAlignment {
   id: string;
-  politicalAlignment: PoliticalPosition;
+  politicalAlignment: number; // 1=Left, 2=Centre-left, 3=Centre, 4=Centre-right, 5=Right
   ageRange?: string;
   country?: string;
   createdAt: string;

@@ -221,28 +221,25 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
               data={(() => {
-                // Database stores: 'left', 'centre-left', 'centre', 'centre-right', 'right'
-                // Onboarding has 7 slider positions that map to these 5 values:
-                // [0,1]→'left', [2]→'centre-left', [3]→'centre', [4]→'centre-right', [5,6]→'right'
-
-                // Get counts from database (stored as strings)
+                // Database stores numeric values: 1=Left, 2=Centre-left, 3=Centre, 4=Centre-right, 5=Right
+                // Get counts from database
                 const leftCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => (item.alignment as any) === 'left'
+                  (item) => item.alignment === 1
                 )?.count || 0;
                 const centreLeftCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => (item.alignment as any) === 'centre-left'
+                  (item) => item.alignment === 2
                 )?.count || 0;
                 const centreCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => (item.alignment as any) === 'centre'
+                  (item) => item.alignment === 3
                 )?.count || 0;
                 const centreRightCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => (item.alignment as any) === 'centre-right'
+                  (item) => item.alignment === 4
                 )?.count || 0;
                 const rightCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => (item.alignment as any) === 'right'
+                  (item) => item.alignment === 5
                 )?.count || 0;
 
-                // Create 5 bars for the 5 database values
+                // Create 5 bars for the 5 alignment values
                 // Only furthest-left, centre, and furthest-right get x-axis labels
                 return [
                   { name: 'Left', tooltipName: 'Left', count: leftCount },
