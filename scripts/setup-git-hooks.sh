@@ -15,9 +15,27 @@ HOOK_FILE=".git/hooks/pre-commit"
 cat > "$HOOK_FILE" << 'EOF'
 #!/bin/bash
 
-# Pre-commit hook: Run TypeScript type checks before allowing commit
+# Pre-commit hook: Format with Prettier and run TypeScript type checks
 
 echo "Running pre-commit checks..."
+echo ""
+
+# Format staged files with Prettier
+echo "🎨 Formatting code with Prettier..."
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx|json|css|md)$' || true)
+
+if [ -n "$STAGED_FILES" ]; then
+    # Format files
+    npx prettier --write $STAGED_FILES
+
+    # Re-add formatted files to staging
+    git add $STAGED_FILES
+
+    echo "✓ Code formatted"
+else
+    echo "No files to format"
+fi
+
 echo ""
 
 # Run type check
@@ -41,6 +59,7 @@ chmod +x "$HOOK_FILE"
 echo "✓ Pre-commit hook installed at $HOOK_FILE"
 echo ""
 echo "This hook will:"
+echo "  - Auto-format code with Prettier before every commit"
 echo "  - Run TypeScript type checks before every commit"
 echo "  - Catch unclosed JSX tags and syntax errors"
 echo "  - Prevent commits if errors are found"
