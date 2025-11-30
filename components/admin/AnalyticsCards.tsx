@@ -9,9 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  RadialBarChart,
-  RadialBar,
-  PolarAngleAxis,
 } from 'recharts';
 
 interface AnalyticsCardsProps {
@@ -88,9 +85,12 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
 
       {/* Position Performance */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
           Position Performance
         </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Detection rate (circle percentage) shows how often users were identified as role-playing. Average score indicates how convincingly they argued their assigned position.
+        </p>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           {analytics.positionPerformance.map((pos) => (
             <div
@@ -220,17 +220,38 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
-              data={analytics.demographicBreakdown.byAlignment.map((item) => ({
-                name:
-                  item.alignment === 1 ? 'Far Left' :
-                  item.alignment === 2 ? 'Left' :
-                  item.alignment === 3 ? 'C-Left' :
-                  item.alignment === 4 ? 'Center' :
-                  item.alignment === 5 ? 'C-Right' :
-                  item.alignment === 6 ? 'Right' :
-                  item.alignment === 7 ? 'Far Right' : `${item.alignment}`,
-                count: item.count,
-              }))}
+              data={(() => {
+                // Database stores: 'left', 'centre-left', 'centre', 'centre-right', 'right'
+                // Onboarding has 7 slider positions that map to these 5 values:
+                // [0,1]→'left', [2]→'centre-left', [3]→'centre', [4]→'centre-right', [5,6]→'right'
+
+                // Get counts from database (stored as strings)
+                const leftCount = analytics.demographicBreakdown.byAlignment.find(
+                  (item) => (item.alignment as any) === 'left'
+                )?.count || 0;
+                const centreLeftCount = analytics.demographicBreakdown.byAlignment.find(
+                  (item) => (item.alignment as any) === 'centre-left'
+                )?.count || 0;
+                const centreCount = analytics.demographicBreakdown.byAlignment.find(
+                  (item) => (item.alignment as any) === 'centre'
+                )?.count || 0;
+                const centreRightCount = analytics.demographicBreakdown.byAlignment.find(
+                  (item) => (item.alignment as any) === 'centre-right'
+                )?.count || 0;
+                const rightCount = analytics.demographicBreakdown.byAlignment.find(
+                  (item) => (item.alignment as any) === 'right'
+                )?.count || 0;
+
+                // Create 5 bars for the 5 database values
+                // Only furthest-left, centre, and furthest-right get x-axis labels
+                return [
+                  { name: 'Left', tooltipName: 'Left', count: leftCount },
+                  { name: '', tooltipName: 'Centre-left', count: centreLeftCount },
+                  { name: 'Centre', tooltipName: 'Centre', count: centreCount },
+                  { name: '', tooltipName: 'Centre-right', count: centreRightCount },
+                  { name: 'Right', tooltipName: 'Right', count: rightCount },
+                ];
+              })()}
               margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" className="stroke-gray-300 dark:stroke-gray-700" />
@@ -250,6 +271,9 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
                   borderRadius: '4px',
                 }}
                 labelStyle={{ color: 'var(--tooltip-text, #000)' }}
+                formatter={(value: any, _name: string, props: any) => {
+                  return [value, props.payload.tooltipName];
+                }}
               />
               <Bar dataKey="count" fill="#6b7280" />
             </BarChart>
@@ -304,10 +328,15 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
-              data={analytics.demographicBreakdown.byAge.map((item) => ({
-                name: item.ageRange,
-                count: item.count,
-              }))}
+              data={(() => {
+                const allAges = ['18-24', '25-34', '35-44', '45-54', '55+'];
+                return allAges.map((ageRange) => {
+                  const found = analytics.demographicBreakdown.byAge.find(
+                    (item) => item.ageRange === ageRange
+                  );
+                  return { name: ageRange, count: found?.count || 0 };
+                });
+              })()}
               margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" className="stroke-gray-300 dark:stroke-gray-700" />
