@@ -15,7 +15,7 @@ interface AnalyticsCardsProps {
   analytics: AdminAnalytics;
 }
 
-// Custom tooltip component for Political Alignment chart
+// Custom tooltip component for charts
 function AlignmentTooltip({ active, payload }: any) {
   if (active && payload && payload.length) {
     return (
@@ -34,6 +34,28 @@ function AlignmentTooltip({ active, payload }: any) {
     );
   }
   return null;
+}
+
+// Compute nice Y-axis ticks: domain goes to dataMax, but only label nice intervals
+function getNiceTicks(maxValue: number, intOnly: boolean = false): number[] {
+  if (maxValue <= 0) return [0];
+  // Pick a nice step size
+  const roughStep = maxValue / 5;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+  const residual = roughStep / magnitude;
+  let niceStep: number;
+  if (residual <= 1) niceStep = magnitude;
+  else if (residual <= 2) niceStep = 2 * magnitude;
+  else if (residual <= 5) niceStep = 5 * magnitude;
+  else niceStep = 10 * magnitude;
+  // Generate ticks from 0 up to (but not exceeding) maxValue
+  const ticks: number[] = [];
+  for (let t = 0; t <= maxValue; t += niceStep) {
+    if (!intOnly || Number.isInteger(t)) {
+      ticks.push(t);
+    }
+  }
+  return ticks;
 }
 
 export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
@@ -235,140 +257,141 @@ export default function AnalyticsCards({ analytics }: AnalyticsCardsProps) {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* By Alignment */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-            Political Alignment
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={(() => {
-                // Database stores numeric values: 1=Left, 2=Centre-left, 3=Centre, 4=Centre-right, 5=Right
-                // Get counts from database
-                const leftCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => item.alignment === 1
-                )?.count || 0;
-                const centreLeftCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => item.alignment === 2
-                )?.count || 0;
-                const centreCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => item.alignment === 3
-                )?.count || 0;
-                const centreRightCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => item.alignment === 4
-                )?.count || 0;
-                const rightCount = analytics.demographicBreakdown.byAlignment.find(
-                  (item) => item.alignment === 5
-                )?.count || 0;
+        {(() => {
+          // Database stores numeric values: 1=Left, 2=Centre-left, 3=Centre, 4=Centre-right, 5=Right
+          const leftCount = analytics.demographicBreakdown.byAlignment.find(
+            (item) => item.alignment === 1
+          )?.count || 0;
+          const centreLeftCount = analytics.demographicBreakdown.byAlignment.find(
+            (item) => item.alignment === 2
+          )?.count || 0;
+          const centreCount = analytics.demographicBreakdown.byAlignment.find(
+            (item) => item.alignment === 3
+          )?.count || 0;
+          const centreRightCount = analytics.demographicBreakdown.byAlignment.find(
+            (item) => item.alignment === 4
+          )?.count || 0;
+          const rightCount = analytics.demographicBreakdown.byAlignment.find(
+            (item) => item.alignment === 5
+          )?.count || 0;
 
-                // Create 5 bars for the 5 alignment values
-                // Only furthest-left, centre, and furthest-right get x-axis labels
-                return [
-                  { name: 'Left', tooltipName: 'Left', count: leftCount },
-                  { name: '', tooltipName: 'Centre-left', count: centreLeftCount },
-                  { name: 'Centre', tooltipName: 'Centre', count: centreCount },
-                  { name: '', tooltipName: 'Centre-right', count: centreRightCount },
-                  { name: 'Right', tooltipName: 'Right', count: rightCount },
-                ];
-              })()}
-              margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" className="stroke-gray-300 dark:stroke-gray-700" />
-              <XAxis
-                dataKey="name"
-                tick={{ fill: 'currentColor' }}
-                className="text-gray-600 dark:text-gray-400"
-              />
-              <YAxis
-                tick={{ fill: 'currentColor' }}
-                className="text-gray-600 dark:text-gray-400"
-              />
-              <Tooltip content={<AlignmentTooltip />} />
-              <Bar dataKey="count" fill="#6b7280" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+          const alignmentData = [
+            { name: 'Left', tooltipName: 'Left', count: leftCount },
+            { name: 'Centre-left', tooltipName: 'Centre-left', count: centreLeftCount },
+            { name: 'Centre', tooltipName: 'Centre', count: centreCount },
+            { name: 'Centre-right', tooltipName: 'Centre-right', count: centreRightCount },
+            { name: 'Right', tooltipName: 'Right', count: rightCount },
+          ];
+          const alignmentMax = Math.max(...alignmentData.map((d) => d.count));
+
+          return (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                Political Alignment
+              </h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={alignmentData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: 'currentColor' }}
+                    className="text-gray-600 dark:text-gray-400"
+                  />
+                  <YAxis
+                    tick={{ fill: 'currentColor' }}
+                    className="text-gray-600 dark:text-gray-400"
+                    allowDecimals={false}
+                    domain={[0, alignmentMax]}
+                    ticks={getNiceTicks(alignmentMax, true)}
+                  />
+                  <Tooltip content={<AlignmentTooltip />} />
+                  <Bar dataKey="count" fill="#6b7280" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          );
+        })()}
 
         {/* By Country */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-            Country Distribution
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={analytics.demographicBreakdown.byCountry
-                .filter((item) => ['US', 'UK', 'Other'].includes(item.country))
-                .map((item) => ({
-                  name:
-                    item.country === 'US' ? 'United States' :
-                    item.country === 'UK' ? 'United Kingdom' :
-                    'Other',
-                  count: item.count,
-                }))}
-              margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" className="stroke-gray-300 dark:stroke-gray-700" />
-              <XAxis
-                dataKey="name"
-                tick={{ fill: 'currentColor' }}
-                className="text-gray-600 dark:text-gray-400"
-              />
-              <YAxis
-                tick={{ fill: 'currentColor' }}
-                className="text-gray-600 dark:text-gray-400"
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'var(--tooltip-bg, #fff)',
-                  border: '1px solid var(--tooltip-border, #ccc)',
-                  borderRadius: '4px',
-                }}
-                labelStyle={{ color: 'var(--tooltip-text, #000)' }}
-              />
-              <Bar dataKey="count" fill="#6b7280" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {(() => {
+          const countryData = analytics.demographicBreakdown.byCountry
+            .filter((item) => ['US', 'UK', 'Other'].includes(item.country))
+            .map((item) => {
+              const displayName =
+                item.country === 'US' ? 'United States' :
+                item.country === 'UK' ? 'United Kingdom' :
+                'Other';
+              return {
+                name: displayName,
+                tooltipName: displayName,
+                count: item.count,
+              };
+            });
+          const countryMax = Math.max(...countryData.map((d) => d.count), 0);
+
+          return (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                Country Distribution
+              </h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={countryData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: 'currentColor' }}
+                    className="text-gray-600 dark:text-gray-400"
+                  />
+                  <YAxis
+                    tick={{ fill: 'currentColor' }}
+                    className="text-gray-600 dark:text-gray-400"
+                    allowDecimals={false}
+                    domain={[0, countryMax]}
+                    ticks={getNiceTicks(countryMax, true)}
+                  />
+                  <Tooltip content={<AlignmentTooltip />} />
+                  <Bar dataKey="count" fill="#6b7280" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          );
+        })()}
 
         {/* By Age */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-            Age Distribution
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={(() => {
-                const allAges = ['18-24', '25-34', '35-44', '45-54', '55+'];
-                return allAges.map((ageRange) => {
-                  const found = analytics.demographicBreakdown.byAge.find(
-                    (item) => item.ageRange === ageRange
-                  );
-                  return { name: ageRange, count: found?.count || 0 };
-                });
-              })()}
-              margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" className="stroke-gray-300 dark:stroke-gray-700" />
-              <XAxis
-                dataKey="name"
-                tick={{ fill: 'currentColor' }}
-                className="text-gray-600 dark:text-gray-400"
-              />
-              <YAxis
-                tick={{ fill: 'currentColor' }}
-                className="text-gray-600 dark:text-gray-400"
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'var(--tooltip-bg, #fff)',
-                  border: '1px solid var(--tooltip-border, #ccc)',
-                  borderRadius: '4px',
-                }}
-                labelStyle={{ color: 'var(--tooltip-text, #000)' }}
-              />
-              <Bar dataKey="count" fill="#6b7280" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {(() => {
+          const allAges = ['18-24', '25-34', '35-44', '45-54', '55+'];
+          const ageData = allAges.map((ageRange) => {
+            const found = analytics.demographicBreakdown.byAge.find(
+              (item) => item.ageRange === ageRange
+            );
+            return { name: ageRange, tooltipName: ageRange, count: found?.count || 0 };
+          });
+          const ageMax = Math.max(...ageData.map((d) => d.count), 0);
+
+          return (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                Age Distribution
+              </h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={ageData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: 'currentColor' }}
+                    className="text-gray-600 dark:text-gray-400"
+                  />
+                  <YAxis
+                    tick={{ fill: 'currentColor' }}
+                    className="text-gray-600 dark:text-gray-400"
+                    allowDecimals={false}
+                    domain={[0, ageMax]}
+                    ticks={getNiceTicks(ageMax, true)}
+                  />
+                  <Tooltip content={<AlignmentTooltip />} />
+                  <Bar dataKey="count" fill="#6b7280" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          );
+        })()}
       </div>
       </section>
     </div>
