@@ -4,26 +4,9 @@ Automated tests and checks to verify code quality and database integration.
 
 ## Pre-Commit Workflow
 
-**IMPORTANT: Run type checks before every commit to prevent syntax errors and broken code.**
+**IMPORTANT: Ensure checks run before every commit to prevent syntax errors and broken code.**
 
-### Quick Workflow
-
-```bash
-# 1. Run type check (REQUIRED)
-./scripts/check-types.sh
-
-# 2. Run linter (REQUIRED)
-npm run lint
-
-# 3. Run tests (recommended)
-./scripts/test-database.sh
-
-# 4. If checks pass, commit
-git add .
-git commit -m "Your message"
-```
-
-### Automated Pre-Commit Hook (Optional)
+### Automated Pre-Commit Hook
 
 Enable automatic checks before every commit:
 
@@ -34,6 +17,23 @@ Enable automatic checks before every commit:
 This blocks commits if TypeScript errors or linting issues exist. Once enabled, you only need to run `git add . && git commit`, and all checks run automatically.
 
 ---
+
+### Manual Workflow
+
+```bash
+# 1. Run type check
+./scripts/check-types.sh
+
+# 2. Run linter
+npm run lint
+
+# 3. Run tests
+./scripts/test-database.sh
+
+# 4. If checks pass, commit
+git add .
+git commit -m "Your message"
+```
 
 ## Available Scripts
 
