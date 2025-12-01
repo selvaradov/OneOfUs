@@ -151,3 +151,117 @@ export interface AdminAnalytics {
     byAge: Array<{ ageRange: string; count: number }>;
   };
 }
+
+// =====================================================
+// 1v1 MATCHES TYPES
+// =====================================================
+
+export type MatchStatus = 'pending' | 'completed' | 'expired';
+
+export type ParticipantRole = 'creator' | 'opponent';
+
+export interface Match {
+  id: string;
+  matchCode: string;
+  status: MatchStatus;
+  promptId: string;
+  createdAt: string;
+  expiresAt: string;
+  completedAt: string | null;
+}
+
+export interface MatchParticipant {
+  id: string;
+  matchId: string;
+  userId: string;
+  sessionId: string | null;
+  role: ParticipantRole;
+  joinedAt: string;
+}
+
+// Extended match with participants (returned by API)
+export interface MatchWithParticipants extends Match {
+  participants: MatchParticipant[];
+}
+
+// Participant with session data for results display
+export interface ParticipantWithSession extends MatchParticipant {
+  session?: {
+    id: string;
+    positionAssigned: PoliticalPosition;
+    userResponse: string;
+    score: number | null;
+    detected: boolean | null;
+    feedback: string | null;
+    rubricUnderstanding: number | null;
+    rubricAuthenticity: number | null;
+    rubricExecution: number | null;
+    aiComparisonResponse: string | null;
+    durationSeconds: number | null;
+  };
+}
+
+// Full match data for results page
+export interface MatchResults {
+  match: Match;
+  prompt: Prompt;
+  participants: ParticipantWithSession[];
+  winner: 'creator' | 'opponent' | 'tie' | null; // null if not completed
+}
+
+// API Request/Response types for matches
+
+export interface MatchCreateRequest {
+  sessionId: string;
+  userId: string;
+}
+
+export interface MatchCreateResponse {
+  success: boolean;
+  matchId?: string;
+  matchCode?: string;
+  shareUrl?: string;
+  existingMatch?: boolean; // True if returning existing match for this session
+  error?: string;
+}
+
+export interface MatchJoinRequest {
+  matchCode: string;
+  userId: string;
+}
+
+export interface MatchJoinResponse {
+  success: boolean;
+  matchId?: string;
+  promptId?: string;
+  position?: PoliticalPosition;
+  alreadyJoined?: boolean;
+  error?: string;
+}
+
+export interface MatchLinkSessionRequest {
+  sessionId: string;
+  matchId: string;
+  userId: string;
+}
+
+export interface MatchLinkSessionResponse {
+  success: boolean;
+  matchCompleted?: boolean;
+  error?: string;
+}
+
+// Match history item (for /matches page)
+export interface MatchHistoryItem {
+  id: string;
+  matchCode: string;
+  status: MatchStatus;
+  promptId: string;
+  promptScenario: string;
+  createdAt: string;
+  completedAt: string | null;
+  role: ParticipantRole;
+  creatorScore: number | null;
+  opponentScore: number | null;
+  participantCount: number;
+}

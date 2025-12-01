@@ -60,6 +60,24 @@ export const adminRateLimiter = new Ratelimit({
   prefix: 'ratelimit:admin',
 });
 
+// Rate limiter for /api/match/create endpoint
+// 10 matches per hour per user
+export const matchCreateRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(100, '1 h'), // TODO change back to 10 per hour
+  analytics: true,
+  prefix: 'ratelimit:match:create',
+});
+
+// Rate limiter for /api/match/* endpoints (general match operations)
+// 60 requests per minute
+export const matchRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, '1 m'),
+  analytics: true,
+  prefix: 'ratelimit:match',
+});
+
 // Helper to extract IP address from request
 export function getClientIp(request: Request): string {
   // Try x-forwarded-for first (Vercel sets this)
