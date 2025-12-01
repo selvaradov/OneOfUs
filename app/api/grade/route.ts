@@ -243,6 +243,7 @@ export async function POST(request: NextRequest) {
     const aiResponse = parsedData.aiComparison?.aiResponse || null;
 
     // Save to database if user ID is provided
+    let sessionId: string | null = null;
     if (userId) {
       try {
         const isConnected = await checkDatabaseConnection();
@@ -253,7 +254,7 @@ export async function POST(request: NextRequest) {
             request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
           const userAgent = request.headers.get('user-agent') || 'unknown';
 
-          await saveGameSession({
+          sessionId = await saveGameSession({
             userId,
             promptId: promptId || 'unknown',
             promptScenario: scenario,
@@ -285,6 +286,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      sessionId: sessionId,
       result,
       aiResponse,
     });
