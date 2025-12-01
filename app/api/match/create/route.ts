@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json();
-    const { sessionId, userId } = body;
+    const { sessionId, userId, forceNew } = body;
 
     // Validate required fields
     if (!sessionId || typeof sessionId !== 'string') {
@@ -78,31 +78,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if a match already exists for this session
-    const existingMatch = await getExistingMatchForSession(sessionId);
+    // Check if a match already exists for this session (unless forceNew is true)
+    if (!forceNew) {
+      const existingMatch = await getExistingMatchForSession(sessionId);
 
-    if (existingMatch) {
-      // Return the existing match instead of creating a new one
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://oneofus.vercel.app';
-      return NextResponse.json({
-        success: true,
-        matchId: existingMatch.matchId,
-        matchCode: existingMatch.matchCode,
-        shareUrl: `${baseUrl}/match/${existingMatch.matchCode}`,
-        existingMatch: true,
-      });
+      if (existingMatch) {
+        // If existing match is pending, return it and indicate it's pending
+        // If existing match is completed or expired, we'll create a new one
+        if (existingMatch.status === 'pending') {
+          return NextResponse.json({
+            success: true,
+            matchId: existingMatch.matchId,
+            matchCode: existingMatch.matchCode,
+            existingMatch: true,
+            existingMatchStatus: 'pending',
+          });
+        }
+        // If completed/expired, fall through to create a new match
+      }
     }
 
     // Create the match
     const { matchId, matchCode } = await createMatch(userId, sessionId, session.prompt_id);
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://oneofus.vercel.app';
-
     return NextResponse.json({
       success: true,
       matchId,
       matchCode,
-      shareUrl: `${baseUrl}/match/${matchCode}`,
       existingMatch: false,
     });
   } catch (error) {

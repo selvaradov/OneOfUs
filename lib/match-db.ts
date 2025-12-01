@@ -149,12 +149,14 @@ export async function getMatchById(matchId: string): Promise<MatchWithParticipan
  */
 export async function getExistingMatchForSession(
   sessionId: string
-): Promise<{ matchId: string; matchCode: string } | null> {
+): Promise<{ matchId: string; matchCode: string; status: string } | null> {
   const result = await sql`
-    SELECT m.id, m.match_code
+    SELECT m.id, m.match_code, m.status
     FROM matches m
     JOIN match_participants mp ON m.id = mp.match_id
     WHERE mp.session_id = ${sessionId} AND mp.role = 'creator'
+    ORDER BY m.created_at DESC
+    LIMIT 1
   `;
 
   if (result.rows.length === 0) {
@@ -164,6 +166,7 @@ export async function getExistingMatchForSession(
   return {
     matchId: result.rows[0].id,
     matchCode: result.rows[0].match_code,
+    status: result.rows[0].status,
   };
 }
 
@@ -232,7 +235,7 @@ export async function joinMatch(
       success: true,
       matchId: match.id,
       promptId: match.prompt_id,
-      position: position,
+      position: position ?? undefined,
       alreadyJoined: true,
     };
   }
@@ -243,7 +246,7 @@ export async function joinMatch(
     WHERE match_id = ${match.id} AND role = 'opponent'
   `;
   if (parseInt(opponentCount.rows[0].count) > 0) {
-    return { success: false, error: 'Match already has an opponent' };
+    return { success: false, error: 'Match already has an opponent! Please refresh the page.' };
   }
 
   // Add the opponent participant
@@ -259,7 +262,7 @@ export async function joinMatch(
     success: true,
     matchId: match.id,
     promptId: match.prompt_id,
-    position: position,
+    position: position ?? undefined,
     alreadyJoined: false,
   };
 }
@@ -268,7 +271,7 @@ export async function joinMatch(
  * Get the creator's position from their session
  * Used to assign the same position to opponent in same-position mode
  */
-async function getCreatorPosition(matchId: string): Promise<PoliticalPosition> {
+export async function getCreatorPosition(matchId: string): Promise<PoliticalPosition | null> {
   const result = await sql`
     SELECT gs.position_assigned
     FROM match_participants mp
@@ -277,7 +280,7 @@ async function getCreatorPosition(matchId: string): Promise<PoliticalPosition> {
   `;
 
   if (result.rows.length === 0) {
-    throw new Error('Creator session not found');
+    return null;
   }
 
   return result.rows[0].position_assigned as PoliticalPosition;
@@ -327,8 +330,8 @@ export async function linkSessionToMatch(
   // Get the expected position (creator's position for same-position mode)
   const expectedPosition = await getCreatorPosition(matchId);
 
-  // Validate position matches
-  if (session.position_assigned !== expectedPosition) {
+  // Validate position matches (only if creator has played)
+  if (expectedPosition && session.position_assigned !== expectedPosition) {
     return {
       success: false,
       matchCompleted: false,

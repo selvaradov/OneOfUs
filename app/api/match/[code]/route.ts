@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMatchByCode, getMatchResults, checkAndUpdateMatchExpiry } from '@/lib/match-db';
+import {
+  getMatchByCode,
+  getMatchResults,
+  checkAndUpdateMatchExpiry,
+  getCreatorPosition,
+} from '@/lib/match-db';
 import { matchRateLimiter, getClientIp, checkRateLimit } from '@/lib/ratelimit';
 
 /**
@@ -65,10 +70,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       });
     }
 
-    // For pending/expired matches, return basic match info
+    // For pending/expired matches, return basic match info with position
+    const position = await getCreatorPosition(match.id);
     return NextResponse.json({
       success: true,
       match,
+      position,
       isCompleted: false,
     });
   } catch (error) {

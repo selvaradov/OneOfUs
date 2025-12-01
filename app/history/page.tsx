@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { GameSession } from '@/lib/types';
 import { getUserAlignment } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
+import ChallengeButton from '@/components/match/ChallengeButton';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -186,43 +187,50 @@ export default function HistoryPage() {
           ) : (
             <div className="space-y-4">
               {sessions.map((session) => (
-                <Link
+                <div
                   key={session.id}
-                  href={`/results?sessionId=${session.id}`}
-                  className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-5"
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-5"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="mb-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                          As {getPositionDescription(session.positionChosen)}
-                        </span>
+                  <Link href={`/results?sessionId=${session.id}`} className="block">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="mb-2">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            As {getPositionDescription(session.positionChosen)}
+                          </span>
+                        </div>
+                        <p className="text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
+                          {session.prompt.scenario}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-500">
+                          {formatDate(session.createdAt)}
+                        </p>
                       </div>
-                      <p className="text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
-                        {session.prompt.scenario}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-500">
-                        {formatDate(session.createdAt)}
-                      </p>
+                      {session.gradingResult && (
+                        <div className="flex flex-col items-end gap-2">
+                          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                            {session.gradingResult.score}
+                          </div>
+                          <div
+                            className={`px-3 py-1 rounded text-sm font-semibold ${
+                              session.gradingResult.detected
+                                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                            }`}
+                          >
+                            {session.gradingResult.detected ? 'Detected' : 'Undetected'}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    {session.gradingResult && (
-                      <div className="flex flex-col items-end gap-2">
-                        <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                          {session.gradingResult.score}
-                        </div>
-                        <div
-                          className={`px-3 py-1 rounded text-sm font-semibold ${
-                            session.gradingResult.detected
-                              ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                              : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                          }`}
-                        >
-                          {session.gradingResult.detected ? 'Detected' : 'Undetected'}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </Link>
+                  </Link>
+                  {/* Challenge Button - outside the Link */}
+                  {session.gradingResult && (
+                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                      <ChallengeButton sessionId={session.id} className="w-full sm:w-auto" />
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           )}

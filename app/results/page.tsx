@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Brain, FingerprintPattern, Goal } from 'lucide-react';
 import { GameSession } from '@/lib/types';
 import { getPositionDescription } from '@/lib/positionDescriptions';
+import ChallengeButton from '@/components/match/ChallengeButton';
 import Footer from '@/components/Footer';
 
 function ResultsContent() {
@@ -115,12 +116,7 @@ function ResultsContent() {
                 >
                   Play Again
                 </Link>
-                <Link
-                  href="/"
-                  className="px-6 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-center"
-                >
-                  Home
-                </Link>
+                <ChallengeButton sessionId={session.id} />
               </div>
             </div>
 
