@@ -231,10 +231,6 @@ function GameContent() {
   const isOverLimit = prompt ? charCount > prompt.charLimit : false;
   const canSubmit = assignedPosition && userResponse.trim() && !isOverLimit && !isSubmitting;
 
-  if (showOnboarding) {
-    return <OnboardingModal onComplete={() => setShowOnboarding(false)} />;
-  }
-
   if (!prompt || !assignedPosition) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -245,6 +241,8 @@ function GameContent() {
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+      {/* Onboarding modal overlays the game content */}
+      {showOnboarding && <OnboardingModal onComplete={() => setShowOnboarding(false)} />}
       {isSubmitting && <DartingLoader message={loadingMessage} />}
       <Navbar />
       <div className="flex-1 py-8 px-4">

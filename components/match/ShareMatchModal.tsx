@@ -25,7 +25,7 @@ export default function ShareMatchModal({
       : `/match/${matchCode}`;
 
   return (
-    <ModalBackdrop onClick={onClose}>
+    <ModalBackdrop onClose={onClose}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6">
         {/* Close Button */}
         <button

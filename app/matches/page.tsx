@@ -99,8 +99,8 @@ export default function MatchHistoryPage() {
               <div className="text-5xl mb-4">⚔️</div>
               <p className="text-xl text-gray-600 dark:text-gray-400 mb-2">No matches yet!</p>
               <p className="text-gray-500 dark:text-gray-500 mb-6">
-                Play a game and challenge a friend to compete. You can also use any of your past
-                games to create a match challenge.
+                Play a new game and challenge a friend to compete, or choose a game from your
+                history.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link

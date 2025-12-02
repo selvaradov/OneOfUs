@@ -27,7 +27,7 @@ function PendingMatchConfirm({
   onClose,
 }: PendingMatchConfirmProps) {
   return (
-    <ModalBackdrop onClick={onClose}>
+    <ModalBackdrop onClose={onClose}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
           Existing Challenge Found

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { UserAlignment } from '@/lib/types';
 import { saveUserAlignment } from '@/lib/storage';
+import { ModalBackdrop } from '@/components/ui/Modal';
 
 interface OnboardingModalProps {
   onComplete: () => void;
@@ -12,7 +13,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const [alignmentValue, setAlignmentValue] = useState(3); // Default to center (1-5 scale)
   const [touched, setTouched] = useState(false);
   const [ageRange, setAgeRange] = useState('');
-  const [country, setCountry] = useState('UK');
+  const [country, setCountry] = useState(''); // No default - user must explicitly select
   const [privacyConsent, setPrivacyConsent] = useState(false);
 
   // Slider labels: 1=Left, 2=Centre-left, 3=Centre, 4=Centre-right, 5=Right
@@ -84,12 +85,9 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop with blur */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
+    <ModalBackdrop maxWidth="max-w-lg">
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-lg bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8 mx-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           Before we start...
         </h2>
@@ -145,7 +143,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
                 <button
                   key={option.value}
                   onClick={() => setAgeRange(option.value)}
-                  className={`px-3 py-2 rounded-lg border-2 transition-all text-sm font-medium ${
+                  className={`px-3 py-2 rounded-lg border-2 transition-all text-sm font-medium cursor-pointer ${
                     ageRange === option.value
                       ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300'
                       : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'
@@ -167,7 +165,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
                 <button
                   key={option.value}
                   onClick={() => setCountry(option.value)}
-                  className={`px-4 py-3 rounded-lg border-2 transition-all text-sm font-medium ${
+                  className={`px-4 py-3 rounded-lg border-2 transition-all text-sm font-medium cursor-pointer ${
                     country === option.value
                       ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300'
                       : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'
@@ -210,11 +208,11 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
         <button
           onClick={handleSubmit}
           disabled={!touched || !privacyConsent}
-          className="mt-6 w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="mt-6 w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           Start Playing
         </button>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 }
