@@ -99,14 +99,23 @@ export default function MatchHistoryPage() {
               <div className="text-5xl mb-4">⚔️</div>
               <p className="text-xl text-gray-600 dark:text-gray-400 mb-2">No matches yet!</p>
               <p className="text-gray-500 dark:text-gray-500 mb-6">
-                Play a game and challenge a friend to compete.
+                Play a game and challenge a friend to compete. You can also use any of your past
+                games to create a match challenge.
               </p>
-              <Link
-                href="/game"
-                className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
-              >
-                Play a Game
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  href="/game"
+                  className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  Play a Game
+                </Link>
+                <Link
+                  href="/history"
+                  className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  View History
+                </Link>
+              </div>
             </div>
           ) : (
             <>

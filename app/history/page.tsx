@@ -27,6 +27,7 @@ export default function HistoryPage() {
   });
 
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -38,6 +39,7 @@ export default function HistoryPage() {
 
       if (!userId) {
         // User hasn't completed onboarding yet
+        setLoading(false);
         return;
       }
 
@@ -96,6 +98,8 @@ export default function HistoryPage() {
         // Only set error if we don't have cached data to show
         // Note: sessions from outer scope may be stale here, but that's acceptable
         setError("Couldn't load your game history—try refreshing");
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     };
 
@@ -157,6 +161,7 @@ export default function HistoryPage() {
                           sessions.filter((s) => s.gradingResult).length
                       )
                     : 0}
+                  <span className="text-lg text-gray-500 dark:text-gray-500 font-normal">/100</span>
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Avg Score</div>
               </div>
@@ -164,7 +169,29 @@ export default function HistoryPage() {
           )}
 
           {/* Sessions List */}
-          {error ? (
+          {loading ? (
+            <div className="space-y-4">
+              {/* Skeleton loaders */}
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 animate-pulse"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2"></div>
+                      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <div className="h-8 w-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div className="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-8 text-center">
               <p className="text-lg text-red-700 dark:text-red-400 mb-4">{error}</p>
               <button
@@ -192,7 +219,10 @@ export default function HistoryPage() {
                   className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-5"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <Link href={`/results?sessionId=${session.id}`} className="flex-1 min-w-0">
+                    <Link
+                      href={`/results?sessionId=${session.id}`}
+                      className="flex-1 min-w-0 group"
+                    >
                       <div className="mb-2">
                         <span className="text-sm text-gray-600 dark:text-gray-400">
                           As {getPositionDescription(session.positionChosen)}
@@ -204,14 +234,18 @@ export default function HistoryPage() {
                       <p className="text-sm text-gray-500 dark:text-gray-500">
                         {formatDate(session.createdAt)}
                       </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-600 mt-2 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors">
+                        Click for details →
+                      </p>
                     </Link>
                     {session.gradingResult && (
                       <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                        <Link href={`/results?sessionId=${session.id}`}>
-                          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                            {session.gradingResult.score}
-                          </div>
-                        </Link>
+                        <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                          {session.gradingResult.score}
+                          <span className="text-base text-gray-500 dark:text-gray-500 font-normal">
+                            /100
+                          </span>
+                        </div>
                         <div
                           className={`px-3 py-1 rounded text-sm font-semibold ${
                             session.gradingResult.detected
@@ -221,7 +255,6 @@ export default function HistoryPage() {
                         >
                           {session.gradingResult.detected ? 'Detected' : 'Undetected'}
                         </div>
-                        {/* Challenge Button - outside any Link */}
                         <ChallengeButton sessionId={session.id} variant="compact" />
                       </div>
                     )}
