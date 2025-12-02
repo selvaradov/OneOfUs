@@ -190,7 +190,7 @@ export default function HeadToHeadResults({ results, currentUserId }: HeadToHead
 
   // Get winner display text
   const getWinnerText = () => {
-    if (winner === 'tie') return "It's a Tie!";
+    if (winner === 'tie') return "It's a Draw!";
     if (winner === 'creator') {
       return isCreator ? 'You Win!' : isOpponent ? 'You Lose!' : 'Creator Wins!';
     }
@@ -227,7 +227,7 @@ export default function HeadToHeadResults({ results, currentUserId }: HeadToHead
       try {
         await navigator.share({
           title: 'One of Us - Match Results',
-          text: `I ${winner === 'tie' ? 'tied' : creatorScore > opponentScore === isCreator ? 'won' : 'lost'} a political Turing test challenge! Score: ${isCreator ? creatorScore : opponentScore}/100`,
+          text: `I ${winner === 'tie' ? 'drew' : creatorScore > opponentScore === isCreator ? 'won' : 'lost'} a political Turing test challenge! Score: ${isCreator ? creatorScore : opponentScore}/100`,
           url: window.location.href,
         });
       } catch {

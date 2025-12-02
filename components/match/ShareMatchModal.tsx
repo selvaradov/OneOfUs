@@ -7,13 +7,15 @@ import { ShareLinkBox } from '@/components/ui/ShareLinkBox';
 
 interface ShareMatchModalProps {
   matchCode: string;
-  existingMatch: boolean;
+  existingMatch?: boolean;
+  isShareOnly?: boolean; // True when sharing from match history (not creating)
   onClose: () => void;
 }
 
 export default function ShareMatchModal({
   matchCode,
   existingMatch,
+  isShareOnly = false,
   onClose,
 }: ShareMatchModalProps) {
   // Generate share URL on client side to get correct origin
@@ -39,12 +41,18 @@ export default function ShareMatchModal({
             <span className="text-3xl">⚔️</span>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-            Challenge Created!
+            {isShareOnly
+              ? 'Share Match'
+              : existingMatch
+                ? 'Challenge Ready!'
+                : 'Challenge Created!'}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-sm">
-            {existingMatch
-              ? 'Share this link with your friend to challenge them!'
-              : 'Share this link with a friend to see who can score higher!'}
+            {isShareOnly
+              ? 'Share this match with others!'
+              : existingMatch
+                ? 'Share this link with your friend to challenge them!'
+                : 'Share this link with a friend to see who can score higher!'}
           </p>
         </div>
 

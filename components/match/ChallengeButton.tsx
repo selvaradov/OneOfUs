@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Users } from 'lucide-react';
 import ShareMatchModal from './ShareMatchModal';
 import { ModalBackdrop } from '@/components/ui/Modal';
@@ -9,7 +10,7 @@ import { getUserAlignment } from '@/lib/storage';
 interface ChallengeButtonProps {
   sessionId: string;
   className?: string;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'compact';
 }
 
 interface PendingMatchConfirmProps {
@@ -26,9 +27,8 @@ function PendingMatchConfirm({
   onClose,
 }: PendingMatchConfirmProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <ModalBackdrop onClick={onClose} />
-      <div className="relative z-10 bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+    <ModalBackdrop onClick={onClose}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
           Existing Challenge Found
         </h3>
@@ -58,7 +58,7 @@ function PendingMatchConfirm({
           </button>
         </div>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 }
 
@@ -150,11 +150,14 @@ export default function ChallengeButton({
   };
 
   const baseStyles =
-    'inline-flex items-center justify-center gap-2 px-6 py-2 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+    variant === 'compact'
+      ? 'inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+      : 'inline-flex items-center justify-center gap-2 px-6 py-2 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantStyles = {
     primary: 'text-white bg-blue-600 hover:bg-blue-700',
     secondary: 'text-white bg-blue-600 hover:bg-blue-700',
+    compact: 'text-white bg-blue-600 hover:bg-blue-700',
   };
 
   return (
@@ -166,12 +169,14 @@ export default function ChallengeButton({
       >
         {isLoading ? (
           <>
-            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-            Creating...
+            <div
+              className={`${variant === 'compact' ? 'w-3 h-3' : 'w-4 h-4'} border-2 border-current border-t-transparent rounded-full animate-spin`}
+            />
+            {variant !== 'compact' && 'Creating...'}
           </>
         ) : (
           <>
-            <Users className="w-4 h-4" />
+            <Users className={variant === 'compact' ? 'w-3 h-3' : 'w-4 h-4'} />
             Challenge a Friend
           </>
         )}
@@ -179,22 +184,30 @@ export default function ChallengeButton({
 
       {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
-      {showConfirm && pendingMatchCode && (
-        <PendingMatchConfirm
-          matchCode={pendingMatchCode}
-          onUseExisting={handleUseExisting}
-          onCreateNew={handleCreateNew}
-          onClose={() => setShowConfirm(false)}
-        />
-      )}
+      {showConfirm &&
+        pendingMatchCode &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <PendingMatchConfirm
+            matchCode={pendingMatchCode}
+            onUseExisting={handleUseExisting}
+            onCreateNew={handleCreateNew}
+            onClose={() => setShowConfirm(false)}
+          />,
+          document.body
+        )}
 
-      {showModal && matchData && (
-        <ShareMatchModal
-          matchCode={matchData.matchCode}
-          existingMatch={matchData.existingMatch}
-          onClose={() => setShowModal(false)}
-        />
-      )}
+      {showModal &&
+        matchData &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <ShareMatchModal
+            matchCode={matchData.matchCode}
+            existingMatch={matchData.existingMatch}
+            onClose={() => setShowModal(false)}
+          />,
+          document.body
+        )}
     </>
   );
 }

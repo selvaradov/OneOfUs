@@ -137,6 +137,44 @@ CREATE TABLE prompts_analytics (
 );
 ```
 
+### Matches Table (1v1 Mode)
+
+```sql
+CREATE TABLE matches (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  match_code VARCHAR(8) UNIQUE NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending',  -- 'pending' | 'completed' | 'expired'
+  prompt_id TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  expires_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() + INTERVAL '24 hours',
+  completed_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX idx_matches_code ON matches(match_code);
+CREATE INDEX idx_matches_status ON matches(status, expires_at);
+```
+
+### Match Participants Table
+
+Links users to matches with their role and game session:
+
+```sql
+CREATE TABLE match_participants (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  session_id UUID REFERENCES game_sessions(id) ON DELETE SET NULL,
+  role VARCHAR(20) NOT NULL,  -- 'creator' | 'opponent'
+  joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(match_id, user_id)
+);
+
+CREATE INDEX idx_match_participants_match ON match_participants(match_id);
+CREATE INDEX idx_match_participants_user ON match_participants(user_id, joined_at DESC);
+```
+
+**Note:** `game_sessions` also has a `match_id` column for reverse lookup.
+
 ---
 
 ## API Endpoints
@@ -163,6 +201,18 @@ CREATE TABLE prompts_analytics (
 | `/api/history?userId=xxx&limit=20&offset=0` | GET    | Paginated user history  |
 | `/api/stats?userId=xxx`                     | GET    | User statistics         |
 | `/api/stats?type=prompts`                   | GET    | Global prompt analytics |
+
+### 1v1 Matches
+
+| Endpoint                                          | Method | Purpose                             |
+| ------------------------------------------------- | ------ | ----------------------------------- |
+| `/api/match/create`                               | POST   | Create match from completed session |
+| `/api/match/[code]`                               | GET    | Get match details by code           |
+| `/api/match/join`                                 | POST   | Join a match as opponent            |
+| `/api/match/link-session`                         | POST   | Link completed session to match     |
+| `/api/match/history?userId=xxx&limit=20&offset=0` | GET    | User's match history                |
+
+**Match code format:** 8 characters from `ABCDEFGHJKMNPQRSTUVWXYZ23456789` (excludes ambiguous 0/O, 1/I/L)
 
 ### Database Admin
 
@@ -286,14 +336,16 @@ Implemented using Upstash Redis with IP-based identification.
 
 ### Limits
 
-| Endpoint          | Limit        | Window   |
-| ----------------- | ------------ | -------- |
-| `/api/grade`      | 20 requests  | 1 hour   |
-| `/api/grade`      | 50 requests  | 24 hours |
-| `/api/history`    | 30 requests  | 1 minute |
-| `/api/session`    | 100 requests | 24 hours |
-| `/api/admin/auth` | 10 requests  | 1 minute |
-| `/api/admin/*`    | 100 requests | 1 minute |
+| Endpoint            | Limit        | Window   |
+| ------------------- | ------------ | -------- |
+| `/api/grade`        | 20 requests  | 1 hour   |
+| `/api/grade`        | 50 requests  | 24 hours |
+| `/api/history`      | 30 requests  | 1 minute |
+| `/api/session`      | 100 requests | 24 hours |
+| `/api/match/create` | 10 requests  | 1 hour   |
+| `/api/match/*`      | 30 requests  | 1 minute |
+| `/api/admin/auth`   | 10 requests  | 1 minute |
+| `/api/admin/*`      | 100 requests | 1 minute |
 
 ### Implementation
 

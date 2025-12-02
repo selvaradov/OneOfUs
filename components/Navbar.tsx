@@ -40,6 +40,12 @@ export default function Navbar() {
             </Link>
           )}
           <Link
+            href="/matches"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+          >
+            Matches
+          </Link>
+          <Link
             href="/history"
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >

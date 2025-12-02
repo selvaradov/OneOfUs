@@ -118,7 +118,7 @@ An admin dashboard is available at `/admin` for monitoring and data export.
 
 ---
 
-## Current Status: MVP Complete ✅
+## Current Status: MVP Complete + 1v1 Matches ✅
 
 **Implemented:**
 
@@ -129,17 +129,34 @@ An admin dashboard is available at `/admin` for monitoring and data export.
 - ✅ Prompt injection protection
 - ✅ Database persistence (localStorage used for client-side caching)
 - ✅ Privacy policy page
+- ✅ **1v1 Match Mode** - Challenge friends to compete on the same scenario
+
+---
+
+## 1v1 Match Mode
+
+Challenge a friend to see who can pass the Turing test better!
+
+**How it works:**
+
+1. Complete a game and click "Challenge a Friend" on your results
+2. Share the unique match link with a friend
+3. They play the same scenario with the same position assignment
+4. Both see head-to-head results comparing scores and responses
+
+**Features:**
+
+- Unique 8-character match codes (e.g., `oneofus.app/match/ABC12XYZ`)
+- Share via copy-to-clipboard or native share API
+- Match history page at `/matches` showing wins, losses, and pending challenges
+- Matches expire after 24 hours if not completed
+- Works for both logged-in and new users (onboarding modal triggers for newcomers)
 
 ---
 
 ## Future Enhancements
 
 ### Gameplay Ideas
-
-**1v1 mode**
-
-- Receive the same prompts as friends playing simultaneously, and see who performs the best
-- Also add ability to share results with others
 
 **Immersive Group Chat Mode**
 
@@ -171,6 +188,8 @@ An admin dashboard is available at `/admin` for monitoring and data export.
 - [ ] Multiplayer mode with human judges
 - [ ] Apply filters for admin dashboard JSON exports
 - [ ] Potential UI refresh for a quirkier theme
+- [ ] Real-time match updates (currently requires manual refresh)
+- [ ] OG image generation for social sharing of match results
 
 ### Grading Improvements
 
@@ -185,16 +204,20 @@ An admin dashboard is available at `/admin` for monitoring and data export.
 
 ```
 app/
-  page.tsx          # Landing page
-  game/page.tsx     # Game interface
-  results/page.tsx  # Results display
-  history/page.tsx  # User history
-  privacy/page.tsx  # Privacy policy
-  api/              # API routes
-components/         # React components
-lib/                # Utilities, types, database
-data/               # Scenarios, grading prompt
-scripts/            # Dev tools and tests
+  page.tsx           # Landing page
+  game/page.tsx      # Game interface
+  results/page.tsx   # Results display
+  history/page.tsx   # User history
+  privacy/page.tsx   # Privacy policy
+  match/
+    [code]/page.tsx  # Match lobby (pending/completed/expired states)
+  matches/page.tsx   # User's match history
+  api/               # API routes
+components/
+  match/             # 1v1 match components
+lib/                 # Utilities, types, database
+data/                # Scenarios, grading prompt
+scripts/             # Dev tools and tests
 ```
 
 ---
