@@ -124,12 +124,12 @@ export async function initializeDatabase(): Promise<void> {
 export async function createUser(
   politicalAlignment?: number,
   ageRange?: string,
-  country: string = 'UK'
+  country?: string
 ): Promise<string> {
   try {
     const result = await sql`
       INSERT INTO users (political_alignment, age_range, country)
-      VALUES (${politicalAlignment ?? null}, ${ageRange ?? null}, ${country})
+      VALUES (${politicalAlignment ?? null}, ${ageRange ?? null}, ${country ?? null})
       RETURNING id
     `;
     return result.rows[0].id;

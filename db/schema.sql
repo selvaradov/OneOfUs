@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   political_alignment INTEGER, -- 1-5 scale from onboarding
   age_range TEXT,
-  country TEXT DEFAULT 'UK',
+  country TEXT,
   total_games INTEGER DEFAULT 0,
   avg_score DECIMAL(5,2)
 );
