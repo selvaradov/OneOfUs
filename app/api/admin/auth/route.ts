@@ -23,8 +23,6 @@ export async function POST(request: NextRequest) {
 
     const rateLimitResult = await checkRateLimit(adminAuthRateLimiter, ip, 'admin auth');
 
-    console.log('Rate limit result:', rateLimitResult ? 'limited' : 'allowed');
-
     if (rateLimitResult && !rateLimitResult.success) {
       return NextResponse.json(
         {

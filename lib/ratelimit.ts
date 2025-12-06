@@ -64,7 +64,7 @@ export const adminRateLimiter = new Ratelimit({
 // 10 matches per hour per user
 export const matchCreateRateLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(100, '1 h'), // TODO change back to 10 per hour
+  limiter: Ratelimit.slidingWindow(10, '1 h'),
   analytics: true,
   prefix: 'ratelimit:match:create',
 });
