@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AdminGameSession, GeolocationData } from '@/lib/types';
 
 interface SessionsTableProps {
@@ -17,17 +17,19 @@ function SortableHeader({
   currentSort,
   currentOrder,
   onClick,
+  className = '',
 }: {
   label: string;
   field: 'created_at' | 'score' | 'detected';
   currentSort: string;
   currentOrder: string;
   onClick: () => void;
+  className?: string;
 }) {
   const isActive = currentSort === field;
   return (
     <th
-      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none"
+      className={`px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none ${className}`}
       onClick={onClick}
     >
       <div className="flex items-center gap-1">
@@ -168,53 +170,64 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <SortableHeader
-                label="Date"
-                field="created_at"
-                currentSort={clientSortBy}
-                currentOrder={clientSortOrder}
-                onClick={() => handleClientSortChange('created_at')}
-              />
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Question ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Position
-              </th>
-              <SortableHeader
-                label="Score (/100)"
-                field="score"
-                currentSort={clientSortBy}
-                currentOrder={clientSortOrder}
-                onClick={() => handleClientSortChange('score')}
-              />
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Detected
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Location
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">
-                Match
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-16"></th>
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {sortedSessions.map((session) => (
-              <>
+    <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+      {/* Small screen warning */}
+      <div className="lg:hidden bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-3 rounded-t-lg">
+        <p className="text-sm text-amber-800 dark:text-amber-200">
+          This table is best viewed on a wider screen.
+        </p>
+      </div>
+
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="sticky top-0 z-10">
+          <tr>
+            <SortableHeader
+              label="Date"
+              field="created_at"
+              currentSort={clientSortBy}
+              currentOrder={clientSortOrder}
+              onClick={() => handleClientSortChange('created_at')}
+              className="lg:rounded-tl-lg"
+            />
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider bg-gray-50 dark:bg-gray-700">
+              Question ID
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider bg-gray-50 dark:bg-gray-700">
+              Position
+            </th>
+            <SortableHeader
+              label="Score (/100)"
+              field="score"
+              currentSort={clientSortBy}
+              currentOrder={clientSortOrder}
+              onClick={() => handleClientSortChange('score')}
+            />
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider bg-gray-50 dark:bg-gray-700">
+              Detected
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider bg-gray-50 dark:bg-gray-700">
+              Location
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider bg-gray-50 dark:bg-gray-700 w-32">
+              Match
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider bg-gray-50 dark:bg-gray-700 w-16 lg:rounded-tr-lg"></th>
+          </tr>
+        </thead>
+        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          {sortedSessions.map((session, index) => {
+            const isLast = index === sortedSessions.length - 1;
+            const isExpanded = expandedId === session.id;
+            return (
+              <React.Fragment key={session.id}>
                 {/* Collapsed Row */}
                 <tr
-                  key={session.id}
                   onClick={() => toggleExpand(session.id)}
                   className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 ${isLast && !isExpanded ? 'rounded-bl-lg' : ''}`}
+                  >
                     {formatDate(session.created_at)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-gray-600 dark:text-gray-400">
@@ -281,11 +294,11 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
                       <span className="text-gray-400 dark:text-gray-600">—</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 ${isLast && !isExpanded ? 'rounded-br-lg' : ''}`}
+                  >
                     <svg
-                      className={`w-5 h-5 transition-transform ${
-                        expandedId === session.id ? 'rotate-180' : ''
-                      }`}
+                      className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -301,9 +314,12 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
                 </tr>
 
                 {/* Expanded Row */}
-                {expandedId === session.id && (
+                {isExpanded && (
                   <tr>
-                    <td colSpan={8} className="px-6 py-6 bg-gray-50 dark:bg-gray-900">
+                    <td
+                      colSpan={8}
+                      className={`px-6 py-6 bg-gray-50 dark:bg-gray-900 ${isLast ? 'rounded-b-lg' : ''}`}
+                    >
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Left Column - Q&A */}
                         <div className="space-y-4">
@@ -481,11 +497,11 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
                     </td>
                   </tr>
                 )}
-              </>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </React.Fragment>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
