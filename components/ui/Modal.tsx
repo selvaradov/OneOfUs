@@ -48,7 +48,9 @@ export function ModalBackdrop({
         onClick={handleBackdropClick}
       />
       {/* Content container */}
-      <div className={`relative z-10 w-full ${maxWidth} mx-4`}>{children}</div>
+      <div className={`relative z-10 ${maxWidth} mx-auto`} style={{ width: 'calc(100% - 2rem)' }}>
+        {children}
+      </div>
     </div>
   );
 }

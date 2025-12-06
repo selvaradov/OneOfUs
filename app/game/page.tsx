@@ -245,7 +245,7 @@ function GameContent() {
       {showOnboarding && <OnboardingModal onComplete={() => setShowOnboarding(false)} />}
       {isSubmitting && <DartingLoader message={loadingMessage} />}
       <Navbar />
-      <div className="flex-1 py-8 px-4">
+      <div className="flex-1 py-8 px-4 w-full">
         <div className="max-w-4xl mx-auto">
           {/* Match Challenge Banner */}
           {isMatchMode && (
@@ -293,7 +293,7 @@ function GameContent() {
                     >
                       ?
                     </button>
-                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 shadow-lg max-w-[calc(100vw-2rem)] whitespace-normal text-center">
                       <div className="text-xs text-gray-300 mb-1">Think:</div>
                       <div className="font-medium">
                         {getExampleFigures(assignedPosition).join(', ')}

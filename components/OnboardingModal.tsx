@@ -87,15 +87,15 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
   return (
     <ModalBackdrop maxWidth="max-w-lg">
       {/* Modal */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-4 sm:p-8 max-h-[85dvh] overflow-y-auto">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
           Before we start...
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
           Just 3 quick questions (helps us understand how you do)
         </p>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Question 1: Political Alignment Slider */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-900 dark:text-white">
@@ -179,14 +179,35 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
         </div>
 
         {/* Privacy Policy Consent */}
-        <div className="mt-6 flex items-start gap-3">
-          <input
-            type="checkbox"
-            id="privacy-consent"
-            checked={privacyConsent}
-            onChange={(e) => setPrivacyConsent(e.target.checked)}
-            className="mt-1 w-5 h-5 sm:w-4 sm:h-4 text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer flex-shrink-0"
-          />
+        <div className="mt-4 sm:mt-6 flex items-start gap-3">
+          <div className="relative flex-shrink-0">
+            <input
+              type="checkbox"
+              id="privacy-consent"
+              checked={privacyConsent}
+              onChange={(e) => setPrivacyConsent(e.target.checked)}
+              className="peer sr-only"
+            />
+            <label
+              htmlFor="privacy-consent"
+              className="flex h-5 w-5 cursor-pointer items-center justify-center rounded border-2 border-gray-300 bg-white transition-colors peer-checked:border-orange-500 peer-checked:bg-orange-500 peer-focus:ring-2 peer-focus:ring-orange-500 peer-focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:border-orange-500 dark:peer-checked:bg-orange-500"
+            >
+              {/* Checkmark icon */}
+              <svg
+                className={`h-3 w-3 text-white transition-opacity ${privacyConsent ? 'opacity-100' : 'opacity-0'}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </label>
+          </div>
           <label
             htmlFor="privacy-consent"
             className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer"
@@ -208,7 +229,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
         <button
           onClick={handleSubmit}
           disabled={!touched || !privacyConsent}
-          className="mt-6 w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="mt-4 sm:mt-6 w-full px-6 py-3 text-base sm:text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           Start Playing
         </button>
