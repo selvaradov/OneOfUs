@@ -99,5 +99,9 @@ CREATE INDEX IF NOT EXISTS idx_match_participants_match ON match_participants(ma
 CREATE INDEX IF NOT EXISTS idx_match_participants_user ON match_participants(user_id, joined_at DESC);
 
 -- Add match_id to game_sessions for linking sessions to matches
+-- NOTE: This column stores the MOST RECENT match created from this session.
+-- A single session can be used to create multiple challenge matches, but match_id
+-- only references the latest one. The authoritative source for ALL matches associated
+-- with a session is the match_participants table (via session_id).
 ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS match_id UUID REFERENCES matches(id) ON DELETE SET NULL;
 CREATE INDEX IF NOT EXISTS idx_sessions_match ON game_sessions(match_id);
