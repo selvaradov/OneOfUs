@@ -107,10 +107,30 @@ export async function getAdminGameSessions(
         u.age_range,
         u.country,
         u.total_games as user_total_games,
-        u.avg_score as user_avg_score
+        u.avg_score as user_avg_score,
+        COALESCE(
+          ARRAY_AGG(DISTINCT m.id) FILTER (WHERE m.id IS NOT NULL),
+          ARRAY[]::uuid[]
+        ) as match_ids,
+        COALESCE(
+          ARRAY_AGG(DISTINCT m.match_code) FILTER (WHERE m.match_code IS NOT NULL),
+          ARRAY[]::text[]
+        ) as match_codes,
+        COALESCE(
+          ARRAY_AGG(DISTINCT m.status) FILTER (WHERE m.status IS NOT NULL),
+          ARRAY[]::text[]
+        ) as match_statuses
       FROM game_sessions gs
       LEFT JOIN users u ON gs.user_id = u.id
+      LEFT JOIN (
+        -- Get all matches associated with this session
+        -- Either directly via gs.match_id or via match_participants
+        SELECT DISTINCT m2.id, m2.match_code, m2.status, mp.session_id
+        FROM matches m2
+        LEFT JOIN match_participants mp ON m2.id = mp.match_id
+      ) m ON m.session_id = gs.id
       WHERE ${whereClause}
+      GROUP BY gs.id, u.political_alignment, u.age_range, u.country, u.total_games, u.avg_score
       ORDER BY ${orderClause}
       LIMIT $${params.length - 1} OFFSET $${params.length}
     `;

@@ -227,11 +227,38 @@ All admin endpoints require Bearer token authentication (obtained via `/api/admi
 | Endpoint                 | Method | Purpose                                             |
 | ------------------------ | ------ | --------------------------------------------------- |
 | `/api/admin/auth`        | POST   | Authenticate and receive session token              |
-| `/api/admin/analytics`   | GET    | Fetch dashboard analytics (stats, charts)           |
+| `/api/admin/analytics`   | GET    | Fetch dashboard analytics (general + match stats)   |
 | `/api/admin/sessions`    | GET    | Paginated game sessions with filtering              |
 | `/api/admin/export`      | GET    | Export data as JSON (sessions/users/analytics/full) |
 | `/api/admin/prompt-ids`  | GET    | List distinct prompt IDs used in sessions           |
 | `/api/admin/geolocation` | POST   | Batch IP geolocation lookup (max 50 IPs per req)    |
+
+#### Analytics Response
+
+Returns both general game analytics and match-specific analytics:
+
+```typescript
+{
+  analytics: {
+    totalUsers, totalGames, avgScore, detectionRate,
+    scoreDistribution, positionPerformance, promptPerformance,
+    demographicBreakdown
+  },
+  matchAnalytics: {
+    totalMatches, completedMatches, pendingMatches, expiredMatches,
+    completionRate, participationRate, avgScoreGap,
+    statusDistribution, scoreDistributionByRole, topCreators
+  }
+}
+```
+
+**Match Analytics Features:**
+
+- Aggregates match data from `matches` and `match_participants` tables
+- Tracks completion rates, user participation, and competitive balance
+- Score distributions compare creators vs opponents across 10 bins
+- Top creators leaderboard includes win rates and match counts
+- Sessions table displays all associated matches per session with color-coded badges (green=completed, orange=pending, gray=expired)
 
 #### Authentication Flow
 

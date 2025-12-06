@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AdminGameSession, AdminAnalytics } from '@/lib/types';
+import { AdminGameSession, AdminAnalytics, MatchAnalytics } from '@/lib/types';
 import SessionsTable from '@/components/admin/SessionsTable';
 import AnalyticsCards from '@/components/admin/AnalyticsCards';
+import MatchAnalyticsCards from '@/components/admin/MatchAnalyticsCards';
+import MatchStatsTable from '@/components/admin/MatchStatsTable';
 import FilterBar from '@/components/admin/FilterBar';
 import ExportButton from '@/components/admin/ExportButton';
 
@@ -92,6 +94,7 @@ export default function AdminDashboard() {
   const [token, setToken] = useState<string | null>(null);
   const [sessions, setSessions] = useState<AdminGameSession[]>([]);
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
+  const [matchAnalytics, setMatchAnalytics] = useState<MatchAnalytics | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -140,6 +143,7 @@ export default function AdminDashboard() {
         const data = await response.json();
         if (!cancelled && data.success) {
           setAnalytics(data.analytics);
+          setMatchAnalytics(data.matchAnalytics);
         }
       } catch (err) {
         if (!cancelled) {
@@ -286,6 +290,12 @@ export default function AdminDashboard() {
               👥 User Demographics
             </a>
             <a
+              href="#match-analytics"
+              className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+            >
+              ⚔️ Match Analytics
+            </a>
+            <a
               href="#sessions"
               className="text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
             >
@@ -296,6 +306,17 @@ export default function AdminDashboard() {
 
         {/* Analytics Section */}
         <div id="analytics">{analytics && <AnalyticsCards analytics={analytics} />}</div>
+
+        {/* Match Analytics Section */}
+        <div id="match-analytics" className="mt-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Match Analytics</h2>
+          {matchAnalytics && (
+            <>
+              <MatchAnalyticsCards analytics={matchAnalytics} />
+              <MatchStatsTable analytics={matchAnalytics} />
+            </>
+          )}
+        </div>
 
         {/* All Sessions Section */}
         <div id="sessions" className="mt-8">

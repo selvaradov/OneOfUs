@@ -187,7 +187,7 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
                 Position
               </th>
               <SortableHeader
-                label="Score"
+                label="Score (/100)"
                 field="score"
                 currentSort={clientSortBy}
                 currentOrder={clientSortOrder}
@@ -199,9 +199,10 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Location
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Expand
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">
+                Match
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-16"></th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -216,14 +217,14 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                     {formatDate(session.created_at)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-gray-600 dark:text-gray-400">
                     {session.prompt_id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                     {session.position_assigned}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100">
-                    {session.score}/100
+                    {session.score}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -238,6 +239,47 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                     {getLocation(session.ip_address)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {session.match_codes && session.match_codes.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {(() => {
+                          // Sort matches: completed first, then pending, then expired
+                          const matchData = session.match_codes.map((code, idx) => ({
+                            code,
+                            status: session.match_statuses[idx],
+                          }));
+                          matchData.sort((a, b) => {
+                            const order = { completed: 0, pending: 1, expired: 2 };
+                            return (
+                              (order[a.status as keyof typeof order] ?? 3) -
+                              (order[b.status as keyof typeof order] ?? 3)
+                            );
+                          });
+
+                          return matchData.map(({ code, status }) => (
+                            <a
+                              key={code}
+                              href={`/match/${code}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center px-2 py-1 text-xs font-mono rounded ${
+                                status === 'completed'
+                                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                  : status === 'pending'
+                                    ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                              } hover:opacity-80`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {code.slice(-3)}
+                            </a>
+                          ));
+                        })()}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 dark:text-gray-600">—</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     <svg
@@ -261,7 +303,7 @@ export default function SessionsTable({ sessions, token, sortBy, sortOrder }: Se
                 {/* Expanded Row */}
                 {expandedId === session.id && (
                   <tr>
-                    <td colSpan={7} className="px-6 py-6 bg-gray-50 dark:bg-gray-900">
+                    <td colSpan={8} className="px-6 py-6 bg-gray-50 dark:bg-gray-900">
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Left Column - Q&A */}
                         <div className="space-y-4">

@@ -89,6 +89,7 @@ An admin dashboard is available at `/admin` for monitoring and data export.
 - 📥 **Data Export**: Export users, sessions, analytics, or full data dump as JSON
 - 🔍 **Question Analysis**: Performance metrics for each prompt (min. 2 attempts)
 - 👥 **Demographics**: User breakdown by political alignment, country, and age
+- ⚔️ **Match Analytics**: Track match engagement, completion rates, score distributions, and top creators
 
 **Setup:**
 

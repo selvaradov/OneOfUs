@@ -122,6 +122,11 @@ export interface AdminGameSession {
   user_total_games: number;
   user_avg_score: number;
 
+  // Match associations (can be multiple)
+  match_ids: string[];
+  match_codes: string[];
+  match_statuses: string[];
+
   // Enriched geolocation data
   geolocation?: GeolocationData;
 }
