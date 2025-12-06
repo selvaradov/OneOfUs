@@ -1,5 +1,5 @@
 import { sql } from '@vercel/postgres';
-import { AdminGameSession, AdminAnalytics, PoliticalPosition } from './types';
+import { AdminGameSession, AdminAnalytics, PoliticalPosition, MatchAnalytics } from './types';
 
 /**
  * Query options for fetching admin game sessions
@@ -453,6 +453,195 @@ export async function getDistinctPromptIds(): Promise<string[]> {
     return result.rows.map((row) => row.prompt_id);
   } catch (error) {
     console.error('Error fetching distinct prompt IDs:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get comprehensive match analytics for admin dashboard
+ */
+export async function getMatchAnalytics(): Promise<MatchAnalytics> {
+  try {
+    // Get total matches by status and completion rate
+    const statusResult = await sql`
+      SELECT
+        status,
+        COUNT(*) as count,
+        COUNT(*) * 100.0 / SUM(COUNT(*)) OVER() as percentage
+      FROM matches
+      GROUP BY status
+    `;
+
+    const statusCounts = statusResult.rows.reduce(
+      (acc, row) => {
+        acc[row.status] = parseInt(row.count);
+        return acc;
+      },
+      { pending: 0, completed: 0, expired: 0 } as Record<string, number>
+    );
+
+    const totalMatches = statusCounts.pending + statusCounts.completed + statusCounts.expired;
+    const completionRate = totalMatches > 0 ? (statusCounts.completed * 100.0) / totalMatches : 0;
+
+    // Get match participation rate
+    const participationResult = await sql`
+      SELECT
+        (SELECT COUNT(DISTINCT user_id) FROM match_participants) as users_in_matches,
+        (SELECT COUNT(*) FROM users) as total_users
+    `;
+
+    const participationData = participationResult.rows[0];
+    const usersInMatches = parseInt(participationData.users_in_matches) || 0;
+    const totalUsers = parseInt(participationData.total_users) || 0;
+    const participationRate = totalUsers > 0 ? (usersInMatches * 100.0) / totalUsers : 0;
+
+    // Get average score difference in completed matches
+    const scoreStatsResult = await sql`
+      SELECT
+        AVG(ABS(creator_score - opponent_score)) as avg_score_diff,
+        AVG(GREATEST(creator_score, opponent_score) - LEAST(creator_score, opponent_score)) as avg_score_gap
+      FROM (
+        SELECT
+          m.id,
+          MAX(CASE WHEN mp.role = 'creator' THEN gs.score END) as creator_score,
+          MAX(CASE WHEN mp.role = 'opponent' THEN gs.score END) as opponent_score
+        FROM matches m
+        JOIN match_participants mp ON m.id = mp.match_id
+        JOIN game_sessions gs ON mp.session_id = gs.id
+        WHERE m.status = 'completed'
+        GROUP BY m.id
+        HAVING COUNT(*) = 2
+      ) scores
+      WHERE creator_score IS NOT NULL AND opponent_score IS NOT NULL
+    `;
+
+    const scoreStats = scoreStatsResult.rows[0];
+    const avgScoreDifference = parseFloat(scoreStats?.avg_score_diff) || 0;
+    const avgScoreGap = parseFloat(scoreStats?.avg_score_gap) || 0;
+
+    // Get score distribution by role (10-point buckets)
+    const scoreDistResult = await sql`
+      WITH bins AS (
+        SELECT unnest(ARRAY['0-9', '10-19', '20-29', '30-39', '40-49',
+                            '50-59', '60-69', '70-79', '80-89', '90-100']) as range,
+               unnest(ARRAY[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) as bin_order
+      ),
+      creator_scores AS (
+        SELECT
+          CASE
+            WHEN gs.score < 10 THEN '0-9'
+            WHEN gs.score < 20 THEN '10-19'
+            WHEN gs.score < 30 THEN '20-29'
+            WHEN gs.score < 40 THEN '30-39'
+            WHEN gs.score < 50 THEN '40-49'
+            WHEN gs.score < 60 THEN '50-59'
+            WHEN gs.score < 70 THEN '60-69'
+            WHEN gs.score < 80 THEN '70-79'
+            WHEN gs.score < 90 THEN '80-89'
+            ELSE '90-100'
+          END as range,
+          COUNT(*) as count
+        FROM match_participants mp
+        JOIN game_sessions gs ON mp.session_id = gs.id
+        WHERE mp.role = 'creator' AND gs.score IS NOT NULL
+        GROUP BY range
+      ),
+      opponent_scores AS (
+        SELECT
+          CASE
+            WHEN gs.score < 10 THEN '0-9'
+            WHEN gs.score < 20 THEN '10-19'
+            WHEN gs.score < 30 THEN '20-29'
+            WHEN gs.score < 40 THEN '30-39'
+            WHEN gs.score < 50 THEN '40-49'
+            WHEN gs.score < 60 THEN '50-59'
+            WHEN gs.score < 70 THEN '60-69'
+            WHEN gs.score < 80 THEN '70-79'
+            WHEN gs.score < 90 THEN '80-89'
+            ELSE '90-100'
+          END as range,
+          COUNT(*) as count
+        FROM match_participants mp
+        JOIN game_sessions gs ON mp.session_id = gs.id
+        WHERE mp.role = 'opponent' AND gs.score IS NOT NULL
+        GROUP BY range
+      )
+      SELECT
+        bins.range,
+        COALESCE(creator_scores.count, 0) as creator_count,
+        COALESCE(opponent_scores.count, 0) as opponent_count
+      FROM bins
+      LEFT JOIN creator_scores ON bins.range = creator_scores.range
+      LEFT JOIN opponent_scores ON bins.range = opponent_scores.range
+      ORDER BY bins.bin_order
+    `;
+
+    // Get top match creators
+    const topCreatorsResult = await sql`
+      SELECT
+        mp.user_id,
+        COUNT(DISTINCT m.id) as matches_created,
+        COUNT(CASE WHEN m.status = 'completed' THEN 1 END) as completed_matches,
+        COUNT(CASE
+          WHEN m.status = 'completed' AND scores.creator_score > scores.opponent_score
+          THEN 1
+        END) as wins
+      FROM match_participants mp
+      JOIN matches m ON mp.match_id = m.id
+      LEFT JOIN LATERAL (
+        SELECT
+          MAX(CASE WHEN mp2.role = 'creator' THEN gs.score END) as creator_score,
+          MAX(CASE WHEN mp2.role = 'opponent' THEN gs.score END) as opponent_score
+        FROM match_participants mp2
+        JOIN game_sessions gs ON mp2.session_id = gs.id
+        WHERE mp2.match_id = m.id
+      ) scores ON true
+      WHERE mp.role = 'creator'
+      GROUP BY mp.user_id
+      ORDER BY matches_created DESC
+      LIMIT 10
+    `;
+
+    return {
+      totalMatches,
+      completedMatches: statusCounts.completed,
+      pendingMatches: statusCounts.pending,
+      expiredMatches: statusCounts.expired,
+      completionRate,
+      participationRate,
+      avgScoreDifference,
+      avgScoreGap,
+      statusDistribution: statusResult.rows.map((row) => ({
+        status: row.status,
+        count: parseInt(row.count),
+        percentage: parseFloat(row.percentage) || 0,
+      })),
+      scoreDistributionByRole: {
+        creators: scoreDistResult.rows.map((row) => ({
+          range: row.range,
+          count: parseInt(row.creator_count),
+        })),
+        opponents: scoreDistResult.rows.map((row) => ({
+          range: row.range,
+          count: parseInt(row.opponent_count),
+        })),
+      },
+      topCreators: topCreatorsResult.rows.map((row) => {
+        const matchesCreated = parseInt(row.matches_created);
+        const completedMatches = parseInt(row.completed_matches);
+        const wins = parseInt(row.wins);
+        const winRate = completedMatches > 0 ? (wins * 100.0) / completedMatches : 0;
+        return {
+          userId: row.user_id,
+          matchesCreated,
+          completedMatches,
+          wins,
+          winRate,
+        };
+      }),
+    };
+  } catch (error) {
+    console.error('Error fetching match analytics:', error);
     throw error;
   }
 }

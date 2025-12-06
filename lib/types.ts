@@ -265,3 +265,42 @@ export interface MatchHistoryItem {
   opponentScore: number | null;
   participantCount: number;
 }
+
+// =====================================================
+// MATCH ANALYTICS TYPES (Admin Dashboard)
+// =====================================================
+
+export interface MatchAnalytics {
+  // Overview metrics
+  totalMatches: number;
+  completedMatches: number;
+  pendingMatches: number;
+  expiredMatches: number;
+  completionRate: number; // percentage
+  participationRate: number; // percentage of users in matches
+
+  // Score metrics
+  avgScoreDifference: number;
+  avgScoreGap: number; // Always positive difference
+
+  // Distributions
+  statusDistribution: Array<{
+    status: string;
+    count: number;
+    percentage: number;
+  }>;
+
+  scoreDistributionByRole: {
+    creators: Array<{ range: string; count: number }>;
+    opponents: Array<{ range: string; count: number }>;
+  };
+
+  // Top creators
+  topCreators: Array<{
+    userId: string;
+    matchesCreated: number;
+    completedMatches: number;
+    wins: number;
+    winRate: number;
+  }>;
+}

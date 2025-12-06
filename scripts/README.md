@@ -116,6 +116,31 @@ Tests rate limiting implementation for the `/api/grade` endpoint.
 ./scripts/test-rate-limit.sh
 ```
 
+### `test-analytics.sh` - Admin Analytics Test
+
+Tests the admin dashboard analytics endpoint (includes both general and match analytics).
+
+```bash
+# Automatically reads ADMIN_DASHBOARD_PASSWORD from .env.local
+./scripts/test-analytics.sh
+
+# Or specify a different base URL
+./scripts/test-analytics.sh http://localhost:3000
+```
+
+**What it tests:**
+
+- ✅ Unauthorized access (should return 401)
+- ✅ Authorized access with valid credentials
+- ✅ Both general analytics and match analytics are returned
+- ✅ Analytics data structure validation
+- ✅ Correct field types and array structures
+
+**Prerequisites:**
+
+- `ADMIN_DASHBOARD_PASSWORD` set in `.env.local`
+- Dev server running (`npm run dev`)
+
 ### `setup-git-hooks.sh` - Install Pre-Commit Hooks
 
 Sets up automatic type checking before commits.

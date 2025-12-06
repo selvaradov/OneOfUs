@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import { getAdminAnalytics } from '@/lib/admin-db';
+import { getAdminAnalytics, getMatchAnalytics } from '@/lib/admin-db';
 import { adminRateLimiter, getClientIp, checkRateLimit } from '@/lib/ratelimit';
 
 export async function GET(request: NextRequest) {
@@ -30,12 +30,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch analytics data
-    const analytics = await getAdminAnalytics();
+    // Fetch both general and match analytics data
+    const [analytics, matchAnalytics] = await Promise.all([
+      getAdminAnalytics(),
+      getMatchAnalytics(),
+    ]);
 
     return NextResponse.json({
       success: true,
       analytics,
+      matchAnalytics,
     });
   } catch (error) {
     console.error('Admin analytics API error:', error);
