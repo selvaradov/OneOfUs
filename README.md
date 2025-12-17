@@ -50,8 +50,11 @@ See `.env.example` for the full list. Required:
 - `POSTGRES_URL` - Database connection string (Vercel Postgres or Neon)
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` - For rate limiting
 - `ADMIN_DASHBOARD_PASSWORD` - Admin dashboard access (optional, for `/admin`)
+- `CRON_SECRET` - For database keep-alive cron jobs
 
 > **Note:** While the application has localStorage fallback logic for graceful degradation, `POSTGRES_URL` is required at startup since `@vercel/postgres` validates the connection on initialization. For local development, you can use a free [Neon](https://neon.tech) database or connect to the Vercel-provisioned database via `vercel env pull`.
+
+> **Database Keep-Alive:** The project includes Vercel cron jobs that automatically ping the Redis and Postgres databases to prevent inactivity archiving.
 
 ### Initialize Database
 

@@ -110,6 +110,14 @@ export async function initializeDatabase(): Promise<void> {
     await sql`ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS match_id UUID REFERENCES matches(id) ON DELETE SET NULL`;
     await sql`CREATE INDEX IF NOT EXISTS idx_sessions_match ON game_sessions(match_id)`;
 
+    // Keep-alive table
+    await sql`
+      CREATE TABLE IF NOT EXISTS keepalive (
+        id SERIAL PRIMARY KEY,
+        last_ping TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `;
+
     console.log('Database initialized successfully');
   } catch (error) {
     console.error('Error initializing database:', error);

@@ -105,3 +105,13 @@ CREATE INDEX IF NOT EXISTS idx_match_participants_user ON match_participants(use
 -- with a session is the match_participants table (via session_id).
 ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS match_id UUID REFERENCES matches(id) ON DELETE SET NULL;
 CREATE INDEX IF NOT EXISTS idx_sessions_match ON game_sessions(match_id);
+
+-- =====================================================
+-- KEEP-ALIVE TABLE
+-- =====================================================
+-- Lightweight table for database keep-alive cron job
+-- Stores single row that gets updated daily by Vercel cron
+CREATE TABLE IF NOT EXISTS keepalive (
+  id SERIAL PRIMARY KEY,
+  last_ping TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
