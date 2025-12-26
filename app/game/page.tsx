@@ -262,10 +262,16 @@ function GameContent() {
     );
   }
 
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    // Refresh the prompt now that we have the user's region
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
       {/* Onboarding modal overlays the game content */}
-      {showOnboarding && <OnboardingModal onComplete={() => setShowOnboarding(false)} />}
+      {showOnboarding && <OnboardingModal onComplete={handleOnboardingComplete} />}
       {isSubmitting && <DartingLoader message={loadingMessage} />}
       <Navbar />
       <div className="flex-1 py-8 px-4 w-full">
