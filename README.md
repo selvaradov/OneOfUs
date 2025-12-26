@@ -2,9 +2,47 @@
 
 **The Ideological Turing Test Game**
 
-Can you convincingly argue for a political position that isn't your own? Write responses to political scenarios, and see if an AI can detect whether you're genuine or playing a role.
+Can you convincingly argue for an ideological position that isn't your own? Write responses to political scenarios, and see if you can fool the AI into thinking you're a true believer.
 
-This isn't about trolling or caricature—it's about truly understanding the strongest version of views different from your own.
+## Background
+
+Economist Bryan Caplan came up with the idea of an Ideological Turing Test
+[in 2011](https://www.econlib.org/archives/2011/06/the_ideological.html); the point is to measure how well
+you're able to simulate the positions of someone from a different political perspective.
+
+There's [another website](https://ituringtest.com) which allows you to _judge_ others' performance
+in ITTs, but that's a lot less fun than being the test subject yourself! Since LLMs are pretty good
+simulators, we can just use them to mark the user's submission against a rubric.
+
+(Note that there's some interesting
+[early work](https://www.anthropic.com/news/political-even-handedness) by
+Anthropic on measuring political bias in LLMs, with grading approaches that could be applied
+to how we mark user submissions here, though I've not implemented any yet.)
+
+Some analysis it might be fun to do in future could include:
+
+- Does the grader score people more highly on questions where they're representing their own
+  ideology, vs different ideologies?
+  - You'd hope yes; this would be to just sense-check the grader.
+- Is there a better predictor of "difficulty to simulate" than just linear distance between ideologies
+  along the left-right axis?
+- Are people from some political ideologies better able to simulate different groups' beliefs (in general)
+  than others are?
+
+Introducing human grading might help further with validation of the LLM grading.
+See also [Gameplay Ideas](#gameplay-ideas) for possible new features.
+
+(Noah Smith has an
+[old blog post](https://noahpinionblog.blogspot.com/2014/01/against-ideological-turing-test.html)
+arguing against Ideological Turing Tests, mostly on the grounds that they're too easy to game
+simply by adopting the other group's vocabulary and shibboleths. I agree that this is a problem --
+I've prompted the LLM grader to focus on the substance rather than language of responses when scoring them
+-- but I do think there is a real skill to sounding authentic,
+and it's not _trivially_ easy to fool a human adherent of the ideology you're trying to pass off as.)
+
+_The remainder of this README and most of the project's code is co-written with [Claude](https://claude.ai/code)._
+
+---
 
 ## How It Works
 
@@ -21,8 +59,6 @@ This isn't about trolling or caricature—it's about truly understanding the str
 - **AI**: Anthropic Claude API (Haiku 4.5 for grading)
 - **Analytics**: Vercel Analytics
 - **Deployment**: Vercel
-
-_Code primarily written by [Claude](https://claude.ai/code)._
 
 ## Quick Start
 
