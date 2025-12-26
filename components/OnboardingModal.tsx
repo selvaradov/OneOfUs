@@ -175,6 +175,9 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
                 </button>
               ))}
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              We&apos;ll show you scenarios relevant to your location
+            </p>
           </div>
         </div>
 

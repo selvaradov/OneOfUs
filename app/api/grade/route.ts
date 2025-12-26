@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { GradingResult, PoliticalPosition, VALID_POSITIONS } from '@/lib/types';
 import { GRADING_PROMPT } from '@/data/graderPrompt';
 import { saveGameSession, checkDatabaseConnection } from '@/lib/db';
-import { getPromptById } from '@/lib/prompts';
+import { getPromptById, getPromptRegion } from '@/lib/prompts';
 import { getPositionDescription, getExampleFigures } from '@/lib/positionDescriptions';
 import { gradeRateLimiter, getClientIp, checkRateLimit } from '@/lib/ratelimit';
 
@@ -171,9 +171,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get region for position descriptions
+    const region = getPromptRegion(prompt);
+
     // Prepare the grading prompt
-    const positionDescription = getPositionDescription(position);
-    const exampleFigures = getExampleFigures(position).join(', ');
+    const positionDescription = getPositionDescription(position, region);
+    const exampleFigures = getExampleFigures(position, region).join(', ');
     const charLimit = prompt.charLimit.toString();
     const filledPrompt = GRADING_PROMPT.replace('{scenario}', scenario)
       .replace(/{position}/g, positionDescription)
@@ -259,6 +262,7 @@ export async function POST(request: NextRequest) {
             promptId: promptId || 'unknown',
             promptScenario: scenario,
             promptCategory: promptCategory || 'other',
+            promptRegion: region,
             positionAssigned: position,
             userResponse,
             charCount: userResponse.length,

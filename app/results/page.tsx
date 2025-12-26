@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Brain, FingerprintPattern, Goal } from 'lucide-react';
 import { GameSession } from '@/lib/types';
-import { getPositionDescription } from '@/lib/positionDescriptions';
+import { getPositionDescription, Region } from '@/lib/positionDescriptions';
 import ChallengeButton from '@/components/match/ChallengeButton';
 import Footer from '@/components/Footer';
 
@@ -72,6 +72,15 @@ function ResultsContent() {
 
   const { gradingResult, prompt, positionChosen, userResponse, aiResponse } = session;
   const passed = !gradingResult.detected;
+
+  // Get region for position descriptions
+  const promptRegion = prompt.metadata?.region;
+  const region: Region | undefined =
+    promptRegion === 'UK' || promptRegion === 'Scotland' || promptRegion === 'Wales'
+      ? 'UK'
+      : promptRegion === 'US'
+        ? 'US'
+        : undefined;
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
@@ -215,7 +224,9 @@ function ResultsContent() {
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-xs">
               Argued from the perspective of{' '}
-              <span className="font-semibold">{getPositionDescription(positionChosen)}</span>
+              <span className="font-semibold">
+                {getPositionDescription(positionChosen, region)}
+              </span>
             </p>
           </div>
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { GameSession } from '@/lib/types';
 import { getUserAlignment } from '@/lib/storage';
-import { getPositionDescription } from '@/lib/positionDescriptions';
+import { getPositionDescription, Region } from '@/lib/positionDescriptions';
 import ChallengeButton from '@/components/match/ChallengeButton';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -62,6 +62,9 @@ export default function HistoryPage() {
                 scenario: dbSession.prompt_scenario,
                 positions: [],
                 charLimit: dbSession.char_count || 280,
+                metadata: {
+                  region: dbSession.prompt_region as 'UK' | 'US' | 'global' | undefined,
+                },
               },
               positionChosen: dbSession.position_assigned,
               userResponse: dbSession.user_response,
@@ -225,7 +228,17 @@ export default function HistoryPage() {
                     >
                       <div className="mb-2">
                         <span className="text-sm text-gray-600 dark:text-gray-400">
-                          As {getPositionDescription(session.positionChosen)}
+                          As{' '}
+                          {getPositionDescription(
+                            session.positionChosen,
+                            (session.prompt.metadata?.region === 'UK' ||
+                            session.prompt.metadata?.region === 'Scotland' ||
+                            session.prompt.metadata?.region === 'Wales'
+                              ? 'UK'
+                              : session.prompt.metadata?.region === 'US'
+                                ? 'US'
+                                : undefined) as Region | undefined
+                          )}
                         </span>
                       </div>
                       <p className="text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">

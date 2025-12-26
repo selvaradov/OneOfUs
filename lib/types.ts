@@ -8,7 +8,7 @@ export interface Prompt {
   charLimit: number;
   wordLimit?: number;
   metadata?: {
-    region?: 'UK' | 'US' | 'global';
+    region?: 'UK' | 'US' | 'Scotland' | 'Wales' | 'global';
     difficulty?: 'easy' | 'medium' | 'hard';
     topic?: string;
   };

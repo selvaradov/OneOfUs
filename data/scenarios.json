@@ -454,5 +454,509 @@
       "difficulty": "medium",
       "topic": "education"
     }
+  },
+  {
+    "id": "us-healthcare-tweet-1",
+    "category": "tweet",
+    "scenario": "New Trump admin 'TrumpRx' initiative promises to slash drug prices through international reference pricing. Pharma stocks tank. Tweet your reaction.",
+    "positions": ["left", "conservative", "libertarian"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "healthcare"
+    }
+  },
+  {
+    "id": "us-immigration-whatsapp-1",
+    "category": "whatsapp",
+    "scenario": "Family chat: Your cousin shares a post claiming '10,000 migrants crossed into Texas yesterday and got free hotel rooms.' How do you respond?",
+    "positions": ["centre-left", "right", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "immigration"
+    }
+  },
+  {
+    "id": "us-guns-reddit-1",
+    "category": "reddit",
+    "scenario": "r/news: 'Louisiana becomes 29th state to allow permitless concealed carry. Federal reciprocity bill now being debated in Congress - would force all states to recognize these permits.' Your comment?",
+    "positions": ["centre-left", "conservative", "libertarian"],
+    "charLimit": 450,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "guns"
+    }
+  },
+  {
+    "id": "us-economy-other-1",
+    "category": "other",
+    "scenario": "At your local coffee shop, the barista mentions they're working 50 hours a week at $12/hour and still can't afford rent. They ask what you think should be done. Quick response?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "economy"
+    }
+  },
+  {
+    "id": "us-abortion-news-comment-1",
+    "category": "news-comment",
+    "scenario": "Article: 'Idaho woman forced to travel to Oregon for emergency abortion after pregnancy complications.' Comment section response?",
+    "positions": ["centre-left", "conservative", "conservative"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "abortion"
+    }
+  },
+  {
+    "id": "us-education-tweet-2",
+    "category": "tweet",
+    "scenario": "Breaking: Trump administration moves to dismantle Biden's SAVE student loan repayment plan. 8 million borrowers now face higher payments or default. Your take?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "education"
+    }
+  },
+  {
+    "id": "us-climate-reddit-2",
+    "category": "reddit",
+    "scenario": "r/technology: 'California announces 2035 ban on new gas car sales. Only electric vehicles allowed after that.' Your reaction?",
+    "positions": ["left", "conservative", "libertarian"],
+    "charLimit": 450,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "climate"
+    }
+  },
+  {
+    "id": "us-crime-whatsapp-2",
+    "category": "whatsapp",
+    "scenario": "Neighborhood group chat: Someone posts Ring camera footage of porch thieves and says 'Defund the police worked out great, huh?' How do you respond?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "crime"
+    }
+  },
+  {
+    "id": "us-culture-other-2",
+    "category": "other",
+    "scenario": "At a parent-teacher meeting, another parent loudly objects to the school library having books about families with two moms. You're asked your opinion. What do you say?",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "culture-wars"
+    }
+  },
+  {
+    "id": "us-foreignpolicy-news-comment-2",
+    "category": "news-comment",
+    "scenario": "Trump announces immediate halt to Ukraine aid, says Europe should pay. Zelenskyy warns this could lose the war. Comment your view.",
+    "positions": ["centre-left", "right", "libertarian"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "foreign-policy"
+    }
+  },
+  {
+    "id": "us-elections-tweet-3",
+    "category": "tweet",
+    "scenario": "Georgia just passed a law requiring photo ID for all voting, including mail-in ballots. Supporters call it common-sense security. Critics say it will disenfranchise elderly and minority voters. Tweet your stance.",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "elections"
+    }
+  },
+  {
+    "id": "us-immigration-other-3",
+    "category": "other",
+    "scenario": "At a church potluck, someone says 'We're a nation of laws - if they came here illegally, they should be deported, period.' Others are listening. Your response?",
+    "positions": ["centre-left", "conservative", "conservative"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "immigration"
+    }
+  },
+  {
+    "id": "us-healthcare-reddit-3",
+    "category": "reddit",
+    "scenario": "r/AskReddit: 'Just got a $4,000 bill for a 20-minute ER visit. They gave me Tylenol and sent me home. Is this what freedom looks like?' Top comment?",
+    "positions": ["left", "conservative", "libertarian"],
+    "charLimit": 450,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "healthcare"
+    }
+  },
+  {
+    "id": "us-guns-whatsapp-3",
+    "category": "whatsapp",
+    "scenario": "Friend group chat after a school shooting: 'Maybe if teachers were armed this wouldn't have happened.' How do you respond?",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "guns"
+    }
+  },
+  {
+    "id": "us-economy-news-comment-3",
+    "category": "news-comment",
+    "scenario": "Amazon, Apple, Google report record profits while announcing major layoffs. Article comment section - what's your take?",
+    "positions": ["left", "conservative", "libertarian"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "economy"
+    }
+  },
+  {
+    "id": "us-education-other-4",
+    "category": "other",
+    "scenario": "At your HOA meeting, neighbors are debating whether to oppose a new affordable housing development because it might 'lower property values and change the school demographics.' You're asked to weigh in.",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "education"
+    }
+  },
+  {
+    "id": "us-race-tweet-4",
+    "category": "tweet",
+    "scenario": "Supreme Court just struck down affirmative action in college admissions. Chief Justice Roberts: 'Eliminating racial discrimination means eliminating all of it.' Your response?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "race"
+    }
+  },
+  {
+    "id": "us-technology-reddit-4",
+    "category": "reddit",
+    "scenario": "r/technology: 'TikTok divests US operations to Oracle partnership following federal deadline. ByteDance forced to sell or face nationwide ban.' Your thoughts?",
+    "positions": ["conservative", "centre-left", "libertarian"],
+    "charLimit": 450,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "technology"
+    }
+  },
+  {
+    "id": "us-housing-whatsapp-4",
+    "category": "whatsapp",
+    "scenario": "Your city council is voting on rent control tonight. A friend texts: 'Landlords are gouging us - we need a 5% cap on increases!' Another replies: 'That'll just reduce housing supply.' Your take?",
+    "positions": ["left", "libertarian", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "housing"
+    }
+  },
+  {
+    "id": "us-drugs-news-comment-4",
+    "category": "news-comment",
+    "scenario": "Breaking: Federal government moves marijuana from Schedule I (alongside heroin) to Schedule III, acknowledging medical uses. 24 states have already legalized recreational use. Comment your reaction.",
+    "positions": ["libertarian", "conservative", "left"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "drugs"
+    }
+  },
+  {
+    "id": "us-crime-tweet-5",
+    "category": "tweet",
+    "scenario": "Viral video shows a violent subway assault. Mayor-elect Mamdani promises to replace police transit outreach with a new civilian 'Department of Community Safety.' Critics say this will invite more chaos. Who's right?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "crime"
+    }
+  },
+  {
+    "id": "us-culture-reddit-5",
+    "category": "reddit",
+    "scenario": "r/teachers: 'A student asked me to use they/them pronouns. Now parents are demanding I be fired for pushing woke ideology. I just called them by their preferred name.' What's your response?",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 450,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "culture-wars"
+    }
+  },
+  {
+    "id": "us-socialprograms-other-5",
+    "category": "other",
+    "scenario": "At a bar, someone argues 'Social Security is a Ponzi scheme - I'd rather invest my own money than pay for Boomers' retirements.' Quick response?",
+    "positions": ["left", "libertarian", "conservative"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "social-programs"
+    }
+  },
+  {
+    "id": "us-abortion-whatsapp-5",
+    "category": "whatsapp",
+    "scenario": "Church group chat: Someone shares that their state just banned abortion after 6 weeks (before most women know they're pregnant). How do you respond?",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "abortion"
+    }
+  },
+  {
+    "id": "us-climate-news-comment-5",
+    "category": "news-comment",
+    "scenario": "Texas power grid fails again during heat wave - 3rd time in 2 years. ERCOT blames renewables. Climate scientists point to fossil fuel infrastructure. Your comment?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "climate"
+    }
+  },
+  {
+    "id": "us-immigration-tweet-6",
+    "category": "tweet",
+    "scenario": "Trump announces mass deportation operations targeting major cities. ICE raids expected to begin next week. Sanctuary cities vow resistance. Your take?",
+    "positions": ["centre-left", "right", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "immigration"
+    }
+  },
+  {
+    "id": "us-healthcare-other-6",
+    "category": "other",
+    "scenario": "At a family BBQ, your cousin (a doctor) says 'Medicare for All would destroy healthcare quality - look at the VA.' Your aunt (a teacher) counters 'I pay $800/month for insurance that covers nothing.' You're asked to mediate.",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "healthcare"
+    }
+  },
+  {
+    "id": "us-guns-news-comment-6",
+    "category": "news-comment",
+    "scenario": "Federal judge strikes down state's red flag law allowing temporary gun seizure for people in crisis. Ruling cites 2nd Amendment. Your reaction?",
+    "positions": ["centre-left", "conservative", "libertarian"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "guns"
+    }
+  },
+  {
+    "id": "us-economy-reddit-6",
+    "category": "reddit",
+    "scenario": "r/personalfinance: 'I make $75k in a mid-size city and still live paycheck to paycheck. My boomer parents bought their house for $40k on one income. What changed?' Your comment?",
+    "positions": ["left", "conservative", "libertarian"],
+    "charLimit": 450,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "economy"
+    }
+  },
+  {
+    "id": "us-education-tweet-7",
+    "category": "tweet",
+    "scenario": "Following Florida's lead, three more states have now pulled funding for AP African American Studies. Critics say it's erasing history; supporters say it's about neutrality. Your take?",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "education"
+    }
+  },
+  {
+    "id": "us-elections-whatsapp-7",
+    "category": "whatsapp",
+    "scenario": "Family chat: Uncle shares a post claiming the 2024 election was stolen through mail-in ballot fraud. Aunt responds 'Every court rejected those claims.' Now it's awkward. How do you respond?",
+    "positions": ["conservative", "centre-left", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "elections"
+    }
+  },
+  {
+    "id": "us-crime-other-7",
+    "category": "other",
+    "scenario": "At your kid's soccer game, parents are discussing bail reform after someone was released and reoffended. 'They should've stayed locked up!' vs 'Innocent until proven guilty.' You're asked your view.",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "crime"
+    }
+  },
+  {
+    "id": "us-race-reddit-7",
+    "category": "reddit",
+    "scenario": "r/news: 'Company implements mandatory DEI training. Employees must complete modules on unconscious bias, microaggressions, and privilege.' Your take in the comments?",
+    "positions": ["centre-left", "conservative", "libertarian"],
+    "charLimit": 450,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "race"
+    }
+  },
+  {
+    "id": "us-foreignpolicy-tweet-8",
+    "category": "tweet",
+    "scenario": "Trump pushes for immediate Gaza ceasefire, threatens to cut all aid to Israel if Netanyahu doesn't comply. Progressive and MAGA wings both support it. Your reaction?",
+    "positions": ["left", "conservative", "centre-left"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "foreign-policy"
+    }
+  },
+  {
+    "id": "us-technology-news-comment-7",
+    "category": "news-comment",
+    "scenario": "Major social media platforms announce they're ending fact-checking programs and loosening content moderation. Free speech or misinformation nightmare? Comment your take.",
+    "positions": ["centre-left", "conservative", "libertarian"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "technology"
+    }
+  },
+  {
+    "id": "us-housing-other-8",
+    "category": "other",
+    "scenario": "Your neighborhood meeting: Developer wants to build a homeless shelter 3 blocks away. Some neighbors say 'Property values will tank!' Others say 'We have a moral obligation.' What's your position?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "housing"
+    }
+  },
+  {
+    "id": "us-socialprograms-whatsapp-8",
+    "category": "whatsapp",
+    "scenario": "Friend group discussing Florida's plan to drug test welfare recipients. One says 'If I have to pass a test for my job, they should too!' Another says 'That's degrading and unconstitutional.' Your response?",
+    "positions": ["conservative", "left", "libertarian"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "social-programs"
+    }
+  },
+  {
+    "id": "us-culture-tweet-9",
+    "category": "tweet",
+    "scenario": "Disney announces major rollback of DEI initiatives and diversity programming. Stock jumps 8%. Boycotters from both sides claim victory. Your take?",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "US",
+      "difficulty": "hard",
+      "topic": "culture-wars"
+    }
+  },
+  {
+    "id": "us-military-reddit-8",
+    "category": "reddit",
+    "scenario": "r/politics: 'US military budget increases to $886 billion while veterans wait months for VA healthcare appointments.' Your comment on priorities?",
+    "positions": ["left", "conservative", "libertarian"],
+    "charLimit": 450,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "military"
+    }
+  },
+  {
+    "id": "us-supremecourt-news-comment-8",
+    "category": "news-comment",
+    "scenario": "Reports reveal Justice Thomas accepted luxury gifts and trips worth hundreds of thousands from GOP donor. No disclosure filed. Comment section - your reaction?",
+    "positions": ["centre-left", "conservative", "centre"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "supreme-court"
+    }
+  },
+  {
+    "id": "us-drugs-other-9",
+    "category": "other",
+    "scenario": "Community meeting about fentanyl crisis. One speaker: 'We need tougher sentences!' Another: 'Portugal decriminalized drugs and overdoses dropped. We should try harm reduction.' You're asked to comment.",
+    "positions": ["conservative", "left", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "US",
+      "difficulty": "medium",
+      "topic": "drugs"
+    }
+  },
+  {
+    "id": "us-education-whatsapp-9",
+    "category": "whatsapp",
+    "scenario": "PTA group chat: 'Our school just banned phones completely - even at lunch. Kids need to learn self-control!' vs 'What if there's an emergency?' Your take?",
+    "positions": ["conservative", "centre-left", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "US",
+      "difficulty": "easy",
+      "topic": "education"
+    }
   }
 ]

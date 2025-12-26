@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MatchWithParticipants, PoliticalPosition } from '@/lib/types';
-import { getPromptById } from '@/lib/prompts';
+import { getPromptById, getPromptRegion } from '@/lib/prompts';
 import { hasCompletedOnboarding, getUserAlignment } from '@/lib/storage';
 import { getPositionDescription } from '@/lib/positionDescriptions';
 import OnboardingModal from '@/components/OnboardingModal';
@@ -202,7 +202,7 @@ export default function MatchLobbyChallenge({
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 You&apos;ll respond as{' '}
                 <span className="font-semibold text-orange-600 dark:text-orange-400">
-                  {getPositionDescription(position)}
+                  {getPositionDescription(position, prompt ? getPromptRegion(prompt) : undefined)}
                 </span>
               </p>
             )}

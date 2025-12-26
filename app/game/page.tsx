@@ -3,9 +3,9 @@
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Prompt, PoliticalPosition, GameSession } from '@/lib/types';
-import { getRandomPrompt, getPromptById } from '@/lib/prompts';
+import { getRandomPromptForRegion, getPromptById, getPromptRegion } from '@/lib/prompts';
 import { hasCompletedOnboarding, getUserAlignment } from '@/lib/storage';
-import { getPositionDescription, getExampleFigures } from '@/lib/positionDescriptions';
+import { getPositionDescription, getExampleFigures, Region } from '@/lib/positionDescriptions';
 import OnboardingModal from '@/components/OnboardingModal';
 import Navbar from '@/components/Navbar';
 import DartingLoader from '@/components/DartingLoader';
@@ -35,6 +35,7 @@ function GameContent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [assignedPosition, setAssignedPosition] = useState<PoliticalPosition | null>(null);
+  const [promptRegion, setPromptRegion] = useState<Region | undefined>(undefined);
   const [userResponse, setUserResponse] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [charCount, setCharCount] = useState(0);
@@ -65,26 +66,33 @@ function GameContent() {
     const completed = hasCompletedOnboarding();
     setShowOnboarding(!completed);
 
+    // Get user's country for region-based prompt selection
+    const userAlignment = getUserAlignment();
+    const userCountry = userAlignment?.country;
+
     // If in match mode, use the specific prompt and position
     if (isMatchMode && matchPromptId && matchPosition) {
       const matchPrompt = getPromptById(matchPromptId);
       if (matchPrompt) {
         setPrompt(matchPrompt);
         setAssignedPosition(matchPosition);
+        setPromptRegion(getPromptRegion(matchPrompt));
       } else {
         // Fallback to random if prompt not found
         console.error('Match prompt not found:', matchPromptId);
-        const randomPrompt = getRandomPrompt();
+        const randomPrompt = getRandomPromptForRegion(userCountry);
         setPrompt(randomPrompt);
+        setPromptRegion(getPromptRegion(randomPrompt));
         if (randomPrompt.positions.length > 0) {
           const randomIndex = Math.floor(Math.random() * randomPrompt.positions.length);
           setAssignedPosition(randomPrompt.positions[randomIndex]);
         }
       }
     } else {
-      // Regular mode: load a random prompt
-      const randomPrompt = getRandomPrompt();
+      // Regular mode: load a random prompt based on user's region
+      const randomPrompt = getRandomPromptForRegion(userCountry);
       setPrompt(randomPrompt);
+      setPromptRegion(getPromptRegion(randomPrompt));
 
       // Randomly assign a position from available positions
       if (randomPrompt.positions.length > 0) {
@@ -298,7 +306,7 @@ function GameContent() {
                 </p>
                 <div className="inline-flex items-center gap-2">
                   <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                    {getPositionDescription(assignedPosition)}
+                    {getPositionDescription(assignedPosition, promptRegion)}
                   </p>
                   <div className="relative" ref={tooltipRef}>
                     <button
@@ -315,7 +323,7 @@ function GameContent() {
                       <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg z-10 shadow-lg w-max max-w-[calc(100vw-10rem)] sm:max-w-[20rem] text-center">
                         <div className="text-xs text-gray-300 mb-1">Think:</div>
                         <div className="font-medium">
-                          {getExampleFigures(assignedPosition).join(', ')}
+                          {getExampleFigures(assignedPosition, promptRegion).join(', ')}
                         </div>
                         <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
                       </div>

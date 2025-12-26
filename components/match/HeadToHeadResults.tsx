@@ -13,7 +13,7 @@ import {
   Check,
 } from 'lucide-react';
 import { MatchResults as MatchResultsType, ParticipantWithSession } from '@/lib/types';
-import { getPositionDescription } from '@/lib/positionDescriptions';
+import { getPositionDescription, Region } from '@/lib/positionDescriptions';
 
 // Rubric bar component for score visualization
 function RubricBar({
@@ -177,6 +177,15 @@ export default function HeadToHeadResults({ results, currentUserId }: HeadToHead
 
   const { prompt, participants, winner } = results;
 
+  // Get region for position descriptions
+  const promptRegion = prompt.metadata?.region;
+  const region: Region | undefined =
+    promptRegion === 'UK' || promptRegion === 'Scotland' || promptRegion === 'Wales'
+      ? 'UK'
+      : promptRegion === 'US'
+        ? 'US'
+        : undefined;
+
   const creator = participants.find((p) => p.role === 'creator');
   const opponent = participants.find((p) => p.role === 'opponent');
 
@@ -312,7 +321,7 @@ export default function HeadToHeadResults({ results, currentUserId }: HeadToHead
         <p className="text-base text-gray-600 dark:text-gray-400">
           Both players argued from the perspective of{' '}
           <span className="font-semibold text-orange-600 dark:text-orange-400">
-            {getPositionDescription(creator?.session?.positionAssigned || 'left')}
+            {getPositionDescription(creator?.session?.positionAssigned || 'left', region)}
           </span>
           .
         </p>

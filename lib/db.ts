@@ -33,6 +33,7 @@ export async function initializeDatabase(): Promise<void> {
         prompt_id TEXT NOT NULL,
         prompt_scenario TEXT NOT NULL,
         prompt_category TEXT NOT NULL,
+        prompt_region TEXT,
         position_assigned TEXT NOT NULL,
         user_response TEXT NOT NULL,
         char_count INTEGER,
@@ -50,6 +51,9 @@ export async function initializeDatabase(): Promise<void> {
         duration_seconds INTEGER
       )
     `;
+
+    // Add prompt_region column if it doesn't exist (for existing databases)
+    await sql`ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS prompt_region TEXT`;
 
     // Create indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_user_sessions ON game_sessions(user_id, created_at DESC)`;
@@ -194,6 +198,7 @@ export async function saveGameSession(data: {
   promptId: string;
   promptScenario: string;
   promptCategory: string;
+  promptRegion?: string;
   positionAssigned: PoliticalPosition;
   userResponse: string;
   charCount: number;
@@ -211,14 +216,14 @@ export async function saveGameSession(data: {
   try {
     const result = await sql`
       INSERT INTO game_sessions (
-        user_id, prompt_id, prompt_scenario, prompt_category, position_assigned,
+        user_id, prompt_id, prompt_scenario, prompt_category, prompt_region, position_assigned,
         user_response, char_count, completed_at, detected, score, feedback,
         rubric_understanding, rubric_authenticity, rubric_execution,
         ai_comparison_response, ip_address, user_agent, duration_seconds
       )
       VALUES (
         ${data.userId}, ${data.promptId}, ${data.promptScenario}, ${data.promptCategory},
-        ${data.positionAssigned}, ${data.userResponse}, ${data.charCount}, NOW(),
+        ${data.promptRegion ?? null}, ${data.positionAssigned}, ${data.userResponse}, ${data.charCount}, NOW(),
         ${data.detected ?? null}, ${data.score ?? null}, ${data.feedback ?? null},
         ${data.rubricUnderstanding ?? null}, ${data.rubricAuthenticity ?? null},
         ${data.rubricExecution ?? null}, ${data.aiComparisonResponse ?? null},
