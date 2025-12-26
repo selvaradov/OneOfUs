@@ -958,5 +958,149 @@
       "difficulty": "easy",
       "topic": "education"
     }
+  },
+  {
+    "id": "uk-utilities-news-2",
+    "category": "news-comment",
+    "scenario": "Guardian article: Water companies announce bill hikes of 40% while paying out millions in dividends and failing to stop sewage spills. Post your reaction.",
+    "positions": ["left", "conservative", "environmentalist"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "environment"
+    }
+  },
+  {
+    "id": "uk-healthcare-reddit-2",
+    "category": "reddit",
+    "scenario": "r/UnitedKingdom: A bill to legalise assisted dying is being debated in the House of Commons. Critics worry about the 'slippery slope' for the vulnerable, while supporters argue for the right to dignity. What is your view?",
+    "positions": ["centre-left", "conservative", "libertarian"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "hard",
+      "topic": "healthcare"
+    }
+  },
+  {
+    "id": "uk-defence-tweet-1",
+    "category": "tweet",
+    "scenario": "With global tensions rising, there is a push to increase UK defence spending to 3% of GDP. Tweet your take on whether this should be prioritized over domestic services.",
+    "positions": ["right", "left", "centre-left"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "defence"
+    }
+  },
+  {
+    "id": "uk-economy-whatsapp-1",
+    "category": "whatsapp",
+    "scenario": "Family chat: Your dad says, 'I have worked my whole life to pay off this house, and now the government wants to take 40% of it in inheritance tax before I can leave it to you.' How do you respond?",
+    "positions": ["conservative", "left", "centre"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "economy"
+    }
+  },
+  {
+    "id": "uk-employment-other-1",
+    "category": "other",
+    "scenario": "At a BBQ, a friend mentions a recent trial of the four-day work week: 'It sounds great for workers, but won't it just kill our productivity and make the UK less competitive?' What is your response?",
+    "positions": ["left", "conservative", "centre-left"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "employment"
+    }
+  },
+  {
+    "id": "uk-constitution-reddit-1",
+    "category": "reddit",
+    "scenario": "r/UKPolitics: The government plans to remove the remaining hereditary peers from the House of Lords. Some say it is a vital modernization; others say it is a constitutional power grab. Your comment?",
+    "positions": ["left", "conservative", "right"],
+    "charLimit": 500,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "constitution"
+    }
+  },
+  {
+    "id": "uk-transport-tweet-2",
+    "category": "tweet",
+    "scenario": "London is considering a new pay-per-mile driving charge to replace the Congestion Charge and ULEZ. Tweet your reaction to this proposed shift in transport policy.",
+    "positions": ["environmentalist", "right", "libertarian"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "transport"
+    }
+  },
+  {
+    "id": "uk-technology-news-2",
+    "category": "news-comment",
+    "scenario": "Daily Mail: Ofcom given new powers to fine social media bosses for failing to remove harmful content after recent civil unrest. Is this necessary regulation or state censorship?",
+    "positions": ["centre-left", "libertarian", "right"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "hard",
+      "topic": "technology"
+    }
+  },
+  {
+    "id": "uk-economy-tweet-2",
+    "category": "tweet",
+    "scenario": "Shell reports record annual profits while the government is set to keep the energy price cap significantly higher than pre-crisis levels. Tweet your view on a further windfall tax.",
+    "positions": ["left", "conservative", "environmentalist"],
+    "charLimit": 280,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "economy"
+    }
+  },
+  {
+    "id": "uk-elections-whatsapp-1",
+    "category": "whatsapp",
+    "scenario": "Friend group: One friend says they couldn't vote because they didn't have a valid photo ID. Another says, 'It's easy to get a free one, it just prevents fraud.' Your take?",
+    "positions": ["centre-left", "right", "libertarian"],
+    "charLimit": 300,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "medium",
+      "topic": "elections"
+    }
+  },
+  {
+    "id": "uk-culture-news-2",
+    "category": "news-comment",
+    "scenario": "Telegraph: New NHS guidance states that hospital wards should be strictly sex-based, meaning trans women would be in single rooms rather than female bays. Write a comment below the line.",
+    "positions": ["left", "right", "centre-left"],
+    "charLimit": 400,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "hard",
+      "topic": "culture-war"
+    }
+  },
+  {
+    "id": "uk-education-other-3",
+    "category": "other",
+    "scenario": "At the school gate, a parent argues: 'We should have free school meals for every single child, regardless of income. It's the only way to end the stigma.' How do you respond?",
+    "positions": ["left", "conservative", "centre"],
+    "charLimit": 250,
+    "metadata": {
+      "region": "UK",
+      "difficulty": "easy",
+      "topic": "education"
+    }
   }
 ]
