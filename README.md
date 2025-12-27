@@ -6,6 +6,9 @@ Can you convincingly argue for an ideological position that isn't your own? Writ
 
 ## Background
 
+_My friend Amos wrote about this game on his Substack recently; check out [the article](https://wollenblog.substack.com/p/how-you-today-can-become-less-of)
+if you're interested in a pitch from someone else about why you might want to play an Ideological Turing Test._
+
 Economist Bryan Caplan came up with the idea of an Ideological Turing Test
 [in 2011](https://www.econlib.org/archives/2011/06/the_ideological.html); the point is to measure how well
 you're able to simulate the positions of someone from a different political perspective.
