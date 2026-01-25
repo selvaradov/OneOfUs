@@ -25,9 +25,6 @@ export const metadata: Metadata = {
   description:
     "Can you convincingly argue for a political position that isn't your own? Test your understanding of different viewpoints in this Ideological Turing Test game.",
   metadataBase: new URL('https://oneofus.vercel.app'),
-  alternates: {
-    canonical: '/',
-  },
   openGraph: {
     title: 'One of Us - Ideological Turing Test',
     description:
