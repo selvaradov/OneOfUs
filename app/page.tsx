@@ -27,10 +27,6 @@ export default function Home() {
               scenarios, and see if an AI can detect whether you&apos;re being genuine or playing a
               role.
             </p>
-            <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-              This isn&apos;t about trolling or caricature—it&apos;s about truly understanding the
-              strongest version of views different from your own.
-            </p>
           </div>
 
           {/* CTA Button */}
